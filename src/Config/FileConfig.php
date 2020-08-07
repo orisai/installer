@@ -1,0 +1,73 @@
+<?php declare(strict_types = 1);
+
+namespace Orisai\Installer\Config;
+
+final class FileConfig
+{
+
+	public const FILE_OPTION = 'file';
+	public const SWITCHES_OPTION = 'switches';
+	public const PACKAGES_OPTION = 'packages';
+	public const PRIORITY_OPTION = 'priority';
+
+	public const PRIORITY_DEFAULT = self::PRIORITY_VALUE_NORMAL;
+
+	public const PRIORITY_VALUE_LOW = 'low';
+	public const PRIORITY_VALUE_NORMAL = 'normal';
+	public const PRIORITY_VALUE_HIGH = 'high';
+	public const PRIORITIES = [
+		self::PRIORITY_VALUE_LOW,
+		self::PRIORITY_VALUE_NORMAL,
+		self::PRIORITY_VALUE_HIGH,
+	];
+
+	/** @var string */
+	private $file;
+
+	/** @var array<bool> */
+	private $switches;
+
+	/** @var array<string> */
+	private $packages;
+
+	/** @var string */
+	private $priority;
+
+	/**
+	 * @param array<mixed> $config
+	 */
+	public function __construct(array $config)
+	{
+		$this->file = $config[self::FILE_OPTION];
+		$this->switches = $config[self::SWITCHES_OPTION];
+		$this->packages = $config[self::PACKAGES_OPTION];
+		$this->priority = $config[self::PRIORITY_OPTION];
+	}
+
+	public function getFile(): string
+	{
+		return $this->file;
+	}
+
+	/**
+	 * @return array<mixed>
+	 */
+	public function getSwitches(): array
+	{
+		return $this->switches;
+	}
+
+	/**
+	 * @return array<string>
+	 */
+	public function getRequiredPackages(): array
+	{
+		return $this->packages;
+	}
+
+	public function getPriority(): string
+	{
+		return $this->priority;
+	}
+
+}

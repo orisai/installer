@@ -1,0 +1,29 @@
+<ruleset
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="./../vendor/squizlabs/php_codesniffer/phpcs.xsd">
+
+	<!-- Show only relevant part of path -->
+	<arg name="basepath" value="./.."/>
+
+	<!-- Configure cache -->
+	<arg name="cache" value="./../var/tmp/codesniffer.dat"/>
+
+	<!-- Import coding-standard -->
+	<rule ref="./../vendor/orisai/coding-standard/src/ruleset-7.1.xml"/>
+
+	<!-- Configure PSR-4 rule -->
+	<rule ref="SlevomatCodingStandard.Files.TypeNameMatchesFileName">
+		<properties>
+			<property name="rootNamespaces" type="array">
+				<element key="src" value="Orisai\Installer"/>
+				<element key="tests" value="Tests\Orisai\Installer"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Schema name contains version - Schema_1_0 -->
+	<rule ref="Squiz.Classes.ValidClassName.NotCamelCaps">
+		<exclude-pattern>src/Schemas</exclude-pattern>
+	</rule>
+
+</ruleset>
