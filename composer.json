@@ -1,0 +1,63 @@
+{
+	"name": "orisai/installer",
+	"description": "Composer installer for nette/di based packages. Integrated by orisai/bootstrap",
+	"keywords": [
+		"orisai",
+		"installer",
+		"nette di"
+	],
+	"type": "composer-plugin",
+	"license": "MPL-2.0",
+	"homepage": "https://github.com/orisai/installer",
+	"authors": [
+		{
+			"name": "Marek Bartoš",
+			"homepage": "https://github.com/mabar"
+		}
+	],
+	"require": {
+		"php": ">=7.1.0 <8.2.0",
+		"composer-plugin-api": "^1.0.0|^2.0.0",
+		"nette/neon": "^3.2.0",
+		"nette/php-generator": "^3.4.0",
+		"nette/schema": "^1.0.0",
+		"orisai/exceptions": "^1.0.0"
+	},
+	"require-dev": {
+		"composer/composer": "^1.10.0|^2.0.0",
+		"orisai/coding-standard": "^1.0.0",
+		"pepakriz/phpstan-exception-rules": "^0.10.0",
+		"phpstan/extension-installer": "^1.0.0",
+		"phpstan/phpstan": "^0.12.0",
+		"phpstan/phpstan-deprecation-rules": "^0.12.0",
+		"phpstan/phpstan-nette": "^0.12.0",
+		"phpstan/phpstan-phpunit": "^0.12.0",
+		"phpstan/phpstan-strict-rules": "^0.12.0",
+		"phpunit/phpunit": "^7.5.0",
+		"staabm/annotate-pull-request-from-checkstyle": "^1.1.0"
+	},
+	"autoload": {
+		"files": [
+			"src/compatibility.php"
+		],
+		"psr-4": {
+			"Orisai\\Installer\\": "src"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Tests\\Orisai\\Installer\\": "tests"
+		}
+	},
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"config": {
+		"sort-packages": true
+	},
+	"extra": {
+		"class": "Orisai\\Installer\\Plugin",
+		"branch-alias": {
+			"dev-master": "1.0.x-dev"
+		}
+	}
+}

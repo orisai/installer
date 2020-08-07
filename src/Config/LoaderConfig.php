@@ -1,0 +1,36 @@
+<?php declare(strict_types = 1);
+
+namespace Orisai\Installer\Config;
+
+final class LoaderConfig
+{
+
+	public const FILE_OPTION = 'file';
+	public const CLASS_OPTION = 'class';
+
+	/** @var string */
+	private $file;
+
+	/** @var string */
+	private $class;
+
+	/**
+	 * @param array<mixed> $config
+	 */
+	public function __construct(array $config)
+	{
+		$this->file = $config[self::FILE_OPTION];
+		$this->class = $config[self::CLASS_OPTION];
+	}
+
+	public function getFile(): string
+	{
+		return $this->file;
+	}
+
+	public function getClass(): string
+	{
+		return $this->class;
+	}
+
+}
