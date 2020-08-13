@@ -36,25 +36,25 @@ final class ConfigValidator
 		$config = $this->reader->read($schemaFileFullName);
 
 		if (!isset($config[PackageConfig::VERSION_OPTION])) {
-			throw InvalidConfig::from(
-				$package,
+			throw InvalidConfig::create(
+				sprintf('The mandatory option \'%s\' is missing.', PackageConfig::VERSION_OPTION),
 				$schemaFileRelativeName,
-				sprintf('The mandatory option \'%s\' is missing.', PackageConfig::VERSION_OPTION)
+				$package
 			);
 		}
 
 		$version = $config[PackageConfig::VERSION_OPTION];
 
 		if (!in_array($version, Schema::VERSIONS, true)) {
-			throw InvalidConfig::from(
-				$package,
-				$schemaFileRelativeName,
+			throw InvalidConfig::create(
 				sprintf(
 					'The option \'%s\' expects to be %s, %s given.',
 					PackageConfig::VERSION_OPTION,
 					implode('|', Schema::VERSIONS),
 					$version
-				)
+				),
+				$schemaFileRelativeName,
+				$package
 			);
 		}
 
@@ -67,7 +67,7 @@ final class ConfigValidator
 		try {
 			$config = $processor->process($structure, $config);
 		} catch (ValidationException $exception) {
-			throw InvalidConfig::from($package, $schemaFileRelativeName, $exception->getMessage());
+			throw InvalidConfig::create($exception->getMessage(), $schemaFileRelativeName, $package);
 		}
 
 		return new PackageConfig($config, $package, $schemaFileRelativeName);
