@@ -23,7 +23,7 @@ final class Schema_1_0 implements Schema
 					LoaderConfig::CLASS_OPTION => Expect::string()->required(),
 				])->castTo('array')
 			),
-			PackageConfig::FILES_OPTION => Expect::listOf(Expect::anyOf(
+			PackageConfig::CONFIGS_OPTION => Expect::listOf(Expect::anyOf(
 				Expect::string(),
 				Expect::structure([
 					FileConfig::FILE_OPTION => Expect::string()->required(),
