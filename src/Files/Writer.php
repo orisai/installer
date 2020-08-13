@@ -15,7 +15,7 @@ final class Writer
 
 		if ($written === false) {
 			throw new FilesystemException(
-				'An error occurred during writing of modules config file.'
+				'An error occurred during writing of modules config file.',
 			);
 		}
 	}

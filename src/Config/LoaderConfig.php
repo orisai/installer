@@ -8,11 +8,8 @@ final class LoaderConfig
 	public const FILE_OPTION = 'file';
 	public const CLASS_OPTION = 'class';
 
-	/** @var string */
-	private $file;
-
-	/** @var string */
-	private $class;
+	private string $file;
+	private string $class;
 
 	/**
 	 * @param array<mixed> $config

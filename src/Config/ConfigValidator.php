@@ -17,11 +17,8 @@ use function sprintf;
 final class ConfigValidator
 {
 
-	/** @var NeonReader */
-	private $reader;
-
-	/** @var PathResolver */
-	private $pathResolver;
+	private NeonReader $reader;
+	private PathResolver $pathResolver;
 
 	public function __construct(NeonReader $reader, PathResolver $pathResolver)
 	{
@@ -39,7 +36,7 @@ final class ConfigValidator
 			throw InvalidConfig::create(
 				sprintf('The mandatory option \'%s\' is missing.', PackageConfig::VERSION_OPTION),
 				$schemaFileRelativeName,
-				$package
+				$package,
 			);
 		}
 
@@ -51,10 +48,10 @@ final class ConfigValidator
 					'The option \'%s\' expects to be %s, %s given.',
 					PackageConfig::VERSION_OPTION,
 					implode('|', Schema::VERSIONS),
-					$version
+					$version,
 				),
 				$schemaFileRelativeName,
-				$package
+				$package,
 			);
 		}
 

@@ -15,13 +15,13 @@ abstract class BaseLoader
 	public const META_ITEM_DIR = 'dir';
 
 	/** @var array<mixed> */
-	protected $schema = [];
+	protected array $schema = [];
 
 	/** @var array<bool> */
-	protected $switches = [];
+	protected array $switches = [];
 
 	/** @var array<mixed> */
-	protected $modulesMeta = [];
+	protected array $modulesMeta = [];
 
 	final public function __construct()
 	{
@@ -56,7 +56,7 @@ abstract class BaseLoader
 				'Switch \'%s\' is not defined by any of loaded \'%s\' in \'%s\' section.',
 				$switch,
 				Plugin::DEFAULT_FILE_NAME,
-				PackageConfig::SWITCHES_OPTION
+				PackageConfig::SWITCHES_OPTION,
 			));
 		}
 

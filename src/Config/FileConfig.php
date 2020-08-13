@@ -21,17 +21,14 @@ final class FileConfig
 		self::PRIORITY_VALUE_HIGH,
 	];
 
-	/** @var string */
-	private $file;
+	private string $file;
+	private string $priority;
 
 	/** @var array<bool> */
-	private $switches;
+	private array $switches;
 
 	/** @var array<string> */
-	private $packages;
-
-	/** @var string */
-	private $priority;
+	private array $packages;
 
 	/**
 	 * @param array<mixed> $config
@@ -39,14 +36,19 @@ final class FileConfig
 	public function __construct(array $config)
 	{
 		$this->file = $config[self::FILE_OPTION];
+		$this->priority = $config[self::PRIORITY_OPTION];
 		$this->switches = $config[self::SWITCHES_OPTION];
 		$this->packages = $config[self::PACKAGES_OPTION];
-		$this->priority = $config[self::PRIORITY_OPTION];
 	}
 
 	public function getFile(): string
 	{
 		return $this->file;
+	}
+
+	public function getPriority(): string
+	{
+		return $this->priority;
 	}
 
 	/**
@@ -63,11 +65,6 @@ final class FileConfig
 	public function getRequiredPackages(): array
 	{
 		return $this->packages;
-	}
-
-	public function getPriority(): string
-	{
-		return $this->priority;
 	}
 
 }

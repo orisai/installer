@@ -19,14 +19,16 @@ use function sprintf;
 final class LoaderGenerateCommand extends BaseCommand
 {
 
-	/** @var string */
-	protected static $defaultName = 'orisai:loader:generate';
+	public static function getDefaultName(): string
+	{
+		return 'orisai:loader:generate';
+	}
 
 	protected function configure(): void
 	{
 		parent::configure();
 
-		$this->setName(self::$defaultName);
+		$this->setName(self::getDefaultName());
 		$this->setDescription('Generate modules loader');
 	}
 
@@ -43,13 +45,13 @@ final class LoaderGenerateCommand extends BaseCommand
 			$composer->getPackage(),
 			$validator,
 			$pathResolver,
-			$fileName
+			$fileName,
 		);
 
 		if (!$activator->isEnabled()) {
 			throw new InvalidState(sprintf(
 				'Cannot generate module loader, \'%s\' with \'loader\' option must be configured.',
-				$fileName
+				$fileName,
 			));
 		}
 
@@ -59,7 +61,7 @@ final class LoaderGenerateCommand extends BaseCommand
 			new Writer(),
 			$pathResolver,
 			$validator,
-			$activator->getRootPackageConfiguration()
+			$activator->getRootPackageConfiguration(),
 		);
 
 		$loaderGenerator->generateLoader();

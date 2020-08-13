@@ -7,11 +7,10 @@ use Orisai\Installer\Config\PackageConfig;
 final class Module
 {
 
-	/** @var PackageConfig */
-	private $config;
+	private PackageConfig $config;
 
 	/** @var array<Module> */
-	private $dependents = [];
+	private array $dependents = [];
 
 	public function __construct(PackageConfig $config)
 	{

@@ -11,14 +11,9 @@ final class SimulatedModuleConfig
 
 	public const OPTIONAL_DEFAULT = false;
 
-	/** @var string */
-	private $name;
-
-	/** @var string */
-	private $path;
-
-	/** @var bool */
-	private $optional;
+	private string $name;
+	private string $path;
+	private bool $optional;
 
 	/**
 	 * @param array<mixed> $config

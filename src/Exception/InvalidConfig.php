@@ -17,7 +17,7 @@ final class InvalidConfig extends LogicalException
 			->withContext(sprintf(
 				'Validation of config file %s of package %s failed',
 				$file,
-				$package->getName()
+				$package->getName(),
 			))
 			->withProblem($problem);
 		$this->withMessage((string) $message);

@@ -18,8 +18,7 @@ use function substr;
 final class PathResolver
 {
 
-	/** @var Composer */
-	private $composer;
+	private Composer $composer;
 
 	public function __construct(Composer $composer)
 	{

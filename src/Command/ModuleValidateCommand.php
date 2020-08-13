@@ -21,21 +21,23 @@ final class ModuleValidateCommand extends BaseCommand
 
 	private const OPTION_PACKAGE = 'package';
 
-	/** @var string */
-	protected static $defaultName = 'orisai:module:validate';
+	public static function getDefaultName(): string
+	{
+		return 'orisai:module:validate';
+	}
 
 	protected function configure(): void
 	{
 		parent::configure();
 
-		$this->setName(self::$defaultName);
+		$this->setName(self::getDefaultName());
 		$this->setDescription(sprintf('Validate %s', Plugin::DEFAULT_FILE_NAME));
 
 		$this->addOption(
 			self::OPTION_PACKAGE,
 			'p',
 			InputOption::VALUE_REQUIRED,
-			'Package which is validated (current package is validated if not specified)'
+			'Package which is validated (current package is validated if not specified)',
 		);
 	}
 

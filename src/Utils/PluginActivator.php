@@ -12,23 +12,13 @@ use function sprintf;
 final class PluginActivator
 {
 
-	/** @var PackageInterface */
-	private $rootPackage;
+	private PackageInterface $rootPackage;
+	private ConfigValidator $validator;
+	private PathResolver $pathResolver;
+	private string $unresolvedFileName;
 
-	/** @var ConfigValidator */
-	private $validator;
-
-	/** @var PathResolver */
-	private $pathResolver;
-
-	/** @var string */
-	private $unresolvedFileName;
-
-	/** @var PackageConfig|null */
-	private $config;
-
-	/** @var string|null */
-	private $schemaFileFullName;
+	private ?PackageConfig $config = null;
+	private ?string $schemaFileFullName = null;
 
 	public function __construct(
 		PackageInterface $rootPackage,
@@ -62,7 +52,7 @@ final class PluginActivator
 			throw new InvalidState(sprintf(
 				'Plugin is not activated, check with \'%s()\' before calling \'%s\'',
 				self::class . '::isEnabled()',
-				self::class . '::' . __METHOD__ . '()'
+				self::class . '::' . __METHOD__ . '()',
 			));
 		}
 

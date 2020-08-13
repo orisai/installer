@@ -23,7 +23,7 @@ final class PluginTestsHelper
 		if (!class_exists(Composer::class)) {
 			throw new InvalidState(sprintf(
 				'Install Composer via \'composer require --dev composer/composer\' to use \'%s\'',
-				self::class
+				self::class,
 			));
 		}
 	}

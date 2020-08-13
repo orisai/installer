@@ -30,17 +30,10 @@ use function uasort;
 final class ModuleResolver
 {
 
-	/** @var WritableRepositoryInterface */
-	private $repository;
-
-	/** @var PathResolver */
-	private $pathResolver;
-
-	/** @var ConfigValidator */
-	private $validator;
-
-	/** @var PackageConfig */
-	private $rootPackageConfiguration;
+	private WritableRepositoryInterface $repository;
+	private PathResolver $pathResolver;
+	private ConfigValidator $validator;
+	private PackageConfig $rootPackageConfiguration;
 
 	public function __construct(
 		WritableRepositoryInterface $repository,
@@ -77,7 +70,7 @@ final class ModuleResolver
 						'Cannot set "%s" as a "%s" simulated module. Given package does not have "%s" file.',
 						$package->getName(),
 						$package->getParentName(),
-						Plugin::DEFAULT_FILE_NAME
+						Plugin::DEFAULT_FILE_NAME,
 					));
 				}
 
@@ -94,8 +87,8 @@ final class ModuleResolver
 			$module->setDependents(
 				$this->packagesToModules(
 					$this->flatten($this->getDependents($module->getConfiguration()->getPackage()->getName(), $packages)),
-					$modules
-				)
+					$modules,
+				),
 			);
 		}
 
@@ -179,7 +172,7 @@ final class ModuleResolver
 					$name,
 					$path,
 					$composerFilePath,
-					SimulatedModuleConfig::OPTIONAL_OPTION
+					SimulatedModuleConfig::OPTIONAL_OPTION,
 				));
 			}
 
@@ -194,7 +187,7 @@ final class ModuleResolver
 					'Path "%s" contains package "%s" while package "%s" was expected by configuration.',
 					$path,
 					$packageName,
-					$name
+					$name,
 				));
 			}
 
