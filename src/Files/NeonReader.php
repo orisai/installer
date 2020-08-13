@@ -23,11 +23,10 @@ final class NeonReader
 {
 
 	private const INCLUDES_KEY = 'includes';
-
 	private const PREVENT_MERGING_SUFFIX = '!';
 
 	/** @var array<bool> */
-	private $loadedFiles = [];
+	private array $loadedFiles = [];
 
 	/**
 	 * @return array<mixed>
@@ -87,7 +86,7 @@ final class NeonReader
 				if (!is_array($value) && $value !== null) {
 					throw new InvalidArgument(sprintf(
 						'Replacing operator is available only for arrays, item "%s" is not array.',
-						$key
+						$key,
 					));
 				}
 

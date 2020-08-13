@@ -85,7 +85,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 			$composer->getPackage(),
 			$validator,
 			$pathResolver,
-			self::DEFAULT_FILE_NAME
+			self::DEFAULT_FILE_NAME,
 		);
 
 		if (!$activator->isEnabled()) {
@@ -97,7 +97,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 			new Writer(),
 			$pathResolver,
 			$validator,
-			$activator->getRootPackageConfiguration()
+			$activator->getRootPackageConfiguration(),
 		);
 
 		$loaderGenerator->generateLoader();

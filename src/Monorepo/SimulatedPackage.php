@@ -7,11 +7,8 @@ use Composer\Package\CompletePackage;
 final class SimulatedPackage extends CompletePackage
 {
 
-	/** @var string */
-	private $packageDirectory;
-
-	/** @var string */
-	private $parentName;
+	private string $packageDirectory;
+	private string $parentName;
 
 	public function getPackageDirectory(): string
 	{

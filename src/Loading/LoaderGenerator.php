@@ -32,20 +32,11 @@ final class LoaderGenerator
 	private const LOADER_PROPERTY_MODULES_META = 'modulesMeta';
 	private const LOADER_PROPERTY_SWITCHES = 'switches';
 
-	/** @var WritableRepositoryInterface */
-	private $repository;
-
-	/** @var Writer */
-	private $writer;
-
-	/** @var PathResolver */
-	private $pathResolver;
-
-	/** @var ConfigValidator */
-	private $validator;
-
-	/** @var PackageConfig */
-	private $rootPackageConfiguration;
+	private WritableRepositoryInterface $repository;
+	private Writer $writer;
+	private PathResolver $pathResolver;
+	private ConfigValidator $validator;
+	private PackageConfig $rootPackageConfiguration;
 
 	public function __construct(
 		WritableRepositoryInterface $repository,
@@ -69,7 +60,7 @@ final class LoaderGenerator
 		if ($loaderConfiguration === null) {
 			throw new InvalidState(sprintf(
 				'Loader should be always available by this moment. Entry point should check if plugin is activated with \'%s\'',
-				PluginActivator::class
+				PluginActivator::class,
 			));
 		}
 
@@ -77,7 +68,7 @@ final class LoaderGenerator
 			$this->repository,
 			$this->pathResolver,
 			$this->validator,
-			$this->rootPackageConfiguration
+			$this->rootPackageConfiguration,
 		);
 
 		$this->generateClass($loaderConfiguration, $resolver->getResolvedConfigurations());
@@ -145,7 +136,7 @@ final class LoaderGenerator
 						throw new InvalidArgument(sprintf(
 							'Configuration file switch \'%s\' is not defined in \'%s\'.',
 							$itemSwitchName,
-							PackageConfig::SWITCHES_OPTION
+							PackageConfig::SWITCHES_OPTION,
 						));
 					}
 				}
@@ -161,7 +152,7 @@ final class LoaderGenerator
 		$schema = array_merge(
 			$itemsByPriority[FileConfig::PRIORITY_VALUE_HIGH],
 			$itemsByPriority[FileConfig::PRIORITY_VALUE_NORMAL],
-			$itemsByPriority[FileConfig::PRIORITY_VALUE_LOW]
+			$itemsByPriority[FileConfig::PRIORITY_VALUE_LOW],
 		);
 
 		if (class_exists($fqn)) {
@@ -169,7 +160,7 @@ final class LoaderGenerator
 				throw new InvalidState(sprintf(
 					'\'%s\' should be instance of \'%s\'',
 					$fqn,
-					BaseLoader::class
+					BaseLoader::class,
 				));
 			}
 
@@ -202,15 +193,18 @@ final class LoaderGenerator
 
 		$class->addProperty(self::LOADER_PROPERTY_SCHEMA, $schema)
 			->setVisibility(ClassType::VISIBILITY_PROTECTED)
-			->setComment('@var mixed[]');
+			->setType('array')
+			->setComment('@var array<mixed>');
 
 		$class->addProperty(self::LOADER_PROPERTY_SWITCHES, $switches)
 			->setVisibility(ClassType::VISIBILITY_PROTECTED)
-			->setComment('@var bool[]');
+			->setType('array')
+			->setComment('@var array<bool>');
 
 		$class->addProperty(self::LOADER_PROPERTY_MODULES_META, $modulesMeta)
 			->setVisibility(ClassType::VISIBILITY_PROTECTED)
-			->setComment('@var mixed[]');
+			->setType('array')
+			->setComment('@var array<mixed>');
 
 		$loaderFilePath = $this->pathResolver->buildPathFromParts([
 			$this->pathResolver->getRootDir(),

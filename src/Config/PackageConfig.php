@@ -17,32 +17,25 @@ final class PackageConfig
 	public const IGNORE_OPTION = 'ignore';
 	public const SIMULATED_MODULES_OPTION = 'simulated-modules';
 
-	/** @var string */
-	private $schemaPath;
+	private string $schemaPath;
+	private string $schemaFile;
+	private float $version;
 
-	/** @var string */
-	private $schemaFile;
-
-	/** @var float */
-	private $version;
-
-	/** @var LoaderConfig|null */
-	private $loader;
+	private ?LoaderConfig $loader;
 
 	/** @var array<FileConfig> */
-	private $configs;
+	private array $configs;
 
 	/** @var array<bool> */
-	private $switches;
+	private array $switches;
 
 	/** @var array<string> */
-	private $ignoredPackages;
+	private array $ignoredPackages;
 
 	/** @var array<SimulatedModuleConfig> */
-	private $simulatedModules;
+	private array $simulatedModules;
 
-	/** @var PackageInterface */
-	private $package;
+	private PackageInterface $package;
 
 	/**
 	 * @param array<mixed> $config

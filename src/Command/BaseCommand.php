@@ -19,7 +19,7 @@ abstract class BaseCommand extends ComposerBaseCommand
 			'f',
 			InputOption::VALUE_REQUIRED,
 			sprintf('Use different config file than %s (for tests)', Plugin::DEFAULT_FILE_NAME),
-			Plugin::DEFAULT_FILE_NAME
+			Plugin::DEFAULT_FILE_NAME,
 		);
 	}
 
