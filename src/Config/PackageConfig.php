@@ -12,7 +12,7 @@ final class PackageConfig
 
 	public const VERSION_OPTION = 'version';
 	public const LOADER_OPTION = 'loader';
-	public const FILES_OPTION = 'files';
+	public const CONFIGS_OPTION = 'configs';
 	public const SWITCHES_OPTION = 'switches';
 	public const IGNORE_OPTION = 'ignore';
 	public const SIMULATED_MODULES_OPTION = 'simulated-modules';
@@ -30,7 +30,7 @@ final class PackageConfig
 	private $loader;
 
 	/** @var array<FileConfig> */
-	private $files;
+	private $configs;
 
 	/** @var array<bool> */
 	private $switches;
@@ -53,7 +53,7 @@ final class PackageConfig
 		$this->schemaPath = $lastSlashPosition === false ? '' : substr($schemaFile, 0, $lastSlashPosition);
 		$this->schemaFile = $schemaFile;
 		$this->version = $config[self::VERSION_OPTION];
-		$this->files = $this->normalizeFiles($config[self::FILES_OPTION]);
+		$this->configs = $this->normalizeConfigs($config[self::CONFIGS_OPTION]);
 		$this->switches = $config[self::SWITCHES_OPTION];
 		$this->loader = $config[self::LOADER_OPTION] !== null ? new LoaderConfig($config[self::LOADER_OPTION]) : null;
 		$this->ignoredPackages = $config[self::IGNORE_OPTION];
@@ -84,9 +84,9 @@ final class PackageConfig
 	/**
 	 * @return array<FileConfig>
 	 */
-	public function getFiles(): array
+	public function getConfigs(): array
 	{
-		return $this->files;
+		return $this->configs;
 	}
 
 	/**
@@ -122,7 +122,7 @@ final class PackageConfig
 	 * @param array<mixed> $files
 	 * @return array<FileConfig>
 	 */
-	private function normalizeFiles(array $files): array
+	private function normalizeConfigs(array $files): array
 	{
 		$normalized = [];
 

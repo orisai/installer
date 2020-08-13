@@ -122,7 +122,7 @@ final class LoaderGenerator
 				];
 			}
 
-			foreach ($packageConfiguration->getFiles() as $fileConfiguration) {
+			foreach ($packageConfiguration->getConfigs() as $fileConfiguration) {
 				// Skip configuration if required package is not installed
 				foreach ($fileConfiguration->getRequiredPackages() as $requiredPackage) {
 					if ($this->repository->findPackage($requiredPackage, new EmptyConstraint()) === null) {
