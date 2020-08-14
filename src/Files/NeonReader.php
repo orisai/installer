@@ -8,6 +8,7 @@ use Nette\Schema\Helpers;
 use Nette\Utils\Validators;
 use Orisai\Exceptions\Logic\InvalidArgument;
 use Orisai\Exceptions\Logic\InvalidState;
+use Orisai\Exceptions\Message;
 use function assert;
 use function dirname;
 use function file_get_contents;
@@ -38,7 +39,13 @@ final class NeonReader
 		}
 
 		if (isset($this->loadedFiles[$file])) {
-			throw new InvalidState(sprintf('Recursively included file "%s"', $file));
+			$message = Message::create()
+				->withContext(sprintf('Trying to include file `%s`.', $file))
+				->withProblem('File was already loaded.')
+				->withSolution('Ensure file is included just once to prevent priority and recursion issues.');
+
+			throw InvalidState::create()
+				->withMessage((string) $message);
 		}
 
 		$this->loadedFiles[$file] = true;
@@ -84,10 +91,11 @@ final class NeonReader
 		foreach ($array as $key => $value) {
 			if (is_string($key) && substr($key, -1) === self::PREVENT_MERGING_SUFFIX) {
 				if (!is_array($value) && $value !== null) {
-					throw new InvalidArgument(sprintf(
-						'Replacing operator is available only for arrays, item "%s" is not array.',
-						$key,
-					));
+					throw InvalidArgument::create()
+						->withMessage(sprintf(
+							'Replacing operator is available only for arrays, item "%s" is not array.',
+							$key,
+						));
 				}
 
 				$key = substr($key, 0, -1);

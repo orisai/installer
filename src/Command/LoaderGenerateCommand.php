@@ -3,6 +3,7 @@
 namespace Orisai\Installer\Command;
 
 use Orisai\Exceptions\Logic\InvalidState;
+use Orisai\Exceptions\Message;
 use Orisai\Installer\Config\ConfigValidator;
 use Orisai\Installer\Files\NeonReader;
 use Orisai\Installer\Files\Writer;
@@ -49,10 +50,13 @@ final class LoaderGenerateCommand extends BaseCommand
 		);
 
 		if (!$activator->isEnabled()) {
-			throw new InvalidState(sprintf(
-				'Cannot generate module loader, \'%s\' with \'loader\' option must be configured.',
-				$fileName,
-			));
+			$message = Message::create()
+				->withContext('Trying to generate module loader.')
+				->withProblem(sprintf('`%s` option `loader` is not configured.', $fileName))
+				->withSolution(sprintf('Add `loader` option to `%s`', $fileName));
+
+			throw InvalidState::create()
+				->withMessage((string) $message);
 		}
 
 		$io = new SymfonyStyle($input, $output);

@@ -10,9 +10,8 @@ use function sprintf;
 final class InvalidConfig extends LogicalException
 {
 
-	public function __construct(string $problem, string $file, PackageInterface $package)
+	public static function create(string $problem, string $file, PackageInterface $package): self
 	{
-		parent::__construct();
 		$message = Message::create()
 			->withContext(sprintf(
 				'Validation of config file %s of package %s failed',
@@ -20,12 +19,8 @@ final class InvalidConfig extends LogicalException
 				$package->getName(),
 			))
 			->withProblem($problem);
-		$this->withMessage((string) $message);
-	}
 
-	public static function create(string $problem, string $file, PackageInterface $package): self
-	{
-		return new self($problem, $file, $package);
+		return new self((string) $message);
 	}
 
 }

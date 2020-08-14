@@ -3,8 +3,10 @@
 namespace Orisai\Installer\Loading;
 
 use Orisai\Exceptions\Logic\InvalidArgument;
-use Orisai\Installer\Config\PackageConfig;
+use Orisai\Exceptions\Message;
 use Orisai\Installer\Plugin;
+use function array_keys;
+use function implode;
 use function sprintf;
 
 abstract class BaseLoader
@@ -52,12 +54,16 @@ abstract class BaseLoader
 	public function configureSwitch(string $switch, bool $value): void
 	{
 		if (!isset($this->switches[$switch])) {
-			throw new InvalidArgument(sprintf(
-				'Switch \'%s\' is not defined by any of loaded \'%s\' in \'%s\' section.',
-				$switch,
-				Plugin::DEFAULT_FILE_NAME,
-				PackageConfig::SWITCHES_OPTION,
-			));
+			$message = Message::create()
+				->withContext(sprintf('Trying to set value of switch `%s`.', $switch))
+				->withProblem(sprintf('Switch is not defined by any of loaded `%s`.', Plugin::DEFAULT_FILE_NAME))
+				->withSolution(sprintf(
+					'Do not configure switch or choose one of available: `%s`',
+					implode(', ', array_keys($this->switches)),
+				));
+
+			throw InvalidArgument::create()
+				->withMessage((string) $message);
 		}
 
 		$this->switches[$switch] = $value;

@@ -7,13 +7,13 @@ use Composer\Console\Application;
 use Composer\Factory;
 use Composer\IO\BufferIO;
 use Orisai\Exceptions\Logic\InvalidState;
+use Orisai\Exceptions\Message;
 use Orisai\Installer\Command\LoaderGenerateCommand;
 use Orisai\Installer\Command\ModuleValidateCommand;
 use Orisai\Installer\Plugin;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use function class_exists;
-use function sprintf;
 
 final class PluginTestsHelper
 {
@@ -21,10 +21,13 @@ final class PluginTestsHelper
 	private static function checkComposerAvailability(): void
 	{
 		if (!class_exists(Composer::class)) {
-			throw new InvalidState(sprintf(
-				'Install Composer via \'composer require --dev composer/composer\' to use \'%s\'',
-				self::class,
-			));
+			$message = Message::create()
+				->withContext('Trying to use installer tests utility.')
+				->withProblem('Cannot found Composer installation.')
+				->withSolution('Install Composer via `composer require --dev composer/composer`.');
+
+			throw InvalidState::create()
+				->withMessage((string) $message);
 		}
 	}
 
