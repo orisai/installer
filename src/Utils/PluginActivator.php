@@ -49,11 +49,12 @@ final class PluginActivator
 		}
 
 		if (!file_exists($this->getSchemaFileFullName())) {
-			throw new InvalidState(sprintf(
-				'Plugin is not activated, check with \'%s()\' before calling \'%s\'',
-				self::class . '::isEnabled()',
-				self::class . '::' . __METHOD__ . '()',
-			));
+			throw InvalidState::create()
+				->withMessage(sprintf(
+					'Plugin is not activated, check with \'%s()\' before calling \'%s\'',
+					self::class . '::isEnabled()',
+					__METHOD__ . '()',
+				));
 		}
 
 		return $this->config = $this->validator->validateConfiguration($this->rootPackage, $this->unresolvedFileName);

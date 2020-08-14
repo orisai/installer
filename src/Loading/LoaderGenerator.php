@@ -8,17 +8,22 @@ use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile;
 use Orisai\Exceptions\Logic\InvalidArgument;
 use Orisai\Exceptions\Logic\InvalidState;
+use Orisai\Exceptions\Message;
+use Orisai\Installer\Command\LoaderGenerateCommand;
 use Orisai\Installer\Config\ConfigValidator;
 use Orisai\Installer\Config\FileConfig;
 use Orisai\Installer\Config\LoaderConfig;
 use Orisai\Installer\Config\PackageConfig;
 use Orisai\Installer\Files\Writer;
+use Orisai\Installer\Plugin;
 use Orisai\Installer\Resolving\ModuleResolver;
 use Orisai\Installer\Utils\PathResolver;
 use Orisai\Installer\Utils\PluginActivator;
 use ReflectionClass;
+use function array_keys;
 use function array_merge;
 use function class_exists;
+use function implode;
 use function is_subclass_of;
 use function sprintf;
 use function strrchr;
@@ -58,10 +63,11 @@ final class LoaderGenerator
 		$loaderConfiguration = $this->rootPackageConfiguration->getLoader();
 
 		if ($loaderConfiguration === null) {
-			throw new InvalidState(sprintf(
-				'Loader should be always available by this moment. Entry point should check if plugin is activated with \'%s\'',
-				PluginActivator::class,
-			));
+			throw InvalidState::create()
+				->withMessage(sprintf(
+					'Loader should be always available by this moment. Entry point should check if plugin is activated with \'%s\'',
+					PluginActivator::class,
+				));
 		}
 
 		$resolver = new ModuleResolver(
@@ -79,13 +85,6 @@ final class LoaderGenerator
 	 */
 	private function generateClass(LoaderConfig $loaderConfiguration, array $packageConfigurations): void
 	{
-		$fqn = $loaderConfiguration->getClass();
-		$lastSlashPosition = strrpos($fqn, '\\');
-
-		if ($lastSlashPosition === false) {
-			throw new InvalidArgument('Namespace of loader class must be specified.');
-		}
-
 		$itemsByPriority = [
 			FileConfig::PRIORITY_VALUE_HIGH => [],
 			FileConfig::PRIORITY_VALUE_NORMAL => [],
@@ -133,11 +132,25 @@ final class LoaderGenerator
 
 				foreach ($itemSwitches as $itemSwitchName => $itemSwitchValue) {
 					if (!isset($switches[$itemSwitchName])) {
-						throw new InvalidArgument(sprintf(
-							'Configuration file switch \'%s\' is not defined in \'%s\'.',
-							$itemSwitchName,
-							PackageConfig::SWITCHES_OPTION,
-						));
+						$message = Message::create()
+							->withContext(sprintf(
+								'Trying to use switch `%s` for config file `%s` defined in `%s` of package `%s`.',
+								$itemSwitchName,
+								$fileConfiguration->getFile(),
+								$packageConfiguration->getSchemaFile(),
+								$packageConfiguration->getPackage()->getName(),
+							))
+							->withProblem(sprintf(
+								'Switch is not defined by any of previously loaded `%s` schema files.',
+								Plugin::DEFAULT_FILE_NAME,
+							))
+							->withSolution(sprintf(
+								'Do not configure switch or define one or choose one of already loaded: `%s`',
+								implode(', ', array_keys($switches)),
+							));
+
+						throw InvalidArgument::create()
+							->withMessage((string) $message);
 					}
 				}
 
@@ -155,13 +168,23 @@ final class LoaderGenerator
 			$itemsByPriority[FileConfig::PRIORITY_VALUE_LOW],
 		);
 
+		$fqn = $loaderConfiguration->getClass();
 		if (class_exists($fqn)) {
 			if (!is_subclass_of($fqn, BaseLoader::class)) {
-				throw new InvalidState(sprintf(
-					'\'%s\' should be instance of \'%s\'',
-					$fqn,
-					BaseLoader::class,
-				));
+				$message = Message::create()
+					->withContext('Generating configuration loader.')
+					->withProblem(sprintf(
+						'Loader class `%s` already exists but is not subclass of `%s`.',
+						$fqn,
+						BaseLoader::class,
+					))
+					->withSolution(sprintf(
+						'Remove or rename existing class and then run command `composer %s`',
+						LoaderGenerateCommand::getDefaultName(),
+					));
+
+				throw InvalidState::create()
+					->withMessage((string) $message);
 			}
 
 			$loaderReflection = new ReflectionClass($fqn);
@@ -176,18 +199,28 @@ final class LoaderGenerator
 			}
 		}
 
-		$classString = substr($fqn, $lastSlashPosition + 1);
-		$namespaceString = substr($fqn, 0, $lastSlashPosition);
+		$lastSlashPosition = strrpos($fqn, '\\');
+		if ($lastSlashPosition === false) {
+			$classString = $fqn;
+			$namespaceString = null;
+		} else {
+			$classString = substr($fqn, $lastSlashPosition + 1);
+			$namespaceString = substr($fqn, 0, $lastSlashPosition);
+		}
 
 		$file = new PhpFile();
 		$file->setStrictTypes();
 
-		$alias = $classString === substr(strrchr(BaseLoader::class, '\\'), 1) ? 'Loader' : null;
-		$namespace = $file->addNamespace($namespaceString)
-			->addUse(BaseLoader::class, $alias);
+		if ($namespaceString === null) {
+			$class = $file->addClass($classString);
+		} else {
+			$alias = $classString === substr(strrchr(BaseLoader::class, '\\'), 1) ? 'Loader' : null;
+			$namespace = $file->addNamespace($namespaceString)
+				->addUse(BaseLoader::class, $alias);
+			$class = $namespace->addClass($classString);
+		}
 
-		$class = $namespace->addClass($classString)
-			->setExtends(BaseLoader::class)
+		$class->setExtends(BaseLoader::class)
 			->setFinal()
 			->setComment('Generated by orisai/installer');
 

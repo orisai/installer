@@ -10,9 +10,9 @@ use Composer\Package\PackageInterface;
 use Composer\Repository\WritableRepositoryInterface;
 use Composer\Semver\Constraint\EmptyConstraint;
 use Orisai\Exceptions\Logic\InvalidArgument;
+use Orisai\Exceptions\Message;
 use Orisai\Installer\Config\ConfigValidator;
 use Orisai\Installer\Config\PackageConfig;
-use Orisai\Installer\Config\SimulatedModuleConfig;
 use Orisai\Installer\Monorepo\SimulatedPackage;
 use Orisai\Installer\Plugin;
 use Orisai\Installer\Utils\PathResolver;
@@ -66,12 +66,19 @@ final class ModuleResolver
 		foreach ($packages as $package) {
 			if (!$this->isApplicable($package)) {
 				if ($package instanceof SimulatedPackage) {
-					throw new InvalidArgument(sprintf(
-						'Cannot set "%s" as a "%s" simulated module. Given package does not have "%s" file.',
-						$package->getName(),
-						$package->getParentName(),
-						Plugin::DEFAULT_FILE_NAME,
-					));
+					$message = Message::create()
+						->withContext(sprintf(
+							'Trying to set package `%s` as a simulated module of `%s`.',
+							$package->getName(),
+							$package->getParentName(),
+						))
+						->withProblem(sprintf('Package does not have `%s` file.', Plugin::DEFAULT_FILE_NAME))
+						->withSolution(
+							'Choose an package which does have required file or create the file or remove simulated module from configuration.',
+						);
+
+					throw InvalidArgument::create()
+						->withMessage((string) $message);
 				}
 
 				continue;
@@ -143,10 +150,10 @@ final class ModuleResolver
 		$packages = [];
 
 		foreach ($this->rootPackageConfiguration->getSimulatedModules() as $module) {
-			$name = $module->getName();
+			$expectedName = $module->getName();
 
 			// Package exists, simulation not needed
-			if ($this->repository->findPackage($name, new EmptyConstraint()) !== null) {
+			if ($this->repository->findPackage($expectedName, new EmptyConstraint()) !== null) {
 				continue;
 			}
 
@@ -167,13 +174,13 @@ final class ModuleResolver
 					continue;
 				}
 
-				throw new InvalidArgument(sprintf(
-					'Package "%s" is not installed and simulated module path "%s" is invalid, "%s" not found. If it is an optional dependency then set %s: true',
-					$name,
-					$path,
-					$composerFilePath,
-					SimulatedModuleConfig::OPTIONAL_OPTION,
-				));
+				$message = Message::create()
+					->withContext(sprintf('Trying to setup simulated module `%s`.', $expectedName))
+					->withProblem(sprintf('Package is not installed and file `%s` was not found.', $composerFilePath))
+					->withSolution(sprintf('Set correct relative path instead of `%s` to simulated module or mark it as optional.', $path));
+
+				throw InvalidArgument::create()
+					->withMessage((string) $message);
 			}
 
 			$config = JsonFile::parseJson(file_get_contents($composerFilePath), $composerFilePath) + ['version' => '999.999.999'];
@@ -182,13 +189,23 @@ final class ModuleResolver
 			assert($package instanceof SimulatedPackage);
 			$packageName = $package->getName();
 
-			if ($name !== $packageName) {
-				throw new InvalidArgument(sprintf(
-					'Path "%s" contains package "%s" while package "%s" was expected by configuration.',
-					$path,
-					$packageName,
-					$name,
-				));
+			if ($expectedName !== $packageName) {
+				$message = Message::create()
+					->withContext('Trying to configure simulated package.')
+					->withProblem(sprintf(
+						'Path `%s` contains package `%s` while package `%s` was expected by configuration.',
+						$path,
+						$packageName,
+						$expectedName,
+					))
+					->withSolution(sprintf(
+						'Set correct path to `%s` or change expected package name to `%s`.',
+						$expectedName,
+						$packageName,
+					));
+
+				throw InvalidArgument::create()
+					->withMessage((string) $message);
 			}
 
 			$package->setParentName($parentPackageName);
