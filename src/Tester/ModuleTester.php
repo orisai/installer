@@ -4,21 +4,27 @@ namespace Orisai\Installer\Tester;
 
 use Composer\Composer;
 use Composer\Console\Application;
-use Composer\Factory;
-use Composer\IO\BufferIO;
 use Orisai\Exceptions\Logic\InvalidState;
 use Orisai\Exceptions\Message;
 use Orisai\Installer\Command\LoaderGenerateCommand;
 use Orisai\Installer\Command\ModuleValidateCommand;
-use Orisai\Installer\Plugin;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use function class_exists;
 
 final class ModuleTester
 {
 
-	private static function checkComposerAvailability(): void
+	private Application $application;
+
+	public function __construct()
+	{
+		$this->checkComposerAvailability();
+		$this->application = new Application();
+		$this->application->add(new LoaderGenerateCommand());
+		$this->application->add(new ModuleValidateCommand());
+	}
+
+	private function checkComposerAvailability(): void
 	{
 		if (!class_exists(Composer::class)) {
 			$message = Message::create()
@@ -31,56 +37,23 @@ final class ModuleTester
 		}
 	}
 
-	/**
-	 * @return array<object>
-	 * @phpstan-return array{
-	 *		Plugin,
-	 * 		Composer,
-	 * 		BufferIO
-	 * }
-	 */
-	private static function initializePlugin(): array
+	public function generateLoader(?string $file = null): int
 	{
-		self::checkComposerAvailability();
-
-		$io = new BufferIO('', OutputInterface::VERBOSITY_VERBOSE);
-		$composer = Factory::create($io);
-		$plugin = new Plugin();
-
-		$plugin->activate($composer, $io);
-
-		return [$plugin, $composer, $io];
-	}
-
-	public static function generateLoader(?string $file = null): int
-	{
-		self::initializePlugin();
-
-		$command = new LoaderGenerateCommand();
-
-		$application = new Application();
-		$application->add($command);
-
 		$input = [];
 
 		if ($file !== null) {
 			$input['--file'] = $file;
 		}
 
-		$tester = new CommandTester($command);
+		$tester = new CommandTester(
+			$this->application->get(LoaderGenerateCommand::getDefaultName()),
+		);
 
 		return $tester->execute($input);
 	}
 
-	public static function validateModule(?string $file = null, ?string $package = null): int
+	public function validateModule(?string $file = null, ?string $package = null): int
 	{
-		self::initializePlugin();
-
-		$command = new ModuleValidateCommand();
-
-		$application = new Application();
-		$application->add($command);
-
 		$input = [];
 
 		if ($file !== null) {
@@ -91,7 +64,9 @@ final class ModuleTester
 			$input['--package'] = $package;
 		}
 
-		$tester = new CommandTester($command);
+		$tester = new CommandTester(
+			$this->application->get(ModuleValidateCommand::getDefaultName()),
+		);
 
 		return $tester->execute($input);
 	}
