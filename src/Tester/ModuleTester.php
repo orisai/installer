@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Orisai\Installer\Tests;
+namespace Orisai\Installer\Tester;
 
 use Composer\Composer;
 use Composer\Console\Application;
@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use function class_exists;
 
-final class InstallerToolkit
+final class ModuleTester
 {
 
 	private static function checkComposerAvailability(): void
