@@ -54,7 +54,10 @@ final class ModuleValidateCommand extends BaseCommand
 
 		if (($packageName = $input->getOption(self::OPTION_PACKAGE)) !== null) {
 			assert(is_string($packageName));
-			$package = $composer->getRepositoryManager()->getLocalRepository()->findPackage($packageName, new EmptyConstraint());
+			$package = $composer->getRepositoryManager()->getLocalRepository()->findPackage(
+				$packageName,
+				new EmptyConstraint(),
+			);
 
 			if ($package === null) {
 				throw new LogicException(sprintf('Package \'%s\' does not exists', $packageName));

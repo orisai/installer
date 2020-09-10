@@ -84,7 +84,9 @@ final class ModuleResolver
 				continue;
 			}
 
-			$modules[$package->getName()] = $module = new Module($this->validator->validateConfiguration($package, Plugin::DEFAULT_FILE_NAME));
+			$modules[$package->getName()] = $module = new Module(
+				$this->validator->validateConfiguration($package, Plugin::DEFAULT_FILE_NAME),
+			);
 			$ignored = array_merge($ignored, $module->getConfiguration()->getIgnoredPackages());
 		}
 
@@ -93,7 +95,9 @@ final class ModuleResolver
 		foreach ($modules as $module) {
 			$module->setDependents(
 				$this->packagesToModules(
-					$this->flatten($this->getDependents($module->getConfiguration()->getPackage()->getName(), $packages)),
+					$this->flatten(
+						$this->getDependents($module->getConfiguration()->getPackage()->getName(), $packages),
+					),
 					$modules,
 				),
 			);
@@ -177,13 +181,21 @@ final class ModuleResolver
 				$message = Message::create()
 					->withContext(sprintf('Trying to setup simulated module `%s`.', $expectedName))
 					->withProblem(sprintf('Package is not installed and file `%s` was not found.', $composerFilePath))
-					->withSolution(sprintf('Set correct relative path instead of `%s` to simulated module or mark it as optional.', $path));
+					->withSolution(
+						sprintf(
+							'Set correct relative path instead of `%s` to simulated module or mark it as optional.',
+							$path,
+						),
+					);
 
 				throw InvalidArgument::create()
 					->withMessage((string) $message);
 			}
 
-			$config = JsonFile::parseJson(file_get_contents($composerFilePath), $composerFilePath) + ['version' => '999.999.999'];
+			$config = JsonFile::parseJson(
+				file_get_contents($composerFilePath),
+				$composerFilePath,
+			) + ['version' => '999.999.999'];
 
 			$package = $loader->load($config, SimulatedPackage::class);
 			assert($package instanceof SimulatedPackage);
@@ -225,7 +237,9 @@ final class ModuleResolver
 		$name = $package->getName();
 
 		return $cache[$name]
-			?? $cache[$name] = (file_exists($this->pathResolver->getSchemaFileFullName($package, Plugin::DEFAULT_FILE_NAME))
+			?? $cache[$name] = (file_exists(
+				$this->pathResolver->getSchemaFileFullName($package, Plugin::DEFAULT_FILE_NAME),
+			)
 				&& $package !== $this->rootPackageConfiguration->getPackage());
 	}
 
