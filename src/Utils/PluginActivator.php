@@ -66,7 +66,10 @@ final class PluginActivator
 			return $this->schemaFileFullName;
 		}
 
-		return $this->schemaFileFullName = $this->pathResolver->getSchemaFileFullName($this->rootPackage, $this->unresolvedFileName);
+		return $this->schemaFileFullName = $this->pathResolver->getSchemaFileFullName(
+			$this->rootPackage,
+			$this->unresolvedFileName,
+		);
 	}
 
 }
