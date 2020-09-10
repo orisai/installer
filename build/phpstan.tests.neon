@@ -2,4 +2,4 @@ includes:
 	- phpstan.base.neon
 
 parameters:
-	level: 1
+	level: 3
