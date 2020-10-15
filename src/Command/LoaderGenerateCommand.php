@@ -56,7 +56,7 @@ final class LoaderGenerateCommand extends BaseCommand
 				->withSolution(sprintf('Add `loader` option to `%s`', $fileName));
 
 			throw InvalidState::create()
-				->withMessage((string) $message);
+				->withMessage($message);
 		}
 
 		$io = new SymfonyStyle($input, $output);
