@@ -78,7 +78,7 @@ final class ModuleResolver
 						);
 
 					throw InvalidArgument::create()
-						->withMessage((string) $message);
+						->withMessage($message);
 				}
 
 				continue;
@@ -189,7 +189,7 @@ final class ModuleResolver
 					);
 
 				throw InvalidArgument::create()
-					->withMessage((string) $message);
+					->withMessage($message);
 			}
 
 			$config = JsonFile::parseJson(
@@ -217,7 +217,7 @@ final class ModuleResolver
 					));
 
 				throw InvalidArgument::create()
-					->withMessage((string) $message);
+					->withMessage($message);
 			}
 
 			$package->setParentName($parentPackageName);

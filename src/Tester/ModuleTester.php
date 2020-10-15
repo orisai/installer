@@ -33,7 +33,7 @@ final class ModuleTester
 				->withSolution('Install Composer via `composer require --dev composer/composer`.');
 
 			throw InvalidState::create()
-				->withMessage((string) $message);
+				->withMessage($message);
 		}
 	}
 

@@ -63,7 +63,7 @@ abstract class BaseLoader
 				));
 
 			throw InvalidArgument::create()
-				->withMessage((string) $message);
+				->withMessage($message);
 		}
 
 		$this->switches[$switch] = $value;

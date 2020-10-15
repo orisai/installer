@@ -45,7 +45,7 @@ final class NeonReader
 				->withSolution('Ensure file is included just once to prevent priority and recursion issues.');
 
 			throw InvalidState::create()
-				->withMessage((string) $message);
+				->withMessage($message);
 		}
 
 		$this->loadedFiles[$file] = true;

@@ -20,7 +20,7 @@ final class InvalidConfig extends LogicalException
 			))
 			->withProblem($problem);
 
-		return new self((string) $message);
+		return new self($message->toString());
 	}
 
 }

@@ -150,7 +150,7 @@ final class LoaderGenerator
 							));
 
 						throw InvalidArgument::create()
-							->withMessage((string) $message);
+							->withMessage($message);
 					}
 				}
 
@@ -184,7 +184,7 @@ final class LoaderGenerator
 					));
 
 				throw InvalidState::create()
-					->withMessage((string) $message);
+					->withMessage($message);
 			}
 
 			$loaderReflection = new ReflectionClass($fqn);
