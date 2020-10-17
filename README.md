@@ -5,7 +5,7 @@
 </p>
 
 <p align=center>
-  <a href="https://github.com/orisai/installer/actions"><img src="https://github.com/orisai/installer/workflows/ci/badge.svg"></a>
+  <a href="https://github.com/orisai/installer/actions?query=workflow%3Aci"><img src="https://github.com/orisai/installer/workflows/ci/badge.svg"></a>
   <a href="https://coveralls.io/r/orisai/installer"><img src="https://badgen.net/coveralls/c/github/orisai/installer/v1.x?cache=300"></a>
   <a href="https://packagist.org/packages/orisai/installer"><img src="https://badgen.net/packagist/dt/orisai/installer?cache=3600"></a>
   <a href="https://packagist.org/packages/orisai/installer"><img src="https://badgen.net/packagist/v/orisai/installer?cache=3600"></a>
