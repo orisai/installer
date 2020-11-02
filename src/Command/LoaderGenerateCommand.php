@@ -36,6 +36,7 @@ final class LoaderGenerateCommand extends BaseCommand
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$composer = $this->getComposer();
+		assert($composer !== null);
 
 		$fileName = $input->getOption(self::OPTION_FILE);
 		assert(is_string($fileName));
