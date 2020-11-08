@@ -61,9 +61,6 @@
 		"sort-packages": true
 	},
 	"extra": {
-		"class": "Orisai\\Installer\\Plugin",
-		"branch-alias": {
-			"dev-master": "1.0.x-dev"
-		}
+		"class": "Orisai\\Installer\\Plugin"
 	}
 }
