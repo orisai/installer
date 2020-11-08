@@ -1,10 +1,13 @@
 {
 	"name": "orisai/installer",
-	"description": "Composer installer for nette/di based packages. Integrated by orisai/bootstrap",
+	"description": "Composer installer for nette/di based packages",
 	"keywords": [
-		"orisai",
+		"bootstrap",
+		"configurator",
+		"DI",
 		"installer",
-		"nette di"
+		"nette",
+		"orisai"
 	],
 	"type": "composer-plugin",
 	"license": "MPL-2.0",
@@ -22,7 +25,8 @@
 		"nette/neon": "^3.2.0",
 		"nette/php-generator": "^3.4.0",
 		"nette/schema": "^1.0.0",
-		"orisai/exceptions": "^1.0.0"
+		"orisai/exceptions": "^1.0.0",
+		"orisai/nette-di": "^1.0.0"
 	},
 	"require-dev": {
 		"composer/composer": "^1.10.0|^2.0.0",
