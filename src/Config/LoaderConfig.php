@@ -5,10 +5,12 @@ namespace Orisai\Installer\Config;
 final class LoaderConfig
 {
 
-	public const FILE_OPTION = 'file';
-	public const CLASS_OPTION = 'class';
+	public const
+		FILE_OPTION = 'file',
+		CLASS_OPTION = 'class';
 
 	private string $file;
+
 	private string $class;
 
 	/**

@@ -10,15 +10,18 @@ use function substr;
 final class PackageConfig
 {
 
-	public const VERSION_OPTION = 'version';
-	public const LOADER_OPTION = 'loader';
-	public const CONFIGS_OPTION = 'configs';
-	public const SWITCHES_OPTION = 'switches';
-	public const IGNORE_OPTION = 'ignore';
-	public const SIMULATED_MODULES_OPTION = 'simulated-modules';
+	public const
+		VERSION_OPTION = 'version',
+		LOADER_OPTION = 'loader',
+		CONFIGS_OPTION = 'configs',
+		SWITCHES_OPTION = 'switches',
+		IGNORE_OPTION = 'ignore',
+		SIMULATED_MODULES_OPTION = 'simulated-modules';
 
 	private string $schemaPath;
+
 	private string $schemaFile;
+
 	private float $version;
 
 	private ?LoaderConfig $loader;

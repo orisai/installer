@@ -31,8 +31,11 @@ final class ModuleResolver
 {
 
 	private WritableRepositoryInterface $repository;
+
 	private PathResolver $pathResolver;
+
 	private ConfigValidator $validator;
+
 	private PackageConfig $rootPackageConfiguration;
 
 	public function __construct(

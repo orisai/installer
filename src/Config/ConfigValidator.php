@@ -18,6 +18,7 @@ final class ConfigValidator
 {
 
 	private NeonReader $reader;
+
 	private PathResolver $pathResolver;
 
 	public function __construct(NeonReader $reader, PathResolver $pathResolver)

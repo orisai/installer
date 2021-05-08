@@ -12,8 +12,10 @@ use function sprintf;
 abstract class BaseLoader
 {
 
-	public const SCHEMA_ITEM_FILE = 'file';
-	public const SCHEMA_ITEM_SWITCHES = 'switches';
+	public const
+		SCHEMA_ITEM_FILE = 'file',
+		SCHEMA_ITEM_SWITCHES = 'switches';
+
 	public const META_ITEM_DIR = 'dir';
 
 	/** @var array<mixed> */

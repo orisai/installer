@@ -5,14 +5,18 @@ namespace Orisai\Installer\Config;
 final class SimulatedModuleConfig
 {
 
-	public const NAME_OPTION = 'name';
-	public const PATH_OPTION = 'path';
+	public const
+		NAME_OPTION = 'name',
+		PATH_OPTION = 'path';
+
 	public const OPTIONAL_OPTION = 'optional';
 
 	public const OPTIONAL_DEFAULT = false;
 
 	private string $name;
+
 	private string $path;
+
 	private bool $optional;
 
 	/**

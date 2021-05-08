@@ -5,16 +5,19 @@ namespace Orisai\Installer\Config;
 final class FileConfig
 {
 
-	public const FILE_OPTION = 'file';
-	public const SWITCHES_OPTION = 'switches';
-	public const PACKAGES_OPTION = 'packages';
-	public const PRIORITY_OPTION = 'priority';
+	public const
+		FILE_OPTION = 'file',
+		SWITCHES_OPTION = 'switches',
+		PACKAGES_OPTION = 'packages',
+		PRIORITY_OPTION = 'priority';
 
 	public const PRIORITY_DEFAULT = self::PRIORITY_VALUE_NORMAL;
 
-	public const PRIORITY_VALUE_LOW = 'low';
-	public const PRIORITY_VALUE_NORMAL = 'normal';
-	public const PRIORITY_VALUE_HIGH = 'high';
+	public const
+		PRIORITY_VALUE_LOW = 'low',
+		PRIORITY_VALUE_NORMAL = 'normal',
+		PRIORITY_VALUE_HIGH = 'high';
+
 	public const PRIORITIES = [
 		self::PRIORITY_VALUE_LOW,
 		self::PRIORITY_VALUE_NORMAL,
@@ -22,6 +25,7 @@ final class FileConfig
 	];
 
 	private string $file;
+
 	private string $priority;
 
 	/** @var array<bool> */

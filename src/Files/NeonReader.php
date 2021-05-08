@@ -24,6 +24,7 @@ final class NeonReader
 {
 
 	private const INCLUDES_KEY = 'includes';
+
 	private const PREVENT_MERGING_SUFFIX = '!';
 
 	/** @var array<bool> */

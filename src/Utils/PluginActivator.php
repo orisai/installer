@@ -13,11 +13,15 @@ final class PluginActivator
 {
 
 	private PackageInterface $rootPackage;
+
 	private ConfigValidator $validator;
+
 	private PathResolver $pathResolver;
+
 	private string $unresolvedFileName;
 
 	private ?PackageConfig $config = null;
+
 	private ?string $schemaFileFullName = null;
 
 	public function __construct(

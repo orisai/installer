@@ -8,6 +8,7 @@ final class SimulatedPackage extends CompletePackage
 {
 
 	private string $packageDirectory;
+
 	private string $parentName;
 
 	public function getPackageDirectory(): string

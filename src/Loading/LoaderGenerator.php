@@ -33,14 +33,19 @@ use function substr;
 final class LoaderGenerator
 {
 
-	private const LOADER_PROPERTY_SCHEMA = 'schema';
-	private const LOADER_PROPERTY_MODULES_META = 'modulesMeta';
-	private const LOADER_PROPERTY_SWITCHES = 'switches';
+	private const
+		LOADER_PROPERTY_SCHEMA = 'schema',
+		LOADER_PROPERTY_MODULES_META = 'modulesMeta',
+		LOADER_PROPERTY_SWITCHES = 'switches';
 
 	private WritableRepositoryInterface $repository;
+
 	private Writer $writer;
+
 	private PathResolver $pathResolver;
+
 	private ConfigValidator $validator;
+
 	private PackageConfig $rootPackageConfiguration;
 
 	public function __construct(
