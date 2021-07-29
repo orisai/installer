@@ -29,6 +29,7 @@
 		"orisai/nette-di": "^1.0.0"
 	},
 	"require-dev": {
+		"brianium/paratest": "^6.3.0",
 		"composer/composer": "^1.10.0|^2.0.0",
 		"infection/infection": "^0.22.1",
 		"orisai/coding-standard": "^2.0.0",
