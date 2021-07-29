@@ -3,7 +3,7 @@
 namespace Orisai\Installer\Loading;
 
 use Composer\Repository\WritableRepositoryInterface;
-use Composer\Semver\Constraint\EmptyConstraint;
+use Composer\Semver\Constraint\MatchAllConstraint;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile;
 use Orisai\Exceptions\Logic\InvalidArgument;
@@ -120,7 +120,7 @@ final class LoaderGenerator
 			foreach ($packageConfiguration->getConfigs() as $fileConfiguration) {
 				// Skip configuration if required package is not installed
 				foreach ($fileConfiguration->getRequiredPackages() as $requiredPackage) {
-					if ($this->repository->findPackage($requiredPackage, new EmptyConstraint()) === null) {
+					if ($this->repository->findPackage($requiredPackage, new MatchAllConstraint()) === null) {
 						continue 2;
 					}
 				}

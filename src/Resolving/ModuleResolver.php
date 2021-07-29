@@ -8,7 +8,7 @@ use Composer\Package\Loader\ArrayLoader;
 use Composer\Package\Loader\ValidatingArrayLoader;
 use Composer\Package\PackageInterface;
 use Composer\Repository\WritableRepositoryInterface;
-use Composer\Semver\Constraint\EmptyConstraint;
+use Composer\Semver\Constraint\MatchAllConstraint;
 use Orisai\Exceptions\Logic\InvalidArgument;
 use Orisai\Exceptions\Message;
 use Orisai\Installer\Config\ConfigValidator;
@@ -160,7 +160,7 @@ final class ModuleResolver
 			$expectedName = $module->getName();
 
 			// Package exists, simulation not needed
-			if ($this->repository->findPackage($expectedName, new EmptyConstraint()) !== null) {
+			if ($this->repository->findPackage($expectedName, new MatchAllConstraint()) !== null) {
 				continue;
 			}
 
@@ -251,7 +251,7 @@ final class ModuleResolver
 		static $cache = [];
 		$name = $link->getTarget();
 
-		return $cache[$name] ?? $cache[$name] = $this->repository->findPackage($name, new EmptyConstraint());
+		return $cache[$name] ?? $cache[$name] = $this->repository->findPackage($name, new MatchAllConstraint());
 	}
 
 	/**

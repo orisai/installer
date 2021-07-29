@@ -2,7 +2,7 @@
 
 namespace Orisai\Installer\Command;
 
-use Composer\Semver\Constraint\EmptyConstraint;
+use Composer\Semver\Constraint\MatchAllConstraint;
 use LogicException;
 use Orisai\Installer\Config\ConfigValidator;
 use Orisai\Installer\Files\NeonReader;
@@ -57,7 +57,7 @@ final class ModuleValidateCommand extends BaseCommand
 			assert(is_string($packageName));
 			$package = $composer->getRepositoryManager()->getLocalRepository()->findPackage(
 				$packageName,
-				new EmptyConstraint(),
+				new MatchAllConstraint(),
 			);
 
 			if ($package === null) {
