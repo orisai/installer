@@ -1,7 +1,7 @@
 <h1 align="center">Orisai Installer</h1>
 
 <p align="center">
-    Composer installer for <a href="https://github.com/nette/di">nette/di</a> based packages
+    <a href="https://getcomposer.org">Composer</a> installer for <a href="https://github.com/nette/di">nette/di</a> based packages
 </p>
 
 <p align=center>

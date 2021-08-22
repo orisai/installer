@@ -1,11 +1,20 @@
 # Installer
 
-Composer installer for nette/di based packages
+[Composer](https://getcomposer.org) installer for [nette/di](https://github.com/nette/di/) based packages
 
 ## Content
 
+- [Setup](#setup)
 - [Schema](#schema)
 - [Automatic configurator](#automatic-configurator)
+
+## Setup
+
+Install with [Composer](https://getcomposer.org)
+
+```sh
+composer require orisai/installer
+```
 
 ## Schema
 
