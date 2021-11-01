@@ -26,7 +26,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 	public const DEFAULT_FILE_NAME = 'orisai.neon';
 
 	/**
-	 * @return array<string>
+	 * {@inheritDoc}
 	 */
 	public static function getSubscribedEvents(): array
 	{
@@ -38,7 +38,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 	}
 
 	/**
-	 * @return array<string>
+	 * {@inheritDoc}
 	 */
 	public function getCapabilities(): array
 	{

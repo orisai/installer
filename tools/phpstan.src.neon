@@ -2,7 +2,7 @@ includes:
 	- phpstan.base.neon
 
 parameters:
-	level: max
+	level: 8
 	resultCachePath: %currentWorkingDirectory%/var/tools/PHPStan/resultCache.src.php
 
 	ignoreErrors:
@@ -11,7 +11,7 @@ parameters:
 		  path: %currentWorkingDirectory%/src/Files/NeonReader.php
 		- message: '#^Only booleans are allowed in a ternary operator condition, int\|false given\.$#'
 		  path: %currentWorkingDirectory%/src/Files/NeonReader.php
-		- message: '#^Parameter \#1 (.+) of static method Composer\\Json\\JsonFile\:\:parseJson\(\) expects string, string\|false given\.$#'
+		- message: '#^Parameter \#1 (.+) of static method Composer\\Json\\JsonFile\:\:parseJson\(\) expects string\|null, string\|false given\.$#'
 		  path: %currentWorkingDirectory%/src/Resolving/ModuleResolver.php
 		# Cannot happen - used string is always same
 		- message: '#^Parameter \#1 \$string of function substr expects string, string\|false given\.$#'
