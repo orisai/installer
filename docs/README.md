@@ -18,7 +18,84 @@ composer require orisai/installer
 
 ## Schema
 
-TODO
+`orisai.neon`
+
+```neon
+# schema version
+version: 1
+
+# generated code with all packages and their configs
+# root-only
+# default: null
+loader:
+    # path to file
+    # string
+    # required
+    file: path/to/src/Loader.php
+    # class name
+    # class-string
+    # required
+    class: App\Loader
+
+# config files provided by current package
+# any package
+configs:
+    # path to config
+    # string
+    - path/to/config.neon
+    -
+      # path to config
+      # string
+      # required
+      file: path/to/config.neon
+      # switches required to include this config file
+      # array<string, bool> array of switch names and their required value
+      switches:
+          # if switch value matches required value, include this file
+          # bool
+          httpsOnly: false
+      # packages required to be installed to include this config file
+      packages:
+          # package name
+          # string
+          - vendor/package
+      # change loading priority of config file
+      # by default configs are ordered by package priority in dependency tree and added to 'normal' group
+      # low|normal|high
+      # default: normal
+      priority: normal
+
+# enable/disable config option from a config file
+# any package
+# array<string, bool> array of switch names and their default value
+switches:
+    # bool
+    httpsOnly: true
+
+# ignore config from packages
+# any package
+ignore:
+    # string
+    # package name
+    - vendor/package
+
+# packages which are part of monorepo are not really considered installed in monorepo
+# this simulates their existence for purpose of in-monorepo development
+# root-only
+simulated-modules:
+    # path to module
+    # string
+    - path/to/submodule-a
+    -
+      # path to module
+      # string
+      # required
+      path: path/to/submodule-b
+      # raise error when module is not found
+      # bool
+      # default: false
+      optional: false
+```
 
 ## Automatic configurator
 
