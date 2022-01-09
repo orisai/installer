@@ -7,7 +7,10 @@ use Orisai\Installer\Plugin;
 use Symfony\Component\Console\Input\InputOption;
 use function sprintf;
 
-abstract class BaseCommand extends ComposerBaseCommand
+/**
+ * @internal
+ */
+abstract class BaseInstallerCommand extends ComposerBaseCommand
 {
 
 	protected const OPTION_FILE = 'file';

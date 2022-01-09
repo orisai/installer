@@ -4,6 +4,9 @@ namespace Orisai\Installer\Monorepo;
 
 use Composer\Package\CompletePackage;
 
+/**
+ * @internal
+ */
 final class SimulatedPackage extends CompletePackage
 {
 

@@ -9,6 +9,9 @@ use Orisai\Installer\Config\LoaderConfig;
 use Orisai\Installer\Config\PackageConfig;
 use Orisai\Installer\Config\SimulatedModuleConfig;
 
+/**
+ * @internal
+ */
 final class Schema_1_0 implements Schema
 {
 

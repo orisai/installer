@@ -4,6 +4,9 @@ namespace Orisai\Installer\Schemas;
 
 use Nette\Schema\Elements\Structure;
 
+/**
+ * @internal
+ */
 interface Schema
 {
 

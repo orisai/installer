@@ -7,6 +7,9 @@ use Orisai\Exceptions\LogicalException;
 use Orisai\Exceptions\Message;
 use function sprintf;
 
+/**
+ * @internal
+ */
 final class InvalidConfig extends LogicalException
 {
 

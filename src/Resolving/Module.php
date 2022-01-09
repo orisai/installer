@@ -4,6 +4,9 @@ namespace Orisai\Installer\Resolving;
 
 use Orisai\Installer\Config\PackageConfig;
 
+/**
+ * @internal
+ */
 final class Module
 {
 

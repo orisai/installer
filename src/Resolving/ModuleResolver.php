@@ -27,6 +27,9 @@ use function sprintf;
 use function strtolower;
 use function uasort;
 
+/**
+ * @internal
+ */
 final class ModuleResolver
 {
 

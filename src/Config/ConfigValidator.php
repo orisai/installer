@@ -14,6 +14,9 @@ use function implode;
 use function in_array;
 use function sprintf;
 
+/**
+ * @internal
+ */
 final class ConfigValidator
 {
 

@@ -15,6 +15,9 @@ use function realpath;
 use function strlen;
 use function substr;
 
+/**
+ * @internal
+ */
 final class PathResolver
 {
 

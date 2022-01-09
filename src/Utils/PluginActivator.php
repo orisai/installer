@@ -9,6 +9,9 @@ use Orisai\Installer\Config\PackageConfig;
 use function file_exists;
 use function sprintf;
 
+/**
+ * @internal
+ */
 final class PluginActivator
 {
 

@@ -20,6 +20,9 @@ use Orisai\Installer\Loading\LoaderGenerator;
 use Orisai\Installer\Utils\PathResolver;
 use Orisai\Installer\Utils\PluginActivator;
 
+/**
+ * @internal
+ */
 final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 {
 

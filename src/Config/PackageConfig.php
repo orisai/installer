@@ -7,6 +7,9 @@ use function is_string;
 use function strrpos;
 use function substr;
 
+/**
+ * @internal
+ */
 final class PackageConfig
 {
 

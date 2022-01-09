@@ -6,6 +6,9 @@ use Composer\Downloader\FilesystemException;
 use Nette\PhpGenerator\PhpFile;
 use function file_put_contents;
 
+/**
+ * @internal
+ */
 final class Writer
 {
 

@@ -2,6 +2,9 @@
 
 namespace Orisai\Installer\Config;
 
+/**
+ * @internal
+ */
 final class SimulatedModuleConfig
 {
 

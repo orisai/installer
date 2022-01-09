@@ -16,7 +16,10 @@ use function assert;
 use function is_string;
 use function sprintf;
 
-final class ModuleValidateCommand extends BaseCommand
+/**
+ * @internal
+ */
+final class ModuleValidateCommand extends BaseInstallerCommand
 {
 
 	private const OPTION_PACKAGE = 'package';

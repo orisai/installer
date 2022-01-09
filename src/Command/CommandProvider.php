@@ -2,14 +2,16 @@
 
 namespace Orisai\Installer\Command;
 
-use Composer\Command\BaseCommand;
 use Composer\Plugin\Capability\CommandProvider as CommandProviderCapability;
 
+/**
+ * @internal
+ */
 final class CommandProvider implements CommandProviderCapability
 {
 
 	/**
-	 * @return array<BaseCommand>
+	 * @return array<BaseInstallerCommand>
 	 */
 	public function getCommands(): array
 	{

@@ -20,6 +20,9 @@ use function preg_match;
 use function sprintf;
 use function substr;
 
+/**
+ * @internal
+ */
 final class NeonReader
 {
 

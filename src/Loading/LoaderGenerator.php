@@ -30,6 +30,9 @@ use function strrchr;
 use function strrpos;
 use function substr;
 
+/**
+ * @internal
+ */
 final class LoaderGenerator
 {
 

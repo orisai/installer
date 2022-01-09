@@ -17,7 +17,10 @@ use function assert;
 use function is_string;
 use function sprintf;
 
-final class LoaderGenerateCommand extends BaseCommand
+/**
+ * @internal
+ */
+final class LoaderGenerateCommand extends BaseInstallerCommand
 {
 
 	public static function getDefaultName(): string
