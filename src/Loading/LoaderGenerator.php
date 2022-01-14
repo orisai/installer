@@ -2,6 +2,7 @@
 
 namespace Orisai\Installer\Loading;
 
+use Composer\Downloader\FilesystemException;
 use Composer\Repository\WritableRepositoryInterface;
 use Composer\Semver\Constraint\MatchAllConstraint;
 use Nette\PhpGenerator\ClassType;
@@ -12,7 +13,6 @@ use Orisai\Exceptions\Message;
 use Orisai\Installer\Config\ConfigValidator;
 use Orisai\Installer\Config\PackageConfig;
 use Orisai\Installer\Console\GenerateLoaderCommand;
-use Orisai\Installer\Files\Writer;
 use Orisai\Installer\Plugin;
 use Orisai\Installer\Resolving\ModuleResolver;
 use Orisai\Installer\Schema\ConfigPriority;
@@ -23,6 +23,7 @@ use ReflectionClass;
 use function array_keys;
 use function array_merge;
 use function class_exists;
+use function file_put_contents;
 use function implode;
 use function is_subclass_of;
 use function sprintf;
@@ -43,8 +44,6 @@ final class LoaderGenerator
 
 	private WritableRepositoryInterface $repository;
 
-	private Writer $writer;
-
 	private PathResolver $pathResolver;
 
 	private ConfigValidator $validator;
@@ -53,14 +52,12 @@ final class LoaderGenerator
 
 	public function __construct(
 		WritableRepositoryInterface $repository,
-		Writer $writer,
 		PathResolver $pathResolver,
 		ConfigValidator $validator,
 		PackageConfig $rootPackageConfiguration
 	)
 	{
 		$this->repository = $repository;
-		$this->writer = $writer;
 		$this->pathResolver = $pathResolver;
 		$this->validator = $validator;
 		$this->rootPackageConfiguration = $rootPackageConfiguration;
@@ -252,7 +249,19 @@ final class LoaderGenerator
 			$this->rootPackageConfiguration->getSchemaPath(),
 			$loaderConfiguration->getFile(),
 		]);
-		$this->writer->write($loaderFilePath, $file);
+
+		$this->writeFile($loaderFilePath, $file);
+	}
+
+	private function writeFile(string $loaderFilePath, PhpFile $file): void
+	{
+		$written = file_put_contents($loaderFilePath, (string) $file);
+
+		if ($written === false) {
+			throw new FilesystemException(
+				'An error occurred during writing of modules config file.',
+			);
+		}
 	}
 
 }
