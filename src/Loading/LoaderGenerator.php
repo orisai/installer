@@ -10,13 +10,13 @@ use Orisai\Exceptions\Logic\InvalidArgument;
 use Orisai\Exceptions\Logic\InvalidState;
 use Orisai\Exceptions\Message;
 use Orisai\Installer\Config\ConfigValidator;
-use Orisai\Installer\Config\FileConfig;
-use Orisai\Installer\Config\LoaderConfig;
 use Orisai\Installer\Config\PackageConfig;
 use Orisai\Installer\Console\GenerateLoaderCommand;
 use Orisai\Installer\Files\Writer;
 use Orisai\Installer\Plugin;
 use Orisai\Installer\Resolving\ModuleResolver;
+use Orisai\Installer\Schema\ConfigPriority;
+use Orisai\Installer\Schema\LoaderSchema;
 use Orisai\Installer\Utils\PathResolver;
 use Orisai\Installer\Utils\PluginActivator;
 use ReflectionClass;
@@ -68,7 +68,7 @@ final class LoaderGenerator
 
 	public function generateLoader(): void
 	{
-		$loaderConfiguration = $this->rootPackageConfiguration->getLoader();
+		$loaderConfiguration = $this->rootPackageConfiguration->getSchema()->getLoader();
 
 		if ($loaderConfiguration === null) {
 			throw InvalidState::create()
@@ -91,12 +91,12 @@ final class LoaderGenerator
 	/**
 	 * @param array<PackageConfig> $packageConfigurations
 	 */
-	private function generateClass(LoaderConfig $loaderConfiguration, array $packageConfigurations): void
+	private function generateClass(LoaderSchema $loaderConfiguration, array $packageConfigurations): void
 	{
 		$itemsByPriority = [
-			FileConfig::PRIORITY_VALUE_HIGH => [],
-			FileConfig::PRIORITY_VALUE_NORMAL => [],
-			FileConfig::PRIORITY_VALUE_LOW => [],
+			ConfigPriority::high()->name => [],
+			ConfigPriority::normal()->name => [],
+			ConfigPriority::low()->name => [],
 		];
 
 		$modulesMeta = [];
@@ -104,7 +104,7 @@ final class LoaderGenerator
 		$switchesByPackage = [];
 
 		foreach ($packageConfigurations as $packageConfiguration) {
-			$switchesByPackage[] = $packageConfiguration->getSwitches();
+			$switchesByPackage[] = $packageConfiguration->getSchema()->getSwitches();
 		}
 
 		$switches = array_merge(...$switchesByPackage);
@@ -120,7 +120,7 @@ final class LoaderGenerator
 				];
 			}
 
-			foreach ($packageConfiguration->getConfigs() as $fileConfiguration) {
+			foreach ($packageConfiguration->getSchema()->getConfigs() as $fileConfiguration) {
 				// Skip configuration if required package is not installed
 				foreach ($fileConfiguration->getRequiredPackages() as $requiredPackage) {
 					if ($this->repository->findPackage($requiredPackage, new MatchAllConstraint()) === null) {
@@ -136,7 +136,7 @@ final class LoaderGenerator
 					]),
 				];
 
-				$itemSwitches = $fileConfiguration->getSwitches();
+				$itemSwitches = $fileConfiguration->getRequiredSwitchValues();
 
 				foreach ($itemSwitches as $itemSwitchName => $itemSwitchValue) {
 					if (!isset($switches[$itemSwitchName])) {
@@ -166,14 +166,14 @@ final class LoaderGenerator
 					$item[BaseLoader::SCHEMA_ITEM_SWITCHES] = $itemSwitches;
 				}
 
-				$itemsByPriority[$fileConfiguration->getPriority()][] = $item;
+				$itemsByPriority[$fileConfiguration->getPriority()->name][] = $item;
 			}
 		}
 
 		$schema = array_merge(
-			$itemsByPriority[FileConfig::PRIORITY_VALUE_HIGH],
-			$itemsByPriority[FileConfig::PRIORITY_VALUE_NORMAL],
-			$itemsByPriority[FileConfig::PRIORITY_VALUE_LOW],
+			$itemsByPriority[ConfigPriority::high()->name],
+			$itemsByPriority[ConfigPriority::normal()->name],
+			$itemsByPriority[ConfigPriority::low()->name],
 		);
 
 		$fqn = $loaderConfiguration->getClass();

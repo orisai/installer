@@ -46,7 +46,7 @@ final class PluginActivator
 			return false;
 		}
 
-		return $this->getRootPackageConfiguration()->getLoader() !== null;
+		return $this->getRootPackageConfiguration()->getSchema()->getLoader() !== null;
 	}
 
 	public function getRootPackageConfiguration(): PackageConfig

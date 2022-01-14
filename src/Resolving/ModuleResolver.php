@@ -93,10 +93,10 @@ final class ModuleResolver
 			$modules[$package->getName()] = $module = new Module(
 				$this->validator->validateConfiguration($package, Plugin::DEFAULT_FILE_NAME),
 			);
-			$ignored = array_merge($ignored, $module->getConfiguration()->getIgnoredPackages());
+			$ignored = array_merge($ignored, $module->getConfiguration()->getSchema()->getIgnorePackageConfigs());
 		}
 
-		$ignored = array_merge($ignored, $this->rootPackageConfiguration->getIgnoredPackages());
+		$ignored = array_merge($ignored, $this->rootPackageConfiguration->getSchema()->getIgnorePackageConfigs());
 
 		foreach ($modules as $module) {
 			$module->setDependents(
@@ -159,7 +159,7 @@ final class ModuleResolver
 
 		$packages = [];
 
-		foreach ($this->rootPackageConfiguration->getSimulatedModules() as $module) {
+		foreach ($this->rootPackageConfiguration->getSchema()->getMonorepoPackages() as $module) {
 			$expectedName = $module->getName();
 
 			// Package exists, simulation not needed
