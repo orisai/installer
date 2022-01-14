@@ -7,10 +7,6 @@ parameters:
 
 	ignoreErrors:
 		# Should not happen
-		- message: '#^Parameter \#1 \$input of static method Nette\\Neon\\Neon\:\:decode\(\) expects string, string\|false given\.$#'
-		  path: %currentWorkingDirectory%/src/Files/NeonReader.php
-		- message: '#^Only booleans are allowed in a ternary operator condition, int\|false given\.$#'
-		  path: %currentWorkingDirectory%/src/Files/NeonReader.php
 		- message: '#^Parameter \#1 (.+) of static method Composer\\Json\\JsonFile\:\:parseJson\(\) expects string\|null, string\|false given\.$#'
 		  path: %currentWorkingDirectory%/src/Resolving/ModuleResolver.php
 		# Cannot happen - used string is always same

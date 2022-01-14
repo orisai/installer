@@ -14,7 +14,6 @@ use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
 use Orisai\Installer\Config\ConfigValidator;
 use Orisai\Installer\Console\CommandProvider;
-use Orisai\Installer\Files\NeonReader;
 use Orisai\Installer\Files\Writer;
 use Orisai\Installer\Loading\LoaderGenerator;
 use Orisai\Installer\Utils\PathResolver;
@@ -26,7 +25,7 @@ use Orisai\Installer\Utils\PluginActivator;
 final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 {
 
-	public const DEFAULT_FILE_NAME = 'orisai.neon';
+	public const DEFAULT_FILE_NAME = 'orisai.php';
 
 	/**
 	 * {@inheritDoc}
@@ -83,7 +82,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 	private function generateLoader(Composer $composer): void
 	{
 		$pathResolver = new PathResolver($composer);
-		$validator = new ConfigValidator(new NeonReader(), $pathResolver);
+		$validator = new ConfigValidator($pathResolver);
 		$activator = new PluginActivator(
 			$composer->getPackage(),
 			$validator,

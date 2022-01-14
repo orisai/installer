@@ -2,27 +2,22 @@
 
 namespace Orisai\Installer\Config;
 
+use Orisai\Installer\Schema\LoaderSchema;
+
 /**
  * @internal
  */
 final class LoaderConfig
 {
 
-	public const
-		FILE_OPTION = 'file',
-		CLASS_OPTION = 'class';
-
 	private string $file;
 
 	private string $class;
 
-	/**
-	 * @param array<mixed> $config
-	 */
-	public function __construct(array $config)
+	public function __construct(LoaderSchema $schema)
 	{
-		$this->file = $config[self::FILE_OPTION];
-		$this->class = $config[self::CLASS_OPTION];
+		$this->file = $schema->getFile();
+		$this->class = $schema->getClass();
 	}
 
 	public function getFile(): string

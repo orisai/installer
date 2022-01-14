@@ -18,83 +18,46 @@ composer require orisai/installer
 
 ## Schema
 
-`orisai.neon`
+`orisai.php`
 
-```neon
-# schema version
-version: 1
+```php
+use Orisai\Installer\Schema\ConfigPriority;
+use Orisai\Installer\Schema\PackageSchema;
 
-# generated code with all packages and their configs
-# root-only
-# default: null
-loader:
-    # path to file
-    # string
-    # required
-    file: path/to/src/Loader.php
-    # class name
-    # class-string
-    # required
-    class: App\Loader
+$schema = new PackageSchema();
 
-# config files provided by current package
-# any package
-configs:
-    # path to config
-    # string
-    - path/to/config.neon
-    -
-      # path to config
-      # string
-      # required
-      file: path/to/config.neon
-      # switches required to include this config file
-      # array<string, bool> array of switch names and their required value
-      switches:
-          # if switch value matches required value, include this file
-          # bool
-          httpsOnly: false
-      # packages required to be installed to include this config file
-      packages:
-          # package name
-          # string
-          - vendor/package
-      # change loading priority of config file
-      # by default configs are ordered by package priority in dependency tree and added to 'normal' group
-      # low|normal|high
-      # default: normal
-      priority: normal
+// generated code with all packages and their configs
+// root-only
+$schema->setLoader(
+	__DIR__ . '/src/Loader.php',
+	App\Loader::class,
+);
 
-# enable/disable config option from a config file
-# any package
-# array<string, bool> array of switch names and their default value
-switches:
-    # bool
-    httpsOnly: true
+// config file provided by current package
+$schema->addConfig(__DIR__ . '/src/wiring.neon');
 
-# ignore config from packages
-# any package
-ignore:
-    # string
-    # package name
-    - vendor/package
+$httpsConfig = $schema->addConfig(__DIR__ . '/src/https.neon');
+// switch and its value required to include this config file
+$httpsConfig->setRequiredSwitchValue('httpsOnly', true);
+// package required to be installed to include this config file
+$httpsConfig->addRequiredPackage('vendor/package');
+// change loading priority of config file
+// by default configs are ordered by package priority in dependency tree and added to 'normal' group
+$httpsConfig->setPriority(ConfigPriority::normal());
 
-# packages which are part of monorepo are not really considered installed in monorepo
-# this simulates their existence for purpose of in-monorepo development
-# root-only
-simulated-modules:
-    # path to module
-    # string
-    - path/to/submodule-a
-    -
-      # path to module
-      # string
-      # required
-      path: path/to/submodule-b
-      # raise error when module is not found
-      # bool
-      # default: false
-      optional: false
+// enable/disable config file by runtime switch
+$schema->addSwitch('httpsOnly', false);
+
+// ignore config from package
+$schema->ignoreConfigFrom('vendor/package');
+
+// packages which are part of monorepo are not really considered installed in monorepo
+// this simulates their existence for purpose of in-monorepo development
+// root-only
+$schema->addMonorepoPackage('vendor/package', __DIR__ . '/packages/submodule-a')
+	->setOptional(false);
+
+return $schema;
 ```
 
 ## Automatic configurator

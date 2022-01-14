@@ -5,7 +5,6 @@ namespace Orisai\Installer\Console;
 use Orisai\Exceptions\Logic\InvalidState;
 use Orisai\Exceptions\Message;
 use Orisai\Installer\Config\ConfigValidator;
-use Orisai\Installer\Files\NeonReader;
 use Orisai\Installer\Files\Writer;
 use Orisai\Installer\Loading\LoaderGenerator;
 use Orisai\Installer\Utils\PathResolver;
@@ -45,7 +44,7 @@ final class GenerateLoaderCommand extends BaseInstallerCommand
 		assert(is_string($fileName));
 
 		$pathResolver = new PathResolver($composer);
-		$validator = new ConfigValidator(new NeonReader(), $pathResolver);
+		$validator = new ConfigValidator($pathResolver);
 		$activator = new PluginActivator(
 			$composer->getPackage(),
 			$validator,

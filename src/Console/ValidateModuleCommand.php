@@ -5,7 +5,6 @@ namespace Orisai\Installer\Console;
 use Composer\Semver\Constraint\MatchAllConstraint;
 use LogicException;
 use Orisai\Installer\Config\ConfigValidator;
-use Orisai\Installer\Files\NeonReader;
 use Orisai\Installer\Plugin;
 use Orisai\Installer\Utils\PathResolver;
 use Symfony\Component\Console\Input\InputInterface;
@@ -53,7 +52,7 @@ final class ValidateModuleCommand extends BaseInstallerCommand
 		assert(is_string($fileName));
 
 		$pathResolver = new PathResolver($composer);
-		$validator = new ConfigValidator(new NeonReader(), $pathResolver);
+		$validator = new ConfigValidator($pathResolver);
 		$io = new SymfonyStyle($input, $output);
 
 		if (($packageName = $input->getOption(self::OPTION_PACKAGE)) !== null) {

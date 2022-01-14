@@ -2,6 +2,8 @@
 
 namespace Orisai\Installer\Config;
 
+use Orisai\Installer\Schema\ConfigSchema;
+
 /**
  * @internal
  */
@@ -9,23 +11,9 @@ final class FileConfig
 {
 
 	public const
-		FILE_OPTION = 'file',
-		SWITCHES_OPTION = 'switches',
-		PACKAGES_OPTION = 'packages',
-		PRIORITY_OPTION = 'priority';
-
-	public const PRIORITY_DEFAULT = self::PRIORITY_VALUE_NORMAL;
-
-	public const
 		PRIORITY_VALUE_LOW = 'low',
 		PRIORITY_VALUE_NORMAL = 'normal',
 		PRIORITY_VALUE_HIGH = 'high';
-
-	public const PRIORITIES = [
-		self::PRIORITY_VALUE_LOW,
-		self::PRIORITY_VALUE_NORMAL,
-		self::PRIORITY_VALUE_HIGH,
-	];
 
 	private string $file;
 
@@ -37,15 +25,12 @@ final class FileConfig
 	/** @var array<string> */
 	private array $packages;
 
-	/**
-	 * @param array<mixed> $config
-	 */
-	public function __construct(array $config)
+	public function __construct(ConfigSchema $schema)
 	{
-		$this->file = $config[self::FILE_OPTION];
-		$this->priority = $config[self::PRIORITY_OPTION];
-		$this->switches = $config[self::SWITCHES_OPTION];
-		$this->packages = $config[self::PACKAGES_OPTION];
+		$this->file = $schema->getFile();
+		$this->priority = $schema->getPriority()->name;
+		$this->switches = $schema->getRequiredSwitchValues();
+		$this->packages = $schema->getRequiredPackages();
 	}
 
 	public function getFile(): string

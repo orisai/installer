@@ -2,19 +2,13 @@
 
 namespace Orisai\Installer\Config;
 
+use Orisai\Installer\Schema\MonorepoSubpackageSchema;
+
 /**
  * @internal
  */
 final class SimulatedModuleConfig
 {
-
-	public const
-		NAME_OPTION = 'name',
-		PATH_OPTION = 'path';
-
-	public const OPTIONAL_OPTION = 'optional';
-
-	public const OPTIONAL_DEFAULT = false;
 
 	private string $name;
 
@@ -22,14 +16,11 @@ final class SimulatedModuleConfig
 
 	private bool $optional;
 
-	/**
-	 * @param array<mixed> $config
-	 */
-	public function __construct(array $config)
+	public function __construct(MonorepoSubpackageSchema $schema)
 	{
-		$this->name = $config[self::NAME_OPTION];
-		$this->path = $config[self::PATH_OPTION];
-		$this->optional = $config[self::OPTIONAL_OPTION];
+		$this->name = $schema->getName();
+		$this->path = $schema->getPath();
+		$this->optional = $schema->isOptional();
 	}
 
 	public function getName(): string
