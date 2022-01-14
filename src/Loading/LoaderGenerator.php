@@ -15,7 +15,8 @@ use Orisai\Installer\Config\PackageConfig;
 use Orisai\Installer\Console\GenerateLoaderCommand;
 use Orisai\Installer\Plugin;
 use Orisai\Installer\Resolving\ModuleResolver;
-use Orisai\Installer\Schema\ConfigPriority;
+use Orisai\Installer\Schema\ConfigFilePriority;
+use Orisai\Installer\Schema\ConfigFileSchema;
 use Orisai\Installer\Schema\LoaderSchema;
 use Orisai\Installer\Utils\PathResolver;
 use Orisai\Installer\Utils\PluginActivator;
@@ -86,30 +87,25 @@ final class LoaderGenerator
 	}
 
 	/**
-	 * @param array<PackageConfig> $packageConfigurations
+	 * @param array<PackageConfig> $packageConfigs
 	 */
-	private function generateClass(LoaderSchema $loaderConfiguration, array $packageConfigurations): void
+	private function generateClass(LoaderSchema $loaderSchema, array $packageConfigs): void
 	{
-		$itemsByPriority = [
-			ConfigPriority::high()->name => [],
-			ConfigPriority::normal()->name => [],
-			ConfigPriority::low()->name => [],
-		];
+		$switches = $this->getSwitches($packageConfigs);
 
 		$modulesMeta = [];
 
-		$switchesByPackage = [];
+		$itemsByPriority = [
+			ConfigFilePriority::high()->name => [],
+			ConfigFilePriority::normal()->name => [],
+			ConfigFilePriority::low()->name => [],
+		];
 
-		foreach ($packageConfigurations as $packageConfiguration) {
-			$switchesByPackage[] = $packageConfiguration->getSchema()->getSwitches();
-		}
-
-		$switches = array_merge(...$switchesByPackage);
-
-		foreach ($packageConfigurations as $packageConfiguration) {
-			$package = $packageConfiguration->getPackage();
+		foreach ($packageConfigs as $packageConfig) {
+			$package = $packageConfig->getPackage();
 			$packageName = $package->getName();
 			$packageDirRelative = $this->pathResolver->getRelativePath($package);
+			$packageSchema = $packageConfig->getSchema();
 
 			if ($packageName !== '__root__') {
 				$modulesMeta[$package->getName()] = [
@@ -117,9 +113,9 @@ final class LoaderGenerator
 				];
 			}
 
-			foreach ($packageConfiguration->getSchema()->getConfigs() as $fileConfiguration) {
+			foreach ($packageSchema->getConfigFiles() as $configFile) {
 				// Skip configuration if required package is not installed
-				foreach ($fileConfiguration->getRequiredPackages() as $requiredPackage) {
+				foreach ($configFile->getRequiredPackages() as $requiredPackage) {
 					if ($this->repository->findPackage($requiredPackage, new MatchAllConstraint()) === null) {
 						continue 2;
 					}
@@ -128,52 +124,107 @@ final class LoaderGenerator
 				$item = [
 					BaseLoader::SCHEMA_ITEM_FILE => $this->pathResolver->buildPathFromParts([
 						$packageDirRelative,
-						$packageConfiguration->getSchemaPath(),
-						$fileConfiguration->getFile(),
+						$packageConfig->getSchemaPath(),
+						$configFile->getFile(),
 					]),
 				];
 
-				$itemSwitches = $fileConfiguration->getRequiredSwitchValues();
-
-				foreach ($itemSwitches as $itemSwitchName => $itemSwitchValue) {
-					if (!isset($switches[$itemSwitchName])) {
-						$message = Message::create()
-							->withContext(sprintf(
-								'Trying to use switch `%s` for config file `%s` defined in `%s` of package `%s`.',
-								$itemSwitchName,
-								$fileConfiguration->getFile(),
-								$packageConfiguration->getSchemaFile(),
-								$packageConfiguration->getPackage()->getName(),
-							))
-							->withProblem(sprintf(
-								'Switch is not defined by any of previously loaded `%s` schema files.',
-								Plugin::DEFAULT_FILE_NAME,
-							))
-							->withSolution(sprintf(
-								'Do not configure switch or define one or choose one of already loaded: `%s`',
-								implode(', ', array_keys($switches)),
-							));
-
-						throw InvalidArgument::create()
-							->withMessage($message);
-					}
-				}
+				$itemSwitches = $this->getConfigSwitches($configFile, $switches, $packageConfig);
 
 				if ($itemSwitches !== []) {
 					$item[BaseLoader::SCHEMA_ITEM_SWITCHES] = $itemSwitches;
 				}
 
-				$itemsByPriority[$fileConfiguration->getPriority()->name][] = $item;
+				$itemsByPriority[$configFile->getPriority()->name][] = $item;
 			}
 		}
 
 		$schema = array_merge(
-			$itemsByPriority[ConfigPriority::high()->name],
-			$itemsByPriority[ConfigPriority::normal()->name],
-			$itemsByPriority[ConfigPriority::low()->name],
+			$itemsByPriority[ConfigFilePriority::high()->name],
+			$itemsByPriority[ConfigFilePriority::normal()->name],
+			$itemsByPriority[ConfigFilePriority::low()->name],
 		);
 
-		$fqn = $loaderConfiguration->getClass();
+		$fqn = $loaderSchema->getClass();
+		if ($this->isLoaderUpToDate($fqn, $schema, $modulesMeta, $switches)) {
+			return;
+		}
+
+		$lastSlashPosition = strrpos($fqn, '\\');
+		if ($lastSlashPosition === false) {
+			$classString = $fqn;
+			$namespaceString = null;
+		} else {
+			$classString = substr($fqn, $lastSlashPosition + 1);
+			$namespaceString = substr($fqn, 0, $lastSlashPosition);
+		}
+
+		$this->writeFile(
+			$this->getFilePath($loaderSchema),
+			$this->getFile($namespaceString, $classString, $schema, $switches, $modulesMeta),
+		);
+	}
+
+	/**
+	 * @param array<int, PackageConfig> $configs
+	 * @return array<string, bool>
+	 */
+	private function getSwitches(array $configs): array
+	{
+		$switchesByPackage = [];
+		foreach ($configs as $config) {
+			$switchesByPackage[] = $config->getSchema()->getSwitches();
+		}
+
+		return array_merge(...$switchesByPackage);
+	}
+
+	/**
+	 * @param array<string, bool> $switches
+	 * @return array<string, bool>
+	 */
+	private function getConfigSwitches(
+		ConfigFileSchema $configFile,
+		array $switches,
+		PackageConfig $packageConfig
+	): array
+	{
+		$itemSwitches = $configFile->getRequiredSwitchValues();
+
+		foreach ($itemSwitches as $itemSwitchName => $itemSwitchValue) {
+			if (!isset($switches[$itemSwitchName])) {
+				$message = Message::create()
+					->withContext(sprintf(
+						'Trying to use switch `%s` for config file `%s` defined in `%s` of package `%s`.',
+						$itemSwitchName,
+						$configFile->getFile(),
+						$packageConfig->getSchemaFile(),
+						$packageConfig->getPackage()->getName(),
+					))
+					->withProblem(sprintf(
+						'Switch is not defined by any of previously loaded `%s` schema files.',
+						Plugin::DEFAULT_FILE_NAME,
+					))
+					->withSolution(sprintf(
+						'Do not configure switch or define one or choose one of already loaded: `%s`',
+						implode(', ', array_keys($switches)),
+					));
+
+				throw InvalidArgument::create()
+					->withMessage($message);
+			}
+		}
+
+		return $itemSwitches;
+	}
+
+	/**
+	 * @param array<mixed>        $schema
+	 * @param array<mixed>        $modulesMeta
+	 * @param array<string, bool> $switches
+	 */
+	public function isLoaderUpToDate(string $fqn, array $schema, array $modulesMeta, array $switches): bool
+	{
 		if (class_exists($fqn)) {
 			if (!is_subclass_of($fqn, BaseLoader::class)) {
 				$message = Message::create()
@@ -196,23 +247,39 @@ final class LoaderGenerator
 			$loaderProperties = $loaderReflection->getDefaultProperties();
 
 			if (
-				$loaderProperties['schema'] === $schema
-				&& $loaderProperties['modulesMeta'] === $modulesMeta
-				&& $loaderProperties['switches'] === $switches
+				$loaderProperties[self::LOADER_PROPERTY_SCHEMA] === $schema
+				&& $loaderProperties[self::LOADER_PROPERTY_MODULES_META] === $modulesMeta
+				&& $loaderProperties[self::LOADER_PROPERTY_SWITCHES] === $switches
 			) {
-				return;
+				return true;
 			}
 		}
 
-		$lastSlashPosition = strrpos($fqn, '\\');
-		if ($lastSlashPosition === false) {
-			$classString = $fqn;
-			$namespaceString = null;
-		} else {
-			$classString = substr($fqn, $lastSlashPosition + 1);
-			$namespaceString = substr($fqn, 0, $lastSlashPosition);
-		}
+		return false;
+	}
 
+	private function getFilePath(LoaderSchema $schema): string
+	{
+		return $this->pathResolver->buildPathFromParts([
+			$this->pathResolver->getRootDir(),
+			$this->rootPackageConfiguration->getSchemaPath(),
+			$schema->getFile(),
+		]);
+	}
+
+	/**
+	 * @param array<mixed>        $schema
+	 * @param array<string, bool> $switches
+	 * @param array<mixed>        $modulesMeta
+	 */
+	private function getFile(
+		?string $namespaceString,
+		string $classString,
+		array $schema,
+		array $switches,
+		array $modulesMeta
+	): PhpFile
+	{
 		$file = new PhpFile();
 		$file->setStrictTypes();
 
@@ -244,18 +311,12 @@ final class LoaderGenerator
 			->setType('array')
 			->setComment('@var array<mixed>');
 
-		$loaderFilePath = $this->pathResolver->buildPathFromParts([
-			$this->pathResolver->getRootDir(),
-			$this->rootPackageConfiguration->getSchemaPath(),
-			$loaderConfiguration->getFile(),
-		]);
-
-		$this->writeFile($loaderFilePath, $file);
+		return $file;
 	}
 
-	private function writeFile(string $loaderFilePath, PhpFile $file): void
+	private function writeFile(string $path, PhpFile $file): void
 	{
-		$written = file_put_contents($loaderFilePath, (string) $file);
+		$written = file_put_contents($path, (string) $file);
 
 		if ($written === false) {
 			throw new FilesystemException(

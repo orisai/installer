@@ -7,8 +7,8 @@ final class PackageSchema
 
 	private ?LoaderSchema $loader = null;
 
-	/** @var array<int, ConfigSchema> */
-	private array $configs = [];
+	/** @var array<int, ConfigFileSchema> */
+	private array $configFiles = [];
 
 	/** @var array<string, bool> */
 	private array $switches = [];
@@ -24,9 +24,9 @@ final class PackageSchema
 		$this->loader = new LoaderSchema($file, $class);
 	}
 
-	public function addConfig(string $file): ConfigSchema
+	public function addConfigFile(string $file): ConfigFileSchema
 	{
-		return $this->configs[] = new ConfigSchema($file);
+		return $this->configFiles[] = new ConfigFileSchema($file);
 	}
 
 	public function addSwitch(string $name, bool $defaultValue): void
@@ -53,13 +53,13 @@ final class PackageSchema
 	}
 
 	/**
-	 * @return array<int, ConfigSchema>
+	 * @return array<int, ConfigFileSchema>
 	 *
 	 * @internal
 	 */
-	public function getConfigs(): array
+	public function getConfigFiles(): array
 	{
-		return $this->configs;
+		return $this->configFiles;
 	}
 
 	/**

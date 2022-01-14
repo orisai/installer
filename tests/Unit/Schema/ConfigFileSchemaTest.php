@@ -2,20 +2,20 @@
 
 namespace Tests\Orisai\Installer\Unit\Schema;
 
-use Orisai\Installer\Schema\ConfigPriority;
-use Orisai\Installer\Schema\ConfigSchema;
+use Orisai\Installer\Schema\ConfigFilePriority;
+use Orisai\Installer\Schema\ConfigFileSchema;
 use PHPUnit\Framework\TestCase;
 
-final class ConfigSchemaTest extends TestCase
+final class ConfigFileSchemaTest extends TestCase
 {
 
 	public function test(): void
 	{
-		$schema = new ConfigSchema($file = __DIR__ . '/wiring.neon');
+		$schema = new ConfigFileSchema($file = __DIR__ . '/wiring.neon');
 		self::assertSame($file, $schema->getFile());
 
-		self::assertEquals(ConfigPriority::normal(), $schema->getPriority());
-		$schema->setPriority($priority = ConfigPriority::low());
+		self::assertEquals(ConfigFilePriority::normal(), $schema->getPriority());
+		$schema->setPriority($priority = ConfigFilePriority::low());
 		self::assertSame($priority, $schema->getPriority());
 
 		self::assertSame([], $schema->getRequiredPackages());

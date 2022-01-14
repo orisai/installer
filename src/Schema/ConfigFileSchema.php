@@ -2,12 +2,12 @@
 
 namespace Orisai\Installer\Schema;
 
-final class ConfigSchema
+final class ConfigFileSchema
 {
 
 	private string $file;
 
-	private ConfigPriority $priority;
+	private ConfigFilePriority $priority;
 
 	/** @var array<int, string> */
 	private array $requiredPackages = [];
@@ -21,10 +21,10 @@ final class ConfigSchema
 	public function __construct(string $file)
 	{
 		$this->file = $file;
-		$this->priority = ConfigPriority::normal();
+		$this->priority = ConfigFilePriority::normal();
 	}
 
-	public function setPriority(ConfigPriority $priority): void
+	public function setPriority(ConfigFilePriority $priority): void
 	{
 		$this->priority = $priority;
 	}
@@ -50,7 +50,7 @@ final class ConfigSchema
 	/**
 	 * @internal
 	 */
-	public function getPriority(): ConfigPriority
+	public function getPriority(): ConfigFilePriority
 	{
 		return $this->priority;
 	}

@@ -21,7 +21,7 @@ composer require orisai/installer
 `orisai.php`
 
 ```php
-use Orisai\Installer\Schema\ConfigPriority;
+use Orisai\Installer\Schema\ConfigFilePriority;
 use Orisai\Installer\Schema\PackageSchema;
 
 $schema = new PackageSchema();
@@ -34,16 +34,16 @@ $schema->setLoader(
 );
 
 // config file provided by current package
-$schema->addConfig(__DIR__ . '/src/wiring.neon');
+$schema->addConfigFile(__DIR__ . '/src/wiring.neon');
 
-$httpsConfig = $schema->addConfig(__DIR__ . '/src/https.neon');
+$httpsConfig = $schema->addConfigFile(__DIR__ . '/src/https.neon');
 // switch and its value required to include this config file
 $httpsConfig->setRequiredSwitchValue('httpsOnly', true);
 // package required to be installed to include this config file
 $httpsConfig->addRequiredPackage('vendor/package');
 // change loading priority of config file
 // by default configs are ordered by package priority in dependency tree and added to 'normal' group
-$httpsConfig->setPriority(ConfigPriority::normal());
+$httpsConfig->setPriority(ConfigFilePriority::normal());
 
 // enable/disable config file by runtime switch
 $schema->addSwitch('httpsOnly', false);

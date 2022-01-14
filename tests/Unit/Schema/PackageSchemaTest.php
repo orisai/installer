@@ -20,15 +20,15 @@ final class PackageSchemaTest extends TestCase
 		self::assertSame($loaderFile, $schema->getLoader()->getFile());
 		self::assertSame($loaderClass, $schema->getLoader()->getClass());
 
-		self::assertSame([], $schema->getConfigs());
-		$config1 = $schema->addConfig(__DIR__ . '/1.neon');
-		$config2 = $schema->addConfig(__DIR__ . '/2.neon');
+		self::assertSame([], $schema->getConfigFiles());
+		$config1 = $schema->addConfigFile(__DIR__ . '/1.neon');
+		$config2 = $schema->addConfigFile(__DIR__ . '/2.neon');
 		self::assertSame(
 			[
 				$config1,
 				$config2,
 			],
-			$schema->getConfigs(),
+			$schema->getConfigFiles(),
 		);
 
 		self::assertSame([], $schema->getSwitches());

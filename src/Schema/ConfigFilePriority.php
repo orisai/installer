@@ -5,7 +5,7 @@ namespace Orisai\Installer\Schema;
 use ValueError;
 use function array_key_exists;
 
-final class ConfigPriority
+final class ConfigFilePriority
 {
 
 	private const NORMAL = 1,
