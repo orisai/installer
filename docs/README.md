@@ -48,9 +48,6 @@ $httpsConfig->setPriority(ConfigFilePriority::normal());
 // enable/disable config file by runtime switch
 $schema->addSwitch('httpsOnly', false);
 
-// ignore config from package
-$schema->ignoreConfigFrom('vendor/package');
-
 // packages which are part of monorepo are not really considered installed in monorepo
 // this simulates their existence for purpose of in-monorepo development
 // root-only

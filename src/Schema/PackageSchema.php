@@ -13,9 +13,6 @@ final class PackageSchema
 	/** @var array<string, bool> */
 	private array $switches = [];
 
-	/** @var array<int, string> */
-	private array $ignorePackageConfigs = [];
-
 	/** @var array<int, MonorepoSubpackageSchema> */
 	private array $monorepoPackages = [];
 
@@ -32,11 +29,6 @@ final class PackageSchema
 	public function addSwitch(string $name, bool $defaultValue): void
 	{
 		$this->switches[$name] = $defaultValue;
-	}
-
-	public function ignoreConfigFrom(string $package): void
-	{
-		$this->ignorePackageConfigs[] = $package;
 	}
 
 	public function addMonorepoPackage(string $name, string $path): MonorepoSubpackageSchema
@@ -70,16 +62,6 @@ final class PackageSchema
 	public function getSwitches(): array
 	{
 		return $this->switches;
-	}
-
-	/**
-	 * @return array<int, string>
-	 *
-	 * @internal
-	 */
-	public function getIgnorePackageConfigs(): array
-	{
-		return $this->ignorePackageConfigs;
 	}
 
 	/**

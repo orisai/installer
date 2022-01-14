@@ -66,9 +66,6 @@ final class ModuleResolver
 		/** @var array<Module> $modules */
 		$modules = [];
 
-		/** @var array<string> $ignored */
-		$ignored = [];
-
 		foreach ($packages as $package) {
 			if (!$this->isApplicable($package)) {
 				if ($package instanceof MonorepoSubpackage) {
@@ -90,13 +87,10 @@ final class ModuleResolver
 				continue;
 			}
 
-			$modules[$package->getName()] = $module = new Module(
+			$modules[$package->getName()] = new Module(
 				$this->validator->validateConfiguration($package, Plugin::DEFAULT_FILE_NAME),
 			);
-			$ignored = array_merge($ignored, $module->getConfiguration()->getSchema()->getIgnorePackageConfigs());
 		}
-
-		$ignored = array_merge($ignored, $this->rootPackageConfiguration->getSchema()->getIgnorePackageConfigs());
 
 		foreach ($modules as $module) {
 			$module->setDependents(
@@ -131,11 +125,6 @@ final class ModuleResolver
 		$packageConfigurations = [];
 
 		foreach ($modules as $module) {
-			// Skip package configuration if listed in ignored
-			if (in_array($module->getConfiguration()->getPackage()->getName(), $ignored, true)) {
-				continue;
-			}
-
 			$packageConfigurations[] = $module->getConfiguration();
 		}
 

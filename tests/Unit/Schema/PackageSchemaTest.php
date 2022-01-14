@@ -42,17 +42,6 @@ final class PackageSchemaTest extends TestCase
 			$schema->getSwitches(),
 		);
 
-		self::assertSame([], $schema->getIgnorePackageConfigs());
-		$schema->ignoreConfigFrom('example/a');
-		$schema->ignoreConfigFrom('example/b');
-		self::assertSame(
-			[
-				'example/a',
-				'example/b',
-			],
-			$schema->getIgnorePackageConfigs(),
-		);
-
 		self::assertSame([], $schema->getMonorepoPackages());
 		$subpackage1 = $schema->addMonorepoPackage('vendor/foo', __DIR__ . '/packages/foo');
 		$subpackage2 = $schema->addMonorepoPackage('vendor/bar', __DIR__ . '/packages/bar');
