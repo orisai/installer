@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Orisai\Installer\Command;
+namespace Orisai\Installer\Console;
 
 use Composer\Command\BaseCommand as ComposerBaseCommand;
 use Orisai\Installer\Plugin;

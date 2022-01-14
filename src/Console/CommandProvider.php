@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Orisai\Installer\Command;
+namespace Orisai\Installer\Console;
 
 use Composer\Plugin\Capability\CommandProvider as CommandProviderCapability;
 
@@ -16,8 +16,8 @@ final class CommandProvider implements CommandProviderCapability
 	public function getCommands(): array
 	{
 		return [
-			new LoaderGenerateCommand(),
-			new ModuleValidateCommand(),
+			new GenerateLoaderCommand(),
+			new ValidateModuleCommand(),
 		];
 	}
 

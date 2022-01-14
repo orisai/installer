@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Orisai\Installer\Command;
+namespace Orisai\Installer\Console;
 
 use Composer\Semver\Constraint\MatchAllConstraint;
 use LogicException;
@@ -19,7 +19,7 @@ use function sprintf;
 /**
  * @internal
  */
-final class ModuleValidateCommand extends BaseInstallerCommand
+final class ValidateModuleCommand extends BaseInstallerCommand
 {
 
 	private const OPTION_PACKAGE = 'package';

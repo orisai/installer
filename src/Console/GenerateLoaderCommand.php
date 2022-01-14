@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Orisai\Installer\Command;
+namespace Orisai\Installer\Console;
 
 use Orisai\Exceptions\Logic\InvalidState;
 use Orisai\Exceptions\Message;
@@ -20,7 +20,7 @@ use function sprintf;
 /**
  * @internal
  */
-final class LoaderGenerateCommand extends BaseInstallerCommand
+final class GenerateLoaderCommand extends BaseInstallerCommand
 {
 
 	public static function getDefaultName(): string

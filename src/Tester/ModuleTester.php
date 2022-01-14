@@ -6,8 +6,8 @@ use Composer\Composer;
 use Composer\Console\Application;
 use Orisai\Exceptions\Logic\InvalidState;
 use Orisai\Exceptions\Message;
-use Orisai\Installer\Command\LoaderGenerateCommand;
-use Orisai\Installer\Command\ModuleValidateCommand;
+use Orisai\Installer\Console\GenerateLoaderCommand;
+use Orisai\Installer\Console\ValidateModuleCommand;
 use Symfony\Component\Console\Tester\CommandTester;
 use function class_exists;
 
@@ -20,8 +20,8 @@ final class ModuleTester
 	{
 		$this->checkComposerAvailability();
 		$this->application = new Application();
-		$this->application->add(new LoaderGenerateCommand());
-		$this->application->add(new ModuleValidateCommand());
+		$this->application->add(new GenerateLoaderCommand());
+		$this->application->add(new ValidateModuleCommand());
 	}
 
 	private function checkComposerAvailability(): void
@@ -46,7 +46,7 @@ final class ModuleTester
 		}
 
 		$tester = new CommandTester(
-			$this->application->get(LoaderGenerateCommand::getDefaultName()),
+			$this->application->get(GenerateLoaderCommand::getDefaultName()),
 		);
 
 		return $tester->execute($input);
@@ -65,7 +65,7 @@ final class ModuleTester
 		}
 
 		$tester = new CommandTester(
-			$this->application->get(ModuleValidateCommand::getDefaultName()),
+			$this->application->get(ValidateModuleCommand::getDefaultName()),
 		);
 
 		return $tester->execute($input);

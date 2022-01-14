@@ -9,11 +9,11 @@ use Nette\PhpGenerator\PhpFile;
 use Orisai\Exceptions\Logic\InvalidArgument;
 use Orisai\Exceptions\Logic\InvalidState;
 use Orisai\Exceptions\Message;
-use Orisai\Installer\Command\LoaderGenerateCommand;
 use Orisai\Installer\Config\ConfigValidator;
 use Orisai\Installer\Config\FileConfig;
 use Orisai\Installer\Config\LoaderConfig;
 use Orisai\Installer\Config\PackageConfig;
+use Orisai\Installer\Console\GenerateLoaderCommand;
 use Orisai\Installer\Files\Writer;
 use Orisai\Installer\Plugin;
 use Orisai\Installer\Resolving\ModuleResolver;
@@ -188,7 +188,7 @@ final class LoaderGenerator
 					))
 					->withSolution(sprintf(
 						'Remove or rename existing class and then run command `composer %s`',
-						LoaderGenerateCommand::getDefaultName(),
+						GenerateLoaderCommand::getDefaultName(),
 					));
 
 				throw InvalidState::create()
