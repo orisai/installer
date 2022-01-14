@@ -4,7 +4,7 @@ namespace Orisai\Installer\Utils;
 
 use Composer\Composer;
 use Composer\Package\PackageInterface;
-use Orisai\Installer\Monorepo\SimulatedPackage;
+use Orisai\Installer\Monorepo\MonorepoSubpackage;
 use function dirname;
 use function file_exists;
 use function implode;
@@ -34,7 +34,7 @@ final class PathResolver
 			return $this->getRootDir();
 		}
 
-		if ($package instanceof SimulatedPackage) {
+		if ($package instanceof MonorepoSubpackage) {
 			return $package->getPackageDirectory();
 		}
 

@@ -13,7 +13,7 @@ use Orisai\Exceptions\Logic\InvalidArgument;
 use Orisai\Exceptions\Message;
 use Orisai\Installer\Config\ConfigValidator;
 use Orisai\Installer\Config\PackageConfig;
-use Orisai\Installer\Monorepo\SimulatedPackage;
+use Orisai\Installer\Monorepo\MonorepoSubpackage;
 use Orisai\Installer\Plugin;
 use Orisai\Installer\Utils\PathResolver;
 use function array_merge;
@@ -71,7 +71,7 @@ final class ModuleResolver
 
 		foreach ($packages as $package) {
 			if (!$this->isApplicable($package)) {
-				if ($package instanceof SimulatedPackage) {
+				if ($package instanceof MonorepoSubpackage) {
 					$message = Message::create()
 						->withContext(sprintf(
 							'Trying to set package `%s` as a simulated module of `%s`.',
@@ -147,7 +147,7 @@ final class ModuleResolver
 	/**
 	 * Returns list of explicitly allowed packages, which are part of monorepo like they were really installed
 	 *
-	 * @return array<SimulatedPackage>
+	 * @return array<MonorepoSubpackage>
 	 */
 	public function getSimulatedPackages(): array
 	{
@@ -203,8 +203,8 @@ final class ModuleResolver
 				$composerFilePath,
 			) + ['version' => '999.999.999'];
 
-			$package = $loader->load($config, SimulatedPackage::class);
-			assert($package instanceof SimulatedPackage);
+			$package = $loader->load($config, MonorepoSubpackage::class);
+			assert($package instanceof MonorepoSubpackage);
 			$packageName = $package->getName();
 
 			if ($expectedName !== $packageName) {

@@ -7,7 +7,7 @@ use Composer\Package\CompletePackage;
 /**
  * @internal
  */
-final class SimulatedPackage extends CompletePackage
+final class MonorepoSubpackage extends CompletePackage
 {
 
 	private string $packageDirectory;
