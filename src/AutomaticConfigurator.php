@@ -3,14 +3,14 @@
 namespace Orisai\Installer;
 
 use OriNette\DI\Boot\BaseConfigurator;
-use Orisai\Installer\Loading\BaseLoader as ModuleLoader;
+use Orisai\Installer\Loading\BaseLoader;
 
 final class AutomaticConfigurator extends BaseConfigurator
 {
 
-	private ModuleLoader $loader;
+	private BaseLoader $loader;
 
-	public function __construct(string $rootDir, ModuleLoader $loader)
+	public function __construct(string $rootDir, BaseLoader $loader)
 	{
 		parent::__construct($rootDir);
 		$this->loader = $loader;
