@@ -17,7 +17,6 @@ use Orisai\Installer\Schema\ConfigFilePriority;
 use Orisai\Installer\Schema\ConfigFileSchema;
 use Orisai\Installer\Schema\LoaderSchema;
 use Orisai\Installer\Utils\PluginActivator;
-use ReflectionClass;
 use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function array_merge;
@@ -120,9 +119,7 @@ final class LoaderGenerator
 		);
 
 		$fqn = $loaderSchema->getClass();
-		if ($this->isLoaderUpToDate($fqn, $schema, $modulesMeta, $switches)) {
-			return;
-		}
+		$this->validateLoader($fqn);
 
 		$lastSlashPosition = strrpos($fqn, '\\');
 		if ($lastSlashPosition === false) {
@@ -195,44 +192,24 @@ final class LoaderGenerator
 		return $itemSwitches;
 	}
 
-	/**
-	 * @param array<int, mixed>    $schema
-	 * @param array<string, mixed> $modulesMeta
-	 * @param array<string, bool>  $switches
-	 */
-	public function isLoaderUpToDate(string $fqn, array $schema, array $modulesMeta, array $switches): bool
+	public function validateLoader(string $fqn): void
 	{
-		if (class_exists($fqn)) {
-			if (!is_subclass_of($fqn, BaseLoader::class)) {
-				$message = Message::create()
-					->withContext('Generating configuration loader.')
-					->withProblem(sprintf(
-						'Loader class `%s` already exists but is not subclass of `%s`.',
-						$fqn,
-						BaseLoader::class,
-					))
-					->withSolution(sprintf(
-						'Remove or rename existing class and then run command `composer %s`',
-						GenerateLoaderCommand::getDefaultName(),
-					));
+		if (class_exists($fqn) && !is_subclass_of($fqn, BaseLoader::class)) {
+			$message = Message::create()
+				->withContext('Generating configuration loader.')
+				->withProblem(sprintf(
+					'Loader class `%s` already exists but is not subclass of `%s`.',
+					$fqn,
+					BaseLoader::class,
+				))
+				->withSolution(sprintf(
+					'Remove or rename existing class and then run command `composer %s`',
+					GenerateLoaderCommand::getDefaultName(),
+				));
 
-				throw InvalidState::create()
-					->withMessage($message);
-			}
-
-			$loaderReflection = new ReflectionClass($fqn);
-			$loaderProperties = $loaderReflection->getDefaultProperties();
-
-			if (
-				$loaderProperties[self::LOADER_PROPERTY_SCHEMA] === $schema
-				&& $loaderProperties[self::LOADER_PROPERTY_MODULES_META] === $modulesMeta
-				&& $loaderProperties[self::LOADER_PROPERTY_SWITCHES] === $switches
-			) {
-				return true;
-			}
+			throw InvalidState::create()
+				->withMessage($message);
 		}
-
-		return false;
 	}
 
 	/**
