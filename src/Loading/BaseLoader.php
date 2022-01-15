@@ -18,13 +18,13 @@ abstract class BaseLoader
 
 	public const META_ITEM_DIR = 'dir';
 
-	/** @var array<mixed> */
+	/** @var array<int, mixed> */
 	protected array $schema = [];
 
-	/** @var array<bool> */
+	/** @var array<string, bool> */
 	protected array $switches = [];
 
-	/** @var array<mixed> */
+	/** @var array<string, mixed> */
 	protected array $modulesMeta = [];
 
 	final public function __construct()
@@ -33,7 +33,7 @@ abstract class BaseLoader
 	}
 
 	/**
-	 * @return array<string>
+	 * @return array<int, string>
 	 */
 	public function loadConfigFiles(string $rootDir): array
 	{
@@ -72,7 +72,7 @@ abstract class BaseLoader
 	}
 
 	/**
-	 * @return array<mixed>
+	 * @return array<string, mixed>
 	 */
 	public function loadModulesMeta(string $rootDir): array
 	{

@@ -196,9 +196,9 @@ final class LoaderGenerator
 	}
 
 	/**
-	 * @param array<mixed>        $schema
-	 * @param array<mixed>        $modulesMeta
-	 * @param array<string, bool> $switches
+	 * @param array<int, mixed>    $schema
+	 * @param array<string, mixed> $modulesMeta
+	 * @param array<string, bool>  $switches
 	 */
 	public function isLoaderUpToDate(string $fqn, array $schema, array $modulesMeta, array $switches): bool
 	{
@@ -236,9 +236,9 @@ final class LoaderGenerator
 	}
 
 	/**
-	 * @param array<mixed>        $schema
-	 * @param array<string, bool> $switches
-	 * @param array<mixed>        $modulesMeta
+	 * @param array<int, mixed>    $schema
+	 * @param array<string, bool>  $switches
+	 * @param array<string, mixed> $modulesMeta
 	 */
 	private function getFile(
 		?string $namespaceString,
@@ -267,17 +267,17 @@ final class LoaderGenerator
 		$class->addProperty(self::LOADER_PROPERTY_SCHEMA, $schema)
 			->setVisibility(ClassType::VISIBILITY_PROTECTED)
 			->setType('array')
-			->setComment('@var array<mixed>');
+			->setComment('{@inheritdoc}');
 
 		$class->addProperty(self::LOADER_PROPERTY_SWITCHES, $switches)
 			->setVisibility(ClassType::VISIBILITY_PROTECTED)
 			->setType('array')
-			->setComment('@var array<bool>');
+			->setComment('{@inheritdoc}');
 
 		$class->addProperty(self::LOADER_PROPERTY_MODULES_META, $modulesMeta)
 			->setVisibility(ClassType::VISIBILITY_PROTECTED)
 			->setType('array')
-			->setComment('@var array<mixed>');
+			->setComment('{@inheritdoc}');
 
 		return $file;
 	}
