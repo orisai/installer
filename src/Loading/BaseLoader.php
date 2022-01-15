@@ -52,9 +52,9 @@ abstract class BaseLoader
 		return $resolved;
 	}
 
-	public function configureSwitch(string $switch, bool $value): void
+	public function configureSwitch(string $switch, bool $value, bool $failOnMissing = true): void
 	{
-		if (!isset($this->switches[$switch])) {
+		if ($failOnMissing && !isset($this->switches[$switch])) {
 			$message = Message::create()
 				->withContext(sprintf('Trying to set value of switch `%s`.', $switch))
 				->withProblem(sprintf('Switch is not defined by any of loaded `%s`.', 'orisai.php'))

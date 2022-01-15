@@ -29,8 +29,8 @@ final class AutomaticConfigurator extends BaseConfigurator
 
 	public function loadContainer(): string
 	{
-		$this->loader->configureSwitch('consoleMode', $this->staticParameters['consoleMode']);
-		$this->loader->configureSwitch('debugMode', $this->staticParameters['debugMode']);
+		$this->loader->configureSwitch('consoleMode', $this->staticParameters['consoleMode'], false);
+		$this->loader->configureSwitch('debugMode', $this->staticParameters['debugMode'], false);
 
 		return parent::loadContainer();
 	}
