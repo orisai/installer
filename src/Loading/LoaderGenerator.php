@@ -84,11 +84,9 @@ final class LoaderGenerator
 			$packageDirRelative = $package->getRelativePath();
 			$packageSchema = $package->getConfig()->getSchema();
 
-			if ($package !== $this->data->getRootPackage()) {
-				$modulesMeta[$packageName] = [
-					BaseLoader::META_ITEM_DIR => $packageDirRelative,
-				];
-			}
+			$modulesMeta[$packageName] = [
+				BaseLoader::META_ITEM_DIR => $packageDirRelative,
+			];
 
 			foreach ($packageSchema->getConfigFiles() as $configFile) {
 				// Skip configuration if required package is not installed
