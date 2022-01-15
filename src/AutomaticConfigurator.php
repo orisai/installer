@@ -14,21 +14,13 @@ final class AutomaticConfigurator extends BaseConfigurator
 	{
 		parent::__construct($rootDir);
 		$this->loader = $loader;
+		$this->addStaticParameters([
+			'modules' => $this->loader->loadModulesMeta($rootDir),
+		]);
 	}
 
 	/**
-	 * @return array<mixed>
-	 */
-	protected function getDefaultParameters(): array
-	{
-		$parameters = parent::getDefaultParameters();
-		$parameters['modules'] = $this->loader->loadModulesMeta($this->rootDir);
-
-		return $parameters;
-	}
-
-	/**
-	 * @return array<string>
+	 * {@inheritDoc}
 	 */
 	protected function loadConfigFiles(): array
 	{
