@@ -112,6 +112,8 @@ final class LoaderGenerator
 			}
 		}
 
+		$modulesMeta['__root__'] = $modulesMeta[$this->data->getRootPackage()->getName()];
+
 		$schema = array_merge(
 			$itemsByPriority[ConfigFilePriority::high()->name],
 			$itemsByPriority[ConfigFilePriority::normal()->name],
