@@ -26,7 +26,7 @@ final class ModuleResolver
 	/**
 	 * @return array<InstallablePackageData>
 	 */
-	public function getResolvedConfigurations(): array
+	public function getResolvedPackages(): array
 	{
 		$modules = [];
 

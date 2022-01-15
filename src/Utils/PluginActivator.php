@@ -36,11 +36,7 @@ final class PluginActivator
 
 	public function isEnabled(): bool
 	{
-		if (!file_exists($this->getSchemaFileFullName())) {
-			return false;
-		}
-
-		return $this->getRootPackageConfiguration()->getSchema()->getLoader() !== null;
+		return file_exists($this->getSchemaFileFullName());
 	}
 
 	public function getRootPackageConfiguration(): PackageConfig

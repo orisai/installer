@@ -16,7 +16,6 @@ use Orisai\Installer\Resolving\ModuleResolver;
 use Orisai\Installer\Schema\ConfigFilePriority;
 use Orisai\Installer\Schema\ConfigFileSchema;
 use Orisai\Installer\Schema\LoaderSchema;
-use Orisai\Installer\Utils\PluginActivator;
 use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function array_merge;
@@ -48,19 +47,18 @@ final class LoaderGenerator
 
 	public function generateLoader(): void
 	{
-		$loaderConfiguration = $this->data->getRootPackage()->getConfig()->getSchema()->getLoader();
+		$loaderSchema = $this->data->getRootPackage()->getConfig()->getSchema()->getLoader();
 
-		if ($loaderConfiguration === null) {
-			throw InvalidState::create()
-				->withMessage(sprintf(
-					'Loader should be always available by this moment. Entry point should check if plugin is activated with \'%s\'',
-					PluginActivator::class,
-				));
+		if ($loaderSchema === null) {
+			$loaderSchema = new LoaderSchema(
+				__DIR__ . '/DefaultLoader.php',
+				DefaultLoader::class,
+			);
 		}
 
 		$resolver = new ModuleResolver($this->data);
 
-		$this->generateClass($loaderConfiguration, $resolver->getResolvedConfigurations());
+		$this->generateClass($loaderSchema, $resolver->getResolvedPackages());
 	}
 
 	/**
