@@ -229,6 +229,7 @@ final class LoaderGenerator
 	{
 		$file = new PhpFile();
 		$file->setStrictTypes();
+		$file->addComment('phpcs:disable');
 
 		if ($namespaceString === null) {
 			$class = $file->addClass($classString);
