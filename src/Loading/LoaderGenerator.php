@@ -137,7 +137,7 @@ final class LoaderGenerator
 		}
 
 		$this->writeFile(
-			$this->getFilePath($loaderSchema),
+			$loaderSchema->getFile(),
 			$this->getFile($namespaceString, $classString, $schema, $switches, $modulesMeta),
 		);
 	}
@@ -233,15 +233,6 @@ final class LoaderGenerator
 		}
 
 		return false;
-	}
-
-	private function getFilePath(LoaderSchema $schema): string
-	{
-		return PathResolver::buildPathFromParts([
-			$this->data->getRootDir(),
-			$this->data->getRootPackage()->getConfig()->getSchemaPath(),
-			$schema->getFile(),
-		]);
 	}
 
 	/**
