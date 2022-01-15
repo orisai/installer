@@ -8,7 +8,7 @@ parameters:
 	ignoreErrors:
 		# Should not happen
 		- message: '#^Parameter \#1 (.+) of static method Composer\\Json\\JsonFile\:\:parseJson\(\) expects string\|null, string\|false given\.$#'
-		  path: %currentWorkingDirectory%/src/Resolving/ModuleResolver.php
+		  path: %currentWorkingDirectory%/src/Data/InstallerDataGenerator.php
 		# Cannot happen - used string is always same
 		- message: '#^Parameter \#1 \$string of function substr expects string, string\|false given\.$#'
 		  path: %currentWorkingDirectory%/src/Loading/LoaderGenerator.php

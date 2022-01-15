@@ -39,7 +39,7 @@ final class ConfigValidator
 				);
 		}
 
-		return new PackageConfig($config, $package, $schemaFileRelativeName);
+		return new PackageConfig($config, $schemaFileRelativeName);
 	}
 
 }

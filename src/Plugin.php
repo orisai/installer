@@ -14,6 +14,7 @@ use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
 use Orisai\Installer\Config\ConfigValidator;
 use Orisai\Installer\Console\CommandProvider;
+use Orisai\Installer\Data\InstallerDataGenerator;
 use Orisai\Installer\Loading\LoaderGenerator;
 use Orisai\Installer\Utils\PathResolver;
 use Orisai\Installer\Utils\PluginActivator;
@@ -82,8 +83,9 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 	{
 		$pathResolver = new PathResolver($composer);
 		$validator = new ConfigValidator($pathResolver);
+		$rootPackage = $composer->getPackage();
 		$activator = new PluginActivator(
-			$composer->getPackage(),
+			$rootPackage,
 			$validator,
 			$pathResolver,
 			self::DEFAULT_FILE_NAME,
@@ -93,11 +95,16 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 			return;
 		}
 
-		$loaderGenerator = new LoaderGenerator(
+		$dataGenerator = new InstallerDataGenerator(
 			$composer->getRepositoryManager()->getLocalRepository(),
-			$pathResolver,
 			$validator,
-			$activator->getRootPackageConfiguration(),
+			$pathResolver,
+		);
+
+		$rootConfig = $activator->getRootPackageConfiguration();
+
+		$loaderGenerator = new LoaderGenerator(
+			$dataGenerator->generate($rootPackage, $rootConfig),
 		);
 
 		$loaderGenerator->generateLoader();

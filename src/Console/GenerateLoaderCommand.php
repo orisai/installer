@@ -5,6 +5,7 @@ namespace Orisai\Installer\Console;
 use Orisai\Exceptions\Logic\InvalidState;
 use Orisai\Exceptions\Message;
 use Orisai\Installer\Config\ConfigValidator;
+use Orisai\Installer\Data\InstallerDataGenerator;
 use Orisai\Installer\Loading\LoaderGenerator;
 use Orisai\Installer\Utils\PathResolver;
 use Orisai\Installer\Utils\PluginActivator;
@@ -44,8 +45,9 @@ final class GenerateLoaderCommand extends BaseInstallerCommand
 
 		$pathResolver = new PathResolver($composer);
 		$validator = new ConfigValidator($pathResolver);
+		$rootPackage = $composer->getPackage();
 		$activator = new PluginActivator(
-			$composer->getPackage(),
+			$rootPackage,
 			$validator,
 			$pathResolver,
 			$fileName,
@@ -61,15 +63,20 @@ final class GenerateLoaderCommand extends BaseInstallerCommand
 				->withMessage($message);
 		}
 
-		$io = new SymfonyStyle($input, $output);
-		$loaderGenerator = new LoaderGenerator(
+		$dataGenerator = new InstallerDataGenerator(
 			$composer->getRepositoryManager()->getLocalRepository(),
-			$pathResolver,
 			$validator,
-			$activator->getRootPackageConfiguration(),
+			$pathResolver,
+		);
+
+		$rootConfig = $activator->getRootPackageConfiguration();
+
+		$loaderGenerator = new LoaderGenerator(
+			$dataGenerator->generate($rootPackage, $rootConfig),
 		);
 
 		$loaderGenerator->generateLoader();
+		$io = new SymfonyStyle($input, $output);
 		$io->success('Modules loader successfully generated');
 
 		return 0;

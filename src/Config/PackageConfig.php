@@ -2,7 +2,6 @@
 
 namespace Orisai\Installer\Config;
 
-use Composer\Package\PackageInterface;
 use Orisai\Installer\Schema\PackageSchema;
 use function strrpos;
 use function substr;
@@ -19,15 +18,12 @@ final class PackageConfig
 
 	private PackageSchema $schema;
 
-	private PackageInterface $package;
-
-	public function __construct(PackageSchema $schema, PackageInterface $package, string $schemaFile)
+	public function __construct(PackageSchema $schema, string $schemaFile)
 	{
 		$lastSlashPosition = strrpos($schemaFile, '/');
 		$this->schemaPath = $lastSlashPosition === false ? '' : substr($schemaFile, 0, $lastSlashPosition);
 		$this->schemaFile = $schemaFile;
 		$this->schema = $schema;
-		$this->package = $package;
 	}
 
 	public function getSchemaPath(): string
@@ -43,11 +39,6 @@ final class PackageConfig
 	public function getSchema(): PackageSchema
 	{
 		return $this->schema;
-	}
-
-	public function getPackage(): PackageInterface
-	{
-		return $this->package;
 	}
 
 }

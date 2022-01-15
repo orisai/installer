@@ -2,7 +2,7 @@
 
 namespace Orisai\Installer\Resolving;
 
-use Orisai\Installer\Config\PackageConfig;
+use Orisai\Installer\Data\InstallablePackageData;
 
 /**
  * @internal
@@ -10,19 +10,19 @@ use Orisai\Installer\Config\PackageConfig;
 final class Module
 {
 
-	private PackageConfig $config;
+	private InstallablePackageData $package;
 
 	/** @var array<Module> */
 	private array $dependents = [];
 
-	public function __construct(PackageConfig $config)
+	public function __construct(InstallablePackageData $package)
 	{
-		$this->config = $config;
+		$this->package = $package;
 	}
 
-	public function getConfiguration(): PackageConfig
+	public function getPackage(): InstallablePackageData
 	{
-		return $this->config;
+		return $this->package;
 	}
 
 	/**

@@ -2,28 +2,11 @@
 
 namespace Orisai\Installer\Resolving;
 
-use Composer\Json\JsonFile;
-use Composer\Package\Link;
-use Composer\Package\Loader\ArrayLoader;
-use Composer\Package\Loader\ValidatingArrayLoader;
-use Composer\Package\PackageInterface;
-use Composer\Repository\WritableRepositoryInterface;
-use Composer\Semver\Constraint\MatchAllConstraint;
-use Orisai\Exceptions\Logic\InvalidArgument;
-use Orisai\Exceptions\Message;
-use Orisai\Installer\Config\ConfigValidator;
-use Orisai\Installer\Config\PackageConfig;
-use Orisai\Installer\Monorepo\MonorepoSubpackage;
-use Orisai\Installer\Plugin;
-use Orisai\Installer\Utils\PathResolver;
-use function array_merge;
-use function assert;
-use function file_exists;
-use function file_get_contents;
+use Orisai\Installer\Data\InstallablePackageData;
+use Orisai\Installer\Data\InstallerData;
+use Orisai\Installer\Data\PackageData;
 use function in_array;
-use function is_array;
 use function ksort;
-use function sprintf;
 use function strtolower;
 use function uasort;
 
@@ -33,70 +16,33 @@ use function uasort;
 final class ModuleResolver
 {
 
-	private WritableRepositoryInterface $repository;
+	private InstallerData $data;
 
-	private PathResolver $pathResolver;
-
-	private ConfigValidator $validator;
-
-	private PackageConfig $rootPackageConfiguration;
-
-	public function __construct(
-		WritableRepositoryInterface $repository,
-		PathResolver $pathResolver,
-		ConfigValidator $validator,
-		PackageConfig $rootPackageConfiguration
-	)
+	public function __construct(InstallerData $data)
 	{
-		$this->repository = $repository;
-		$this->pathResolver = $pathResolver;
-		$this->validator = $validator;
-		$this->rootPackageConfiguration = $rootPackageConfiguration;
+		$this->data = $data;
 	}
 
 	/**
-	 * @return array<PackageConfig>
+	 * @return array<InstallablePackageData>
 	 */
 	public function getResolvedConfigurations(): array
 	{
-		/** @var array<PackageInterface> $packages */
-		$packages = $this->repository->getCanonicalPackages();
-		$packages = array_merge($packages, $this->getSimulatedPackages());
-
-		/** @var array<Module> $modules */
 		$modules = [];
 
-		foreach ($packages as $package) {
-			if (!$this->isApplicable($package)) {
-				if ($package instanceof MonorepoSubpackage) {
-					$message = Message::create()
-						->withContext(sprintf(
-							'Trying to set package `%s` as a simulated module of `%s`.',
-							$package->getName(),
-							$package->getParentName(),
-						))
-						->withProblem(sprintf('Package does not have `%s` file.', Plugin::DEFAULT_FILE_NAME))
-						->withSolution(
-							'Choose an package which does have required file or create the file or remove simulated module from configuration.',
-						);
-
-					throw InvalidArgument::create()
-						->withMessage($message);
-				}
-
+		foreach ($this->data->getPackages() as $package) {
+			if (!$package instanceof InstallablePackageData || $package === $this->data->getRootPackage()) {
 				continue;
 			}
 
-			$modules[$package->getName()] = new Module(
-				$this->validator->validateConfiguration($package, Plugin::DEFAULT_FILE_NAME),
-			);
+			$modules[$package->getName()] = new Module($package);
 		}
 
 		foreach ($modules as $module) {
 			$module->setDependents(
 				$this->packagesToModules(
 					$this->flatten(
-						$this->getDependents($module->getConfiguration()->getPackage()->getName(), $packages),
+						$this->getDependents($module->getPackage()->getName(), $this->data->getPackages()),
 					),
 					$modules,
 				),
@@ -105,10 +51,10 @@ final class ModuleResolver
 
 		uasort($modules, static function (Module $m1, Module $m2) {
 			$d1 = $m1->getDependents();
-			$n1 = $m1->getConfiguration()->getPackage()->getName();
+			$n1 = $m1->getPackage()->getName();
 
 			$d2 = $m2->getDependents();
-			$n2 = $m2->getConfiguration()->getPackage()->getName();
+			$n2 = $m2->getPackage()->getName();
 
 			// Cyclical dependency, ignore
 			if (isset($d1[$n2], $d2[$n1])) {
@@ -122,133 +68,25 @@ final class ModuleResolver
 			return 1;
 		});
 
-		$packageConfigurations = [];
-
-		foreach ($modules as $module) {
-			$packageConfigurations[] = $module->getConfiguration();
-		}
-
-		$packageConfigurations[] = $this->rootPackageConfiguration;
-
-		return $packageConfigurations;
-	}
-
-	/**
-	 * Returns list of explicitly allowed packages, which are part of monorepo like they were really installed
-	 *
-	 * @return array<MonorepoSubpackage>
-	 */
-	public function getSimulatedPackages(): array
-	{
-		$loader = new ValidatingArrayLoader(new ArrayLoader());
-
-		$parentPackage = $this->rootPackageConfiguration->getPackage();
-		$parentPackageName = $parentPackage->getName();
-		$parentFullPath = $this->pathResolver->getAbsolutePath($parentPackage);
-
 		$packages = [];
 
-		foreach ($this->rootPackageConfiguration->getSchema()->getMonorepoPackages() as $module) {
-			$expectedName = $module->getName();
-
-			// Package exists, simulation not needed
-			if ($this->repository->findPackage($expectedName, new MatchAllConstraint()) !== null) {
-				continue;
-			}
-
-			$path = $module->getPath();
-
-			$directoryPath = $this->pathResolver->buildPathFromParts([
-				$parentFullPath,
-				$this->rootPackageConfiguration->getSchemaPath(),
-				$path,
-			]);
-			$composerFilePath = $this->pathResolver->buildPathFromParts([
-				$directoryPath,
-				'composer.json',
-			]);
-
-			if (!file_exists($composerFilePath)) {
-				if ($module->isOptional()) {
-					continue;
-				}
-
-				$message = Message::create()
-					->withContext(sprintf('Trying to setup simulated module `%s`.', $expectedName))
-					->withProblem(sprintf('Package is not installed and file `%s` was not found.', $composerFilePath))
-					->withSolution(
-						sprintf(
-							'Set correct relative path instead of `%s` to simulated module or mark it as optional.',
-							$path,
-						),
-					);
-
-				throw InvalidArgument::create()
-					->withMessage($message);
-			}
-
-			$config = JsonFile::parseJson(
-				file_get_contents($composerFilePath),
-				$composerFilePath,
-			) + ['version' => '999.999.999'];
-
-			$package = $loader->load($config, MonorepoSubpackage::class);
-			assert($package instanceof MonorepoSubpackage);
-			$packageName = $package->getName();
-
-			if ($expectedName !== $packageName) {
-				$message = Message::create()
-					->withContext('Trying to configure simulated package.')
-					->withProblem(sprintf(
-						'Path `%s` contains package `%s` while package `%s` was expected by configuration.',
-						$path,
-						$packageName,
-						$expectedName,
-					))
-					->withSolution(sprintf(
-						'Set correct path to `%s` or change expected package name to `%s`.',
-						$expectedName,
-						$packageName,
-					));
-
-				throw InvalidArgument::create()
-					->withMessage($message);
-			}
-
-			$package->setParentName($parentPackageName);
-			$package->setPackageDirectory($directoryPath);
-			$packages[] = $package;
+		foreach ($modules as $module) {
+			$packages[] = $module->getPackage();
 		}
+
+		$packages[] = $this->data->getRootPackage();
 
 		return $packages;
 	}
 
-	/**
-	 * Filter out packages with no orisai.neon and root package (which is handled separately)
-	 */
-	private function isApplicable(PackageInterface $package): bool
+	private function getPackageFromLink(Link $link): ?PackageData
 	{
-		static $cache = [];
-		$name = $package->getName();
-
-		return $cache[$name]
-			?? $cache[$name] = (file_exists(
-				$this->pathResolver->getSchemaFileFullName($package, Plugin::DEFAULT_FILE_NAME),
-			)
-				&& $package !== $this->rootPackageConfiguration->getPackage());
-	}
-
-	private function getPackageFromLink(Link $link): ?PackageInterface
-	{
-		static $cache = [];
-		$name = $link->getTarget();
-
-		return $cache[$name] ?? $cache[$name] = $this->repository->findPackage($name, new MatchAllConstraint());
+		return $this->data->getPackage($link->getTarget());
 	}
 
 	/**
-	 * @param array<PackageInterface> $packages
-	 * @param array<Module> $modules
+	 * @param array<PackageData> $packages
+	 * @param array<Module>      $modules
 	 * @return array<Module>
 	 */
 	private function packagesToModules(array $packages, array $modules): array
@@ -266,18 +104,16 @@ final class ModuleResolver
 	}
 
 	/**
-	 * @param array<mixed> $dependents
-	 * @return array<PackageInterface>
+	 * @param array<array{PackageData, array<mixed>|null}> $dependents
+	 * @return array<PackageData>
 	 */
 	private function flatten(array $dependents): array
 	{
 		$deps = [];
 
 		foreach ($dependents as $dependent) {
+			/** @var array<array{PackageData, array<mixed>|null}>|null $children */
 			[$package, $children] = $dependent;
-			assert($package instanceof PackageInterface);
-			assert(is_array($children) || $children === null);
-
 			$name = $package->getName();
 
 			if (!isset($deps[$name])) {
@@ -295,10 +131,10 @@ final class ModuleResolver
 	/**
 	 * Returns a list of packages causing the requested needle packages to be installed.
 	 *
-	 * @param string             $needle The package name to inspect.
-	 * @param array<PackageInterface> $packages
+	 * @param string             $needle        The package name to inspect.
+	 * @param array<PackageData> $packages
 	 * @param array<string>|null $packagesFound Used internally when recurring
-	 * @return array<array<mixed>> ['packageName' => [$package, $dependents|null]]
+	 * @return array<string, array{PackageData, array<mixed>|null}>
 	 */
 	private function getDependents(string $needle, array $packages, ?array $packagesFound = null): array
 	{
@@ -313,7 +149,7 @@ final class ModuleResolver
 		// Loop over all currently installed packages.
 		foreach ($packages as $package) {
 			// Skip non-module packages
-			if (!$this->isApplicable($package)) {
+			if (!$package instanceof InstallablePackageData || $package === $this->data->getRootPackage()) {
 				continue;
 			}
 
@@ -332,7 +168,10 @@ final class ModuleResolver
 			foreach ($devLinks as $key => $link) {
 				$resolvedDevPackage = $this->getPackageFromLink($link);
 
-				if ($resolvedDevPackage === null || !$this->isApplicable($resolvedDevPackage)) {
+				if (
+					!$resolvedDevPackage instanceof InstallablePackageData
+					|| $package === $this->data->getRootPackage()
+				) {
 					unset($devLinks[$key]);
 				}
 			}
@@ -343,15 +182,16 @@ final class ModuleResolver
 			foreach ($links as $link) {
 				if ($link->getTarget() === $needle) {
 					// already resolved this node's dependencies
-					if (in_array($link->getSource(), $packagesInTree, true)) {
-						$results[$link->getSource()] = [$package, null];
+					$source = $link->getSource();
+					if (in_array($source, $packagesInTree, true)) {
+						$results[$source] = [$package, null];
 
 						continue;
 					}
 
-					$packagesInTree[] = $link->getSource();
-					$dependents = $this->getDependents($link->getSource(), $packages, $packagesInTree);
-					$results[$link->getSource()] = [$package, $dependents];
+					$packagesInTree[] = $source;
+					$dependents = $this->getDependents($source, $packages, $packagesInTree);
+					$results[$source] = [$package, $dependents];
 				}
 			}
 		}

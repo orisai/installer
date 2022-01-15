@@ -2,17 +2,14 @@
 
 namespace Orisai\Installer\Loading;
 
-use Composer\Downloader\FilesystemException;
-use Composer\Repository\WritableRepositoryInterface;
-use Composer\Semver\Constraint\MatchAllConstraint;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile;
 use Orisai\Exceptions\Logic\InvalidArgument;
 use Orisai\Exceptions\Logic\InvalidState;
 use Orisai\Exceptions\Message;
-use Orisai\Installer\Config\ConfigValidator;
-use Orisai\Installer\Config\PackageConfig;
 use Orisai\Installer\Console\GenerateLoaderCommand;
+use Orisai\Installer\Data\InstallablePackageData;
+use Orisai\Installer\Data\InstallerData;
 use Orisai\Installer\Plugin;
 use Orisai\Installer\Resolving\ModuleResolver;
 use Orisai\Installer\Schema\ConfigFilePriority;
@@ -43,30 +40,16 @@ final class LoaderGenerator
 		LOADER_PROPERTY_MODULES_META = 'modulesMeta',
 		LOADER_PROPERTY_SWITCHES = 'switches';
 
-	private WritableRepositoryInterface $repository;
+	private InstallerData $data;
 
-	private PathResolver $pathResolver;
-
-	private ConfigValidator $validator;
-
-	private PackageConfig $rootPackageConfiguration;
-
-	public function __construct(
-		WritableRepositoryInterface $repository,
-		PathResolver $pathResolver,
-		ConfigValidator $validator,
-		PackageConfig $rootPackageConfiguration
-	)
+	public function __construct(InstallerData $data)
 	{
-		$this->repository = $repository;
-		$this->pathResolver = $pathResolver;
-		$this->validator = $validator;
-		$this->rootPackageConfiguration = $rootPackageConfiguration;
+		$this->data = $data;
 	}
 
 	public function generateLoader(): void
 	{
-		$loaderConfiguration = $this->rootPackageConfiguration->getSchema()->getLoader();
+		$loaderConfiguration = $this->data->getRootPackage()->getConfig()->getSchema()->getLoader();
 
 		if ($loaderConfiguration === null) {
 			throw InvalidState::create()
@@ -76,22 +59,17 @@ final class LoaderGenerator
 				));
 		}
 
-		$resolver = new ModuleResolver(
-			$this->repository,
-			$this->pathResolver,
-			$this->validator,
-			$this->rootPackageConfiguration,
-		);
+		$resolver = new ModuleResolver($this->data);
 
 		$this->generateClass($loaderConfiguration, $resolver->getResolvedConfigurations());
 	}
 
 	/**
-	 * @param array<PackageConfig> $packageConfigs
+	 * @param array<InstallablePackageData> $packages
 	 */
-	private function generateClass(LoaderSchema $loaderSchema, array $packageConfigs): void
+	private function generateClass(LoaderSchema $loaderSchema, array $packages): void
 	{
-		$switches = $this->getSwitches($packageConfigs);
+		$switches = $this->getSwitches($packages);
 
 		$modulesMeta = [];
 
@@ -101,14 +79,13 @@ final class LoaderGenerator
 			ConfigFilePriority::low()->name => [],
 		];
 
-		foreach ($packageConfigs as $packageConfig) {
-			$package = $packageConfig->getPackage();
+		foreach ($packages as $package) {
 			$packageName = $package->getName();
-			$packageDirRelative = $this->pathResolver->getRelativePath($package);
-			$packageSchema = $packageConfig->getSchema();
+			$packageDirRelative = $package->getRelativePath();
+			$packageSchema = $package->getConfig()->getSchema();
 
-			if ($packageName !== '__root__') {
-				$modulesMeta[$package->getName()] = [
+			if ($package !== $this->data->getRootPackage()) {
+				$modulesMeta[$packageName] = [
 					BaseLoader::META_ITEM_DIR => $packageDirRelative,
 				];
 			}
@@ -116,20 +93,20 @@ final class LoaderGenerator
 			foreach ($packageSchema->getConfigFiles() as $configFile) {
 				// Skip configuration if required package is not installed
 				foreach ($configFile->getRequiredPackages() as $requiredPackage) {
-					if ($this->repository->findPackage($requiredPackage, new MatchAllConstraint()) === null) {
+					if ($this->data->getPackage($requiredPackage) === null) {
 						continue 2;
 					}
 				}
 
 				$item = [
-					BaseLoader::SCHEMA_ITEM_FILE => $this->pathResolver->buildPathFromParts([
+					BaseLoader::SCHEMA_ITEM_FILE => PathResolver::buildPathFromParts([
 						$packageDirRelative,
-						$packageConfig->getSchemaPath(),
+						$package->getConfig()->getSchemaPath(),
 						$configFile->getFile(),
 					]),
 				];
 
-				$itemSwitches = $this->getConfigSwitches($configFile, $switches, $packageConfig);
+				$itemSwitches = $this->getConfigSwitches($configFile, $switches, $package);
 
 				if ($itemSwitches !== []) {
 					$item[BaseLoader::SCHEMA_ITEM_SWITCHES] = $itemSwitches;
@@ -166,14 +143,14 @@ final class LoaderGenerator
 	}
 
 	/**
-	 * @param array<int, PackageConfig> $configs
+	 * @param array<int, InstallablePackageData> $packages
 	 * @return array<string, bool>
 	 */
-	private function getSwitches(array $configs): array
+	private function getSwitches(array $packages): array
 	{
 		$switchesByPackage = [];
-		foreach ($configs as $config) {
-			$switchesByPackage[] = $config->getSchema()->getSwitches();
+		foreach ($packages as $package) {
+			$switchesByPackage[] = $package->getConfig()->getSchema()->getSwitches();
 		}
 
 		return array_merge(...$switchesByPackage);
@@ -186,7 +163,7 @@ final class LoaderGenerator
 	private function getConfigSwitches(
 		ConfigFileSchema $configFile,
 		array $switches,
-		PackageConfig $packageConfig
+		InstallablePackageData $package
 	): array
 	{
 		$itemSwitches = $configFile->getRequiredSwitchValues();
@@ -198,8 +175,8 @@ final class LoaderGenerator
 						'Trying to use switch `%s` for config file `%s` defined in `%s` of package `%s`.',
 						$itemSwitchName,
 						$configFile->getFile(),
-						$packageConfig->getSchemaFile(),
-						$packageConfig->getPackage()->getName(),
+						$package->getConfig()->getSchemaFile(),
+						$package->getName(),
 					))
 					->withProblem(sprintf(
 						'Switch is not defined by any of previously loaded `%s` schema files.',
@@ -260,9 +237,9 @@ final class LoaderGenerator
 
 	private function getFilePath(LoaderSchema $schema): string
 	{
-		return $this->pathResolver->buildPathFromParts([
-			$this->pathResolver->getRootDir(),
-			$this->rootPackageConfiguration->getSchemaPath(),
+		return PathResolver::buildPathFromParts([
+			$this->data->getRootDir(),
+			$this->data->getRootPackage()->getConfig()->getSchemaPath(),
 			$schema->getFile(),
 		]);
 	}
@@ -319,9 +296,8 @@ final class LoaderGenerator
 		$written = file_put_contents($path, (string) $file);
 
 		if ($written === false) {
-			throw new FilesystemException(
-				'An error occurred during writing of modules config file.',
-			);
+			throw InvalidState::create()
+				->withMessage('An error occurred during writing of modules config file.');
 		}
 	}
 

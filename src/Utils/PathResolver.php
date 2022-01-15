@@ -4,7 +4,6 @@ namespace Orisai\Installer\Utils;
 
 use Composer\Composer;
 use Composer\Package\PackageInterface;
-use Orisai\Installer\Monorepo\MonorepoSubpackage;
 use function dirname;
 use function file_exists;
 use function implode;
@@ -32,10 +31,6 @@ final class PathResolver
 	{
 		if ($package === $this->composer->getPackage()) {
 			return $this->getRootDir();
-		}
-
-		if ($package instanceof MonorepoSubpackage) {
-			return $package->getPackageDirectory();
 		}
 
 		return $this->composer->getInstallationManager()->getInstallPath($package);
@@ -73,7 +68,7 @@ final class PathResolver
 	/**
 	 * @param array<mixed> $parts
 	 */
-	public function buildPathFromParts(array $parts): string
+	public static function buildPathFromParts(array $parts): string
 	{
 		$paths = [];
 
