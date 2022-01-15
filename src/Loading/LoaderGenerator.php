@@ -4,6 +4,7 @@ namespace Orisai\Installer\Loading;
 
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile;
+use Nette\Utils\FileSystem;
 use Orisai\Exceptions\Logic\InvalidArgument;
 use Orisai\Exceptions\Logic\InvalidState;
 use Orisai\Exceptions\Message;
@@ -21,7 +22,6 @@ use ReflectionClass;
 use function array_keys;
 use function array_merge;
 use function class_exists;
-use function file_put_contents;
 use function implode;
 use function is_subclass_of;
 use function sprintf;
@@ -293,12 +293,7 @@ final class LoaderGenerator
 
 	private function writeFile(string $path, PhpFile $file): void
 	{
-		$written = file_put_contents($path, (string) $file);
-
-		if ($written === false) {
-			throw InvalidState::create()
-				->withMessage('An error occurred during writing of modules config file.');
-		}
+		FileSystem::write($path, (string) $file);
 	}
 
 }
