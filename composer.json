@@ -25,6 +25,7 @@
 		"nette/php-generator": "^3.4.0",
 		"orisai/exceptions": "^1.0.0",
 		"orisai/nette-di": "^1.0.0",
+		"symfony/filesystem": "^5.3.0",
 		"symfony/polyfill-php80": "^1.24.0"
 	},
 	"require-dev": {

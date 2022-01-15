@@ -16,9 +16,9 @@ use Orisai\Installer\Resolving\ModuleResolver;
 use Orisai\Installer\Schema\ConfigFilePriority;
 use Orisai\Installer\Schema\ConfigFileSchema;
 use Orisai\Installer\Schema\LoaderSchema;
-use Orisai\Installer\Utils\PathResolver;
 use Orisai\Installer\Utils\PluginActivator;
 use ReflectionClass;
+use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function array_merge;
 use function class_exists;
@@ -99,11 +99,10 @@ final class LoaderGenerator
 				}
 
 				$item = [
-					BaseLoader::SCHEMA_ITEM_FILE => PathResolver::buildPathFromParts([
-						$packageDirRelative,
-						$package->getConfig()->getSchemaPath(),
+					BaseLoader::SCHEMA_ITEM_FILE => Path::makeRelative(
 						$configFile->getFile(),
-					]),
+						$this->data->getRootDir(),
+					),
 				];
 
 				$itemSwitches = $this->getConfigSwitches($configFile, $switches, $package);
@@ -174,7 +173,10 @@ final class LoaderGenerator
 					->withContext(sprintf(
 						'Trying to use switch `%s` for config file `%s` defined in `%s` of package `%s`.',
 						$itemSwitchName,
-						$configFile->getFile(),
+						Path::makeRelative(
+							$configFile->getFile(),
+							$this->data->getRootDir(),
+						),
 						$package->getConfig()->getSchemaFile(),
 						$package->getName(),
 					))
