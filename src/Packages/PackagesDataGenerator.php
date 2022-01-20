@@ -3,10 +3,13 @@
 namespace Orisai\Installer\Packages;
 
 use Composer\Composer;
+use Composer\Installer\InstallationManager;
 use Composer\Package\Link;
 use Composer\Package\PackageInterface;
 use function array_map;
-use function dirname;
+use function assert;
+use function getcwd;
+use function is_string;
 use function ltrim;
 use function strlen;
 use function substr;
@@ -19,25 +22,25 @@ final class PackagesDataGenerator
 
 	private Composer $composer;
 
-	private string $rootDir;
+	private InstallationManager $installationManager;
 
 	public function __construct(Composer $composer)
 	{
 		$this->composer = $composer;
-		$this->rootDir = dirname($composer->getConfig()->get('vendor-dir'));
+		$this->installationManager = $composer->getInstallationManager();
 	}
 
 	public function generate(): PackagesData
 	{
-		$rootPackageData = $this->packageToData(
-			$this->composer->getPackage(),
-		);
+		$rootPackage = $this->composer->getPackage();
+		$rootDir = $this->getAbsolutePath($rootPackage);
+		$rootPackageData = $this->packageToData($rootPackage, $rootDir);
 
-		$data = new PackagesData($this->rootDir, $rootPackageData);
+		$data = new PackagesData($rootPackageData);
 
 		$repository = $this->composer->getRepositoryManager()->getLocalRepository();
 		foreach ($repository->getCanonicalPackages() as $package) {
-			$data->addPackage($this->packageToData($package));
+			$data->addPackage($this->packageToData($package, $rootDir));
 		}
 
 		PackagesDataStorage::save($data);
@@ -45,15 +48,15 @@ final class PackagesDataGenerator
 		return $data;
 	}
 
-	private function packageToData(PackageInterface $package): PackageData
+	private function packageToData(PackageInterface $package, string $rootDir): PackageData
 	{
 		return new PackageData(
 			$package->getName(),
 			$this->convertLinks($package->getRequires()),
 			$this->convertLinks($package->getDevRequires()),
 			$this->convertLinks($package->getReplaces()),
-			$this->getRelativePath($package),
-			$this->getAbsolutePath($package),
+			$absolutePath = $this->getAbsolutePath($package),
+			$this->getRelativePath($absolutePath, $rootDir),
 		);
 	}
 
@@ -72,15 +75,18 @@ final class PackagesDataGenerator
 	private function getAbsolutePath(PackageInterface $package): string
 	{
 		if ($package === $this->composer->getPackage()) {
-			return $this->rootDir;
+			$cwd = getcwd();
+			assert(is_string($cwd));
+
+			return $cwd;
 		}
 
-		return $this->composer->getInstallationManager()->getInstallPath($package);
+		return $this->installationManager->getInstallPath($package);
 	}
 
-	private function getRelativePath(PackageInterface $package): string
+	private function getRelativePath(string $absolutePath, string $rootDir): string
 	{
-		return ltrim(substr($this->getAbsolutePath($package), strlen($this->rootDir)), '/');
+		return ltrim(substr($absolutePath, strlen($rootDir)), '/');
 	}
 
 }

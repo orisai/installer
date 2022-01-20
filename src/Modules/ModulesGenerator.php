@@ -41,7 +41,6 @@ final class ModulesGenerator
 		$modules[$rootPackage->getName()] = $rootModule;
 
 		return new Modules(
-			$data->getRootDir(),
 			$rootModule,
 			$this->sorter->getSortedModules($modules, $data),
 		);

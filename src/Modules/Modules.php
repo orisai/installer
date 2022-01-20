@@ -8,8 +8,6 @@ namespace Orisai\Installer\Modules;
 final class Modules
 {
 
-	private string $rootDir;
-
 	private Module $rootModule;
 
 	/** @var array<string, Module> */
@@ -18,16 +16,10 @@ final class Modules
 	/**
 	 * @param array<string, Module> $modules
 	 */
-	public function __construct(string $rootDir, Module $rootModule, array $modules)
+	public function __construct(Module $rootModule, array $modules)
 	{
-		$this->rootDir = $rootDir;
 		$this->rootModule = $rootModule;
 		$this->modules = $modules;
-	}
-
-	public function getRootDir(): string
-	{
-		return $this->rootDir;
 	}
 
 	public function getRootModule(): Module

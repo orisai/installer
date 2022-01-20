@@ -8,23 +8,15 @@ namespace Orisai\Installer\Packages;
 final class PackagesData
 {
 
-	private string $rootDir;
-
 	private PackageData $rootPackage;
 
 	/** @var array<string, PackageData> */
 	private array $packages = [];
 
-	public function __construct(string $rootDir, PackageData $rootPackage)
+	public function __construct(PackageData $rootPackage)
 	{
-		$this->rootDir = $rootDir;
 		$this->rootPackage = $rootPackage;
 		$this->addPackage($rootPackage);
-	}
-
-	public function getRootDir(): string
-	{
-		return $this->rootDir;
 	}
 
 	public function getRootPackage(): PackageData

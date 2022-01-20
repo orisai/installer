@@ -88,7 +88,7 @@ final class LoaderGenerator
 				$item = [
 					BaseLoader::SCHEMA_ITEM_FILE => Path::makeRelative(
 						$configFile->getFile(),
-						$this->modules->getRootDir(),
+						$this->modules->getRootModule()->getData()->getAbsolutePath(),
 					),
 				];
 
@@ -163,7 +163,7 @@ final class LoaderGenerator
 						$itemSwitchName,
 						Path::makeRelative(
 							$configFile->getFile(),
-							$this->modules->getRootDir(),
+							$this->modules->getRootModule()->getData()->getAbsolutePath(),
 						),
 						$module->getSchemaRelativeName(),
 						$package->getName(),

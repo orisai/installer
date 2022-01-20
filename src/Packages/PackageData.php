@@ -19,9 +19,9 @@ final class PackageData
 	/** @var array<PackageLink> */
 	private array $replaces;
 
-	private string $relativePath;
-
 	private string $absolutePath;
+
+	private string $relativePath;
 
 	/**
 	 * @param array<PackageLink> $requires
@@ -33,16 +33,16 @@ final class PackageData
 		array $requires,
 		array $devRequires,
 		array $replaces,
-		string $relativePath,
-		string $absolutePath
+		string $absolutePath,
+		string $relativePath
 	)
 	{
 		$this->name = $name;
 		$this->requires = $requires;
 		$this->devRequires = $devRequires;
 		$this->replaces = $replaces;
-		$this->relativePath = $relativePath;
 		$this->absolutePath = $absolutePath;
+		$this->relativePath = $relativePath;
 	}
 
 	public function getName(): string
@@ -74,14 +74,14 @@ final class PackageData
 		return $this->replaces;
 	}
 
-	public function getRelativePath(): string
-	{
-		return $this->relativePath;
-	}
-
 	public function getAbsolutePath(): string
 	{
 		return $this->absolutePath;
+	}
+
+	public function getRelativePath(): string
+	{
+		return $this->relativePath;
 	}
 
 }
