@@ -4,17 +4,15 @@ namespace Orisai\Installer\Console;
 
 use Orisai\Exceptions\Logic\InvalidState;
 use Orisai\Exceptions\Message;
-use Orisai\Installer\Config\ConfigValidator;
-use Orisai\Installer\Data\InstallerDataGenerator;
-use Orisai\Installer\Loading\LoaderGenerator;
-use Orisai\Installer\Utils\PathResolver;
-use Orisai\Installer\Utils\PluginActivator;
+use Orisai\Installer\Loader\LoaderGenerator;
+use Orisai\Installer\Modules\ModulesGenerator;
+use Orisai\Installer\Packages\PackagesDataStorage;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use function assert;
+use function file_exists;
 use function is_string;
-use function sprintf;
 
 /**
  * @internal
@@ -37,45 +35,29 @@ final class GenerateLoaderCommand extends BaseInstallerCommand
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
-		$composer = $this->getComposer();
-		assert($composer !== null);
+		$schemaRelativeName = $input->getOption(self::OPTION_FILE);
+		assert(is_string($schemaRelativeName));
 
-		$fileName = $input->getOption(self::OPTION_FILE);
-		assert(is_string($fileName));
+		$data = PackagesDataStorage::load();
+		$rootPackage = $data->getRootPackage();
 
-		$pathResolver = new PathResolver($composer);
-		$validator = new ConfigValidator($pathResolver);
-		$rootPackage = $composer->getPackage();
-		$activator = new PluginActivator(
-			$rootPackage,
-			$validator,
-			$pathResolver,
-			$fileName,
-		);
-
-		if (!$activator->isEnabled()) {
+		$schemaFqn = "{$rootPackage->getAbsolutePath()}/$schemaRelativeName";
+		if (!file_exists($schemaFqn)) {
 			$message = Message::create()
-				->withContext('Trying to generate module loader.')
-				->withProblem(sprintf('`%s` option `loader` is not configured.', $fileName))
-				->withSolution(sprintf('Add `loader` option to `%s`', $fileName));
+				->withContext("Trying to generate module loader for package {$rootPackage->getName()}.")
+				->withProblem("File $schemaRelativeName does not exist in this package.")
+				->withSolution('Use name of an existing file.');
 
 			throw InvalidState::create()
 				->withMessage($message);
 		}
 
-		$dataGenerator = new InstallerDataGenerator(
-			$composer->getRepositoryManager()->getLocalRepository(),
-			$validator,
-			$pathResolver,
-		);
+		$modulesGenerator = new ModulesGenerator();
+		$modules = $modulesGenerator->generate($data, $schemaRelativeName);
 
-		$rootConfig = $activator->getRootPackageConfiguration();
-
-		$loaderGenerator = new LoaderGenerator(
-			$dataGenerator->generate($rootPackage, $rootConfig),
-		);
-
+		$loaderGenerator = new LoaderGenerator($modules);
 		$loaderGenerator->generateLoader();
+
 		$io = new SymfonyStyle($input, $output);
 		$io->success('Modules loader successfully generated');
 

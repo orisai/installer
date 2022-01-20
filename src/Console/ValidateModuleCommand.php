@@ -2,16 +2,18 @@
 
 namespace Orisai\Installer\Console;
 
-use Composer\Semver\Constraint\MatchAllConstraint;
 use LogicException;
-use Orisai\Installer\Config\ConfigValidator;
+use Orisai\Exceptions\Logic\InvalidState;
+use Orisai\Exceptions\Message;
+use Orisai\Installer\Modules\ModuleSchemaValidator;
+use Orisai\Installer\Packages\PackagesDataStorage;
 use Orisai\Installer\Plugin;
-use Orisai\Installer\Utils\PathResolver;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use function assert;
+use function file_exists;
 use function is_string;
 use function sprintf;
 
@@ -45,32 +47,39 @@ final class ValidateModuleCommand extends BaseInstallerCommand
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
-		$composer = $this->getComposer();
-		assert($composer !== null);
+		$schemaRelativeName = $input->getOption(self::OPTION_FILE);
+		assert(is_string($schemaRelativeName));
 
-		$fileName = $input->getOption(self::OPTION_FILE);
-		assert(is_string($fileName));
+		$data = PackagesDataStorage::load();
 
-		$pathResolver = new PathResolver($composer);
-		$validator = new ConfigValidator($pathResolver);
-		$io = new SymfonyStyle($input, $output);
-
-		if (($packageName = $input->getOption(self::OPTION_PACKAGE)) !== null) {
-			assert(is_string($packageName));
-			$package = $composer->getRepositoryManager()->getLocalRepository()->findPackage(
-				$packageName,
-				new MatchAllConstraint(),
-			);
+		$packageName = $input->getOption(self::OPTION_PACKAGE);
+		assert(is_string($packageName) || $packageName === null);
+		if ($packageName === null) {
+			$package = $data->getRootPackage();
+		} else {
+			$package = $data->getPackage($packageName);
 
 			if ($package === null) {
 				throw new LogicException(sprintf('Package \'%s\' does not exists', $packageName));
 			}
-		} else {
-			$package = $composer->getPackage();
 		}
 
-		$validator->validateConfiguration($package, $fileName);
-		$io->success(sprintf('%s successfully validated', $fileName));
+		$schemaFqn = "{$package->getAbsolutePath()}/$schemaRelativeName";
+		if (!file_exists($schemaFqn)) {
+			$message = Message::create()
+				->withContext("Trying to validate module schema for package $packageName.")
+				->withProblem("File $schemaRelativeName does not exist in this package.")
+				->withSolution('Use name of an existing file.');
+
+			throw InvalidState::create()
+				->withMessage($message);
+		}
+
+		$validator = new ModuleSchemaValidator();
+		$validator->validate($package, $schemaFqn, $schemaRelativeName);
+
+		$io = new SymfonyStyle($input, $output);
+		$io->success(sprintf('%s successfully validated', $schemaRelativeName));
 
 		return 0;
 	}

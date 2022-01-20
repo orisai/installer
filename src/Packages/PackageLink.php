@@ -1,11 +1,11 @@
 <?php declare(strict_types = 1);
 
-namespace Orisai\Installer\Resolving;
+namespace Orisai\Installer\Packages;
 
 /**
  * @internal
  */
-final class Link
+final class PackageLink
 {
 
 	private string $source;

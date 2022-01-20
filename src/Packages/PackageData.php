@@ -1,0 +1,87 @@
+<?php declare(strict_types = 1);
+
+namespace Orisai\Installer\Packages;
+
+/**
+ * @internal
+ */
+final class PackageData
+{
+
+	private string $name;
+
+	/** @var array<PackageLink> */
+	private array $requires;
+
+	/** @var array<PackageLink> */
+	private array $devRequires;
+
+	/** @var array<PackageLink> */
+	private array $replaces;
+
+	private string $relativePath;
+
+	private string $absolutePath;
+
+	/**
+	 * @param array<PackageLink> $requires
+	 * @param array<PackageLink> $devRequires
+	 * @param array<PackageLink> $replaces
+	 */
+	public function __construct(
+		string $name,
+		array $requires,
+		array $devRequires,
+		array $replaces,
+		string $relativePath,
+		string $absolutePath
+	)
+	{
+		$this->name = $name;
+		$this->requires = $requires;
+		$this->devRequires = $devRequires;
+		$this->replaces = $replaces;
+		$this->relativePath = $relativePath;
+		$this->absolutePath = $absolutePath;
+	}
+
+	public function getName(): string
+	{
+		return $this->name;
+	}
+
+	/**
+	 * @return array<PackageLink>
+	 */
+	public function getRequires(): array
+	{
+		return $this->requires;
+	}
+
+	/**
+	 * @return array<PackageLink>
+	 */
+	public function getDevRequires(): array
+	{
+		return $this->devRequires;
+	}
+
+	/**
+	 * @return array<PackageLink>
+	 */
+	public function getReplaces(): array
+	{
+		return $this->replaces;
+	}
+
+	public function getRelativePath(): string
+	{
+		return $this->relativePath;
+	}
+
+	public function getAbsolutePath(): string
+	{
+		return $this->absolutePath;
+	}
+
+}

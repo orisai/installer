@@ -2,7 +2,7 @@
 
 namespace Orisai\Installer\Schema;
 
-final class MonorepoSubpackageSchema
+final class SubmoduleSchema
 {
 
 	private string $name;

@@ -1,10 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace Orisai\Installer\Resolving;
+namespace Orisai\Installer\Modules;
 
-use Orisai\Installer\Data\InstallablePackageData;
-use Orisai\Installer\Data\InstallerData;
-use Orisai\Installer\Data\PackageData;
+use Orisai\Installer\Packages\PackageData;
+use Orisai\Installer\Packages\PackageLink;
+use Orisai\Installer\Packages\PackagesData;
 use function in_array;
 use function ksort;
 use function strtolower;
@@ -13,36 +13,20 @@ use function uasort;
 /**
  * @internal
  */
-final class ModuleResolver
+final class ModuleSorter
 {
 
-	private InstallerData $data;
-
-	public function __construct(InstallerData $data)
-	{
-		$this->data = $data;
-	}
-
 	/**
-	 * @return array<InstallablePackageData>
+	 * @param array<string, Module> $modules
+	 * @return array<string, Module>
 	 */
-	public function getResolvedPackages(): array
+	public function getSortedModules(array $modules, PackagesData $data): array
 	{
-		$modules = [];
-
-		foreach ($this->data->getPackages() as $package) {
-			if (!$package instanceof InstallablePackageData || $package === $this->data->getRootPackage()) {
-				continue;
-			}
-
-			$modules[$package->getName()] = new Module($package);
-		}
-
 		foreach ($modules as $module) {
 			$module->setDependents(
 				$this->packagesToModules(
 					$this->flatten(
-						$this->getDependents($module->getPackage()->getName(), $this->data->getPackages()),
+						$this->getDependents($modules, $data, $module->getData()->getName(), $data->getPackages()),
 					),
 					$modules,
 				),
@@ -51,10 +35,10 @@ final class ModuleResolver
 
 		uasort($modules, static function (Module $m1, Module $m2) {
 			$d1 = $m1->getDependents();
-			$n1 = $m1->getPackage()->getName();
+			$n1 = $m1->getData()->getName();
 
 			$d2 = $m2->getDependents();
-			$n2 = $m2->getPackage()->getName();
+			$n2 = $m2->getData()->getName();
 
 			// Cyclical dependency, ignore
 			if (isset($d1[$n2], $d2[$n1])) {
@@ -68,26 +52,18 @@ final class ModuleResolver
 			return 1;
 		});
 
-		$packages = [];
-
-		foreach ($modules as $module) {
-			$packages[] = $module->getPackage();
-		}
-
-		$packages[] = $this->data->getRootPackage();
-
-		return $packages;
+		return $modules;
 	}
 
-	private function getPackageFromLink(Link $link): ?PackageData
+	private function getPackageFromLink(PackageLink $link, PackagesData $data): ?PackageData
 	{
-		return $this->data->getPackage($link->getTarget());
+		return $data->getPackage($link->getTarget());
 	}
 
 	/**
-	 * @param array<PackageData> $packages
-	 * @param array<Module>      $modules
-	 * @return array<Module>
+	 * @param array<string, PackageData> $packages
+	 * @param array<string, Module>      $modules
+	 * @return array<string, Module>
 	 */
 	private function packagesToModules(array $packages, array $modules): array
 	{
@@ -131,12 +107,19 @@ final class ModuleResolver
 	/**
 	 * Returns a list of packages causing the requested needle packages to be installed.
 	 *
-	 * @param string             $needle        The package name to inspect.
-	 * @param array<PackageData> $packages
-	 * @param array<string>|null $packagesFound Used internally when recurring
+	 * @param array<string, Module> $modules
+	 * @param string                $needle        The package name to inspect.
+	 * @param array<PackageData>    $packages
+	 * @param array<string>|null    $packagesFound Used internally when recurring
 	 * @return array<string, array{PackageData, array<mixed>|null}>
 	 */
-	private function getDependents(string $needle, array $packages, ?array $packagesFound = null): array
+	private function getDependents(
+		array $modules,
+		PackagesData $data,
+		string $needle,
+		array $packages,
+		?array $packagesFound = null
+	): array
 	{
 		$needle = strtolower($needle);
 		$results = [];
@@ -149,7 +132,7 @@ final class ModuleResolver
 		// Loop over all currently installed packages.
 		foreach ($packages as $package) {
 			// Skip non-module packages
-			if (!$package instanceof InstallablePackageData || $package === $this->data->getRootPackage()) {
+			if (!isset($modules[$package->getName()])) {
 				continue;
 			}
 
@@ -166,12 +149,9 @@ final class ModuleResolver
 			$devLinks = $package->getDevRequires();
 
 			foreach ($devLinks as $key => $link) {
-				$resolvedDevPackage = $this->getPackageFromLink($link);
+				$resolvedDevPackage = $this->getPackageFromLink($link, $data);
 
-				if (
-					!$resolvedDevPackage instanceof InstallablePackageData
-					|| $package === $this->data->getRootPackage()
-				) {
+				if ($resolvedDevPackage === null || !isset($modules[$resolvedDevPackage->getName()])) {
 					unset($devLinks[$key]);
 				}
 			}
@@ -190,7 +170,7 @@ final class ModuleResolver
 					}
 
 					$packagesInTree[] = $source;
-					$dependents = $this->getDependents($source, $packages, $packagesInTree);
+					$dependents = $this->getDependents($modules, $data, $source, $packages, $packagesInTree);
 					$results[$source] = [$package, $dependents];
 				}
 			}

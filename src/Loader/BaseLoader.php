@@ -1,9 +1,10 @@
 <?php declare(strict_types = 1);
 
-namespace Orisai\Installer\Loading;
+namespace Orisai\Installer\Loader;
 
 use Orisai\Exceptions\Logic\InvalidArgument;
 use Orisai\Exceptions\Message;
+use Orisai\Installer\SchemaName;
 use function array_keys;
 use function implode;
 use function sprintf;
@@ -57,7 +58,7 @@ abstract class BaseLoader
 		if ($failOnMissing && !isset($this->switches[$switch])) {
 			$message = Message::create()
 				->withContext(sprintf('Trying to set value of switch `%s`.', $switch))
-				->withProblem(sprintf('Switch is not defined by any of loaded `%s`.', 'orisai.php'))
+				->withProblem(sprintf('Switch is not defined by any of loaded `%s`.', SchemaName::DEFAULT_NAME))
 				->withSolution(sprintf(
 					'Do not configure switch or choose one of available: `%s`',
 					implode(', ', array_keys($this->switches)),

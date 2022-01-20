@@ -22,9 +22,9 @@ composer require orisai/installer
 
 ```php
 use Orisai\Installer\Schema\ConfigFilePriority;
-use Orisai\Installer\Schema\PackageSchema;
+use Orisai\Installer\Schema\ModuleSchema;
 
-$schema = new PackageSchema();
+$schema = new ModuleSchema();
 
 // generated code with all packages and their configs
 // root-only
@@ -51,7 +51,7 @@ $schema->addSwitch('httpsOnly', false);
 // packages which are part of monorepo are not really considered installed in monorepo
 // this simulates their existence for purpose of in-monorepo development
 // root-only
-$schema->addMonorepoPackage('vendor/package', __DIR__ . '/packages/submodule-a')
+$schema->addSubmodule('vendor/package', __DIR__ . '/packages/submodule-a')
 	->setOptional(false);
 
 return $schema;

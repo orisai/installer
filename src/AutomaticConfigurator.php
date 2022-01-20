@@ -3,7 +3,7 @@
 namespace Orisai\Installer;
 
 use OriNette\DI\Boot\BaseConfigurator;
-use Orisai\Installer\Loading\BaseLoader;
+use Orisai\Installer\Loader\BaseLoader;
 
 final class AutomaticConfigurator extends BaseConfigurator
 {

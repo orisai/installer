@@ -2,15 +2,15 @@
 
 namespace Tests\Orisai\Installer\Unit\Schema;
 
-use Orisai\Installer\Schema\MonorepoSubpackageSchema;
+use Orisai\Installer\Schema\SubmoduleSchema;
 use PHPUnit\Framework\TestCase;
 
-final class MonorepoSubpackageSchemaTest extends TestCase
+final class SubmoduleSchemaTest extends TestCase
 {
 
 	public function test(): void
 	{
-		$schema = new MonorepoSubpackageSchema(
+		$schema = new SubmoduleSchema(
 			$name = 'foo/bar',
 			$path = __DIR__ . '/foo',
 		);

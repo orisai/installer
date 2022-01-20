@@ -12,12 +12,11 @@ use Composer\Plugin\Capable;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
-use Orisai\Installer\Config\ConfigValidator;
 use Orisai\Installer\Console\CommandProvider;
-use Orisai\Installer\Data\InstallerDataGenerator;
-use Orisai\Installer\Loading\LoaderGenerator;
-use Orisai\Installer\Utils\PathResolver;
-use Orisai\Installer\Utils\PluginActivator;
+use Orisai\Installer\Loader\LoaderGenerator;
+use Orisai\Installer\Modules\ModulesGenerator;
+use Orisai\Installer\Packages\PackagesDataGenerator;
+use function file_exists;
 
 /**
  * @internal
@@ -81,32 +80,20 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 
 	private function generateLoader(Composer $composer): void
 	{
-		$pathResolver = new PathResolver($composer);
-		$validator = new ConfigValidator($pathResolver);
-		$rootPackage = $composer->getPackage();
-		$activator = new PluginActivator(
-			$rootPackage,
-			$validator,
-			$pathResolver,
-			self::DEFAULT_FILE_NAME,
-		);
+		$dataGenerator = new PackagesDataGenerator($composer);
+		$data = $dataGenerator->generate();
+		$rootPackage = $data->getRootPackage();
 
-		if (!$activator->isEnabled()) {
+		$schemaRelativeName = SchemaName::DEFAULT_NAME;
+		$schemaFqn = "{$rootPackage->getAbsolutePath()}/$schemaRelativeName";
+		if (!file_exists($schemaFqn)) {
 			return;
 		}
 
-		$dataGenerator = new InstallerDataGenerator(
-			$composer->getRepositoryManager()->getLocalRepository(),
-			$validator,
-			$pathResolver,
-		);
+		$modulesGenerator = new ModulesGenerator();
+		$modules = $modulesGenerator->generate($data, $schemaRelativeName);
 
-		$rootConfig = $activator->getRootPackageConfiguration();
-
-		$loaderGenerator = new LoaderGenerator(
-			$dataGenerator->generate($rootPackage, $rootConfig),
-		);
-
+		$loaderGenerator = new LoaderGenerator($modules);
 		$loaderGenerator->generateLoader();
 	}
 

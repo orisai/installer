@@ -1,21 +1,21 @@
 <?php declare(strict_types = 1);
 
-namespace Orisai\Installer\Data;
+namespace Orisai\Installer\Packages;
 
 /**
  * @internal
  */
-final class InstallerData
+final class PackagesData
 {
 
 	private string $rootDir;
 
-	private InstallablePackageData $rootPackage;
+	private PackageData $rootPackage;
 
 	/** @var array<string, PackageData> */
 	private array $packages = [];
 
-	public function __construct(string $rootDir, InstallablePackageData $rootPackage)
+	public function __construct(string $rootDir, PackageData $rootPackage)
 	{
 		$this->rootDir = $rootDir;
 		$this->rootPackage = $rootPackage;
@@ -27,7 +27,7 @@ final class InstallerData
 		return $this->rootDir;
 	}
 
-	public function getRootPackage(): InstallablePackageData
+	public function getRootPackage(): PackageData
 	{
 		return $this->rootPackage;
 	}

@@ -2,7 +2,7 @@
 
 namespace Orisai\Installer\Schema;
 
-final class PackageSchema
+final class ModuleSchema
 {
 
 	private ?LoaderSchema $loader = null;
@@ -13,7 +13,7 @@ final class PackageSchema
 	/** @var array<string, bool> */
 	private array $switches = [];
 
-	/** @var array<int, MonorepoSubpackageSchema> */
+	/** @var array<int, SubmoduleSchema> */
 	private array $monorepoPackages = [];
 
 	public function setLoader(string $file, string $class): void
@@ -31,9 +31,9 @@ final class PackageSchema
 		$this->switches[$name] = $defaultValue;
 	}
 
-	public function addMonorepoPackage(string $name, string $path): MonorepoSubpackageSchema
+	public function addSubmodule(string $name, string $path): SubmoduleSchema
 	{
-		return $this->monorepoPackages[] = new MonorepoSubpackageSchema($name, $path);
+		return $this->monorepoPackages[] = new SubmoduleSchema($name, $path);
 	}
 
 	/**
@@ -65,11 +65,11 @@ final class PackageSchema
 	}
 
 	/**
-	 * @return array<int, MonorepoSubpackageSchema>
+	 * @return array<int, SubmoduleSchema>
 	 *
 	 * @internal
 	 */
-	public function getMonorepoPackages(): array
+	public function getMonorepoSubmodules(): array
 	{
 		return $this->monorepoPackages;
 	}

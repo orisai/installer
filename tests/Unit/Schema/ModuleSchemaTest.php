@@ -2,19 +2,19 @@
 
 namespace Tests\Orisai\Installer\Unit\Schema;
 
-use Orisai\Installer\Schema\PackageSchema;
+use Orisai\Installer\Schema\ModuleSchema;
 use PHPUnit\Framework\TestCase;
 
-final class PackageSchemaTest extends TestCase
+final class ModuleSchemaTest extends TestCase
 {
 
 	public function test(): void
 	{
-		$schema = new PackageSchema();
+		$schema = new ModuleSchema();
 
 		self::assertNull($schema->getLoader());
 		$schema->setLoader(
-			$loaderFile = __DIR__ . '/PackageSchemaTest.php',
+			$loaderFile = __DIR__ . '/ModuleSchemaTest.php',
 			$loaderClass = self::class,
 		);
 		self::assertSame($loaderFile, $schema->getLoader()->getFile());
@@ -42,15 +42,15 @@ final class PackageSchemaTest extends TestCase
 			$schema->getSwitches(),
 		);
 
-		self::assertSame([], $schema->getMonorepoPackages());
-		$subpackage1 = $schema->addMonorepoPackage('vendor/foo', __DIR__ . '/packages/foo');
-		$subpackage2 = $schema->addMonorepoPackage('vendor/bar', __DIR__ . '/packages/bar');
+		self::assertSame([], $schema->getMonorepoSubmodules());
+		$submodule1 = $schema->addSubmodule('vendor/foo', __DIR__ . '/packages/foo');
+		$submodule2 = $schema->addSubmodule('vendor/bar', __DIR__ . '/packages/bar');
 		self::assertSame(
 			[
-				$subpackage1,
-				$subpackage2,
+				$submodule1,
+				$submodule2,
 			],
-			$schema->getMonorepoPackages(),
+			$schema->getMonorepoSubmodules(),
 		);
 	}
 

@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-namespace Orisai\Installer\Loading;
+namespace Orisai\Installer\Loader;
 
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile;
@@ -9,10 +9,9 @@ use Orisai\Exceptions\Logic\InvalidArgument;
 use Orisai\Exceptions\Logic\InvalidState;
 use Orisai\Exceptions\Message;
 use Orisai\Installer\Console\GenerateLoaderCommand;
-use Orisai\Installer\Data\InstallablePackageData;
-use Orisai\Installer\Data\InstallerData;
+use Orisai\Installer\Modules\Module;
+use Orisai\Installer\Modules\Modules;
 use Orisai\Installer\Plugin;
-use Orisai\Installer\Resolving\ModuleResolver;
 use Orisai\Installer\Schema\ConfigFilePriority;
 use Orisai\Installer\Schema\ConfigFileSchema;
 use Orisai\Installer\Schema\LoaderSchema;
@@ -38,16 +37,16 @@ final class LoaderGenerator
 		LOADER_PROPERTY_MODULES_META = 'modulesMeta',
 		LOADER_PROPERTY_SWITCHES = 'switches';
 
-	private InstallerData $data;
+	private Modules $modules;
 
-	public function __construct(InstallerData $data)
+	public function __construct(Modules $modules)
 	{
-		$this->data = $data;
+		$this->modules = $modules;
 	}
 
 	public function generateLoader(): void
 	{
-		$loaderSchema = $this->data->getRootPackage()->getConfig()->getSchema()->getLoader();
+		$loaderSchema = $this->modules->getRootModule()->getSchema()->getLoader();
 
 		if ($loaderSchema === null) {
 			$loaderSchema = new LoaderSchema(
@@ -56,17 +55,14 @@ final class LoaderGenerator
 			);
 		}
 
-		$resolver = new ModuleResolver($this->data);
-
-		$this->generateClass($loaderSchema, $resolver->getResolvedPackages());
+		$this->generateClass($loaderSchema);
 	}
 
-	/**
-	 * @param array<InstallablePackageData> $packages
-	 */
-	private function generateClass(LoaderSchema $loaderSchema, array $packages): void
+	private function generateClass(LoaderSchema $loaderSchema): void
 	{
-		$switches = $this->getSwitches($packages);
+		$modules = $this->modules->getModules();
+
+		$switches = $this->getSwitches($modules);
 
 		$modulesMeta = [];
 
@@ -76,10 +72,11 @@ final class LoaderGenerator
 			ConfigFilePriority::low()->name => [],
 		];
 
-		foreach ($packages as $package) {
+		foreach ($modules as $module) {
+			$package = $module->getData();
 			$packageName = $package->getName();
 			$packageDirRelative = $package->getRelativePath();
-			$packageSchema = $package->getConfig()->getSchema();
+			$packageSchema = $module->getSchema();
 
 			$modulesMeta[$packageName] = [
 				BaseLoader::META_ITEM_DIR => $packageDirRelative,
@@ -88,7 +85,7 @@ final class LoaderGenerator
 			foreach ($packageSchema->getConfigFiles() as $configFile) {
 				// Skip configuration if required package is not installed
 				foreach ($configFile->getRequiredPackages() as $requiredPackage) {
-					if ($this->data->getPackage($requiredPackage) === null) {
+					if ($this->modules->getModule($requiredPackage) === null) {
 						continue 2;
 					}
 				}
@@ -96,11 +93,11 @@ final class LoaderGenerator
 				$item = [
 					BaseLoader::SCHEMA_ITEM_FILE => Path::makeRelative(
 						$configFile->getFile(),
-						$this->data->getRootDir(),
+						$this->modules->getRootDir(),
 					),
 				];
 
-				$itemSwitches = $this->getConfigSwitches($configFile, $switches, $package);
+				$itemSwitches = $this->getConfigSwitches($configFile, $switches, $module);
 
 				if ($itemSwitches !== []) {
 					$item[BaseLoader::SCHEMA_ITEM_SWITCHES] = $itemSwitches;
@@ -110,7 +107,7 @@ final class LoaderGenerator
 			}
 		}
 
-		$modulesMeta['__root__'] = $modulesMeta[$this->data->getRootPackage()->getName()];
+		$modulesMeta['__root__'] = $modulesMeta[$this->modules->getRootModule()->getData()->getName()];
 
 		$schema = array_merge(
 			$itemsByPriority[ConfigFilePriority::high()->name],
@@ -137,14 +134,14 @@ final class LoaderGenerator
 	}
 
 	/**
-	 * @param array<int, InstallablePackageData> $packages
+	 * @param array<string, Module> $modules
 	 * @return array<string, bool>
 	 */
-	private function getSwitches(array $packages): array
+	private function getSwitches(array $modules): array
 	{
 		$switchesByPackage = [];
-		foreach ($packages as $package) {
-			$switchesByPackage[] = $package->getConfig()->getSchema()->getSwitches();
+		foreach ($modules as $module) {
+			$switchesByPackage[] = $module->getSchema()->getSwitches();
 		}
 
 		return array_merge(...$switchesByPackage);
@@ -157,10 +154,11 @@ final class LoaderGenerator
 	private function getConfigSwitches(
 		ConfigFileSchema $configFile,
 		array $switches,
-		InstallablePackageData $package
+		Module $module
 	): array
 	{
 		$itemSwitches = $configFile->getRequiredSwitchValues();
+		$package = $module->getData();
 
 		foreach ($itemSwitches as $itemSwitchName => $itemSwitchValue) {
 			if (!isset($switches[$itemSwitchName])) {
@@ -170,9 +168,9 @@ final class LoaderGenerator
 						$itemSwitchName,
 						Path::makeRelative(
 							$configFile->getFile(),
-							$this->data->getRootDir(),
+							$this->modules->getRootDir(),
 						),
-						$package->getConfig()->getSchemaFile(),
+						$module->getSchemaRelativeName(),
 						$package->getName(),
 					))
 					->withProblem(sprintf(
