@@ -238,7 +238,7 @@ final class LoaderGenerator
 		];
 	}
 
-	public function validateLoader(string $fqn): void
+	private function validateLoader(string $fqn): void
 	{
 		if (class_exists($fqn) && !is_subclass_of($fqn, BaseLoader::class)) {
 			$message = Message::create()
