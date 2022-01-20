@@ -25,7 +25,7 @@ abstract class BaseLoader
 	protected array $switches = [];
 
 	/** @var array<string, mixed> */
-	protected array $modulesMeta = [];
+	protected array $modules = [];
 
 	final public function __construct()
 	{
@@ -78,7 +78,7 @@ abstract class BaseLoader
 	{
 		$meta = [];
 
-		foreach ($this->modulesMeta as $moduleName => $moduleMeta) {
+		foreach ($this->modules as $moduleName => $moduleMeta) {
 			$dir = $moduleMeta[self::META_ITEM_DIR];
 			$moduleMeta[self::META_ITEM_DIR] = $dir === '' ? $rootDir : $rootDir . '/' . $dir;
 

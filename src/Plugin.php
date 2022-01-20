@@ -94,7 +94,7 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 		$modules = $modulesGenerator->generate($data, $schemaRelativeName);
 
 		$loaderGenerator = new LoaderGenerator($modules);
-		$loaderGenerator->generateLoader();
+		$loaderGenerator->generateAndSave();
 	}
 
 }

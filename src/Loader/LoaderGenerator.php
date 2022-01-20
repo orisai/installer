@@ -39,7 +39,7 @@ final class LoaderGenerator
 		$this->modules = $modules;
 	}
 
-	public function generateLoader(): void
+	public function generateAndSave(): void
 	{
 		$loaderSchema = $this->modules->getRootModule()->getSchema()->getLoader();
 
@@ -50,10 +50,51 @@ final class LoaderGenerator
 			);
 		}
 
-		$this->generateClass($loaderSchema);
+		$names = $this->getNamespaceAndClass($loaderSchema);
+		$dependencies = $this->getDependencies();
+
+		$file = $this->getFile(
+			$names['namespace'],
+			$names['class'],
+			$dependencies['schema'],
+			$dependencies['switches'],
+			$dependencies['modules'],
+		);
+		$this->writeFile($loaderSchema->getFile(), $file);
 	}
 
-	private function generateClass(LoaderSchema $loaderSchema): void
+	public function generate(): BaseLoader
+	{
+		$inst = new class extends BaseLoader {
+
+			/**
+			 * @param array<int, mixed>    $schema
+			 * @param array<string, bool>  $switches
+			 * @param array<string, mixed> $modules
+			 */
+			public function setDependencies(array $schema, array $switches, array $modules): void
+			{
+				$this->schema = $schema;
+				$this->switches = $switches;
+				$this->modules = $modules;
+			}
+
+		};
+
+		$dependencies = $this->getDependencies();
+		$inst->setDependencies(
+			$dependencies['schema'],
+			$dependencies['switches'],
+			$dependencies['modules'],
+		);
+
+		return $inst;
+	}
+
+	/**
+	 * @return array{schema: array<int, mixed>, switches: array<string, bool>, modules: array<string, mixed>}
+	 */
+	private function getDependencies(): array
 	{
 		$modules = $this->modules->getModules();
 
@@ -110,22 +151,11 @@ final class LoaderGenerator
 			$itemsByPriority[ConfigFilePriority::low()->name],
 		);
 
-		$fqn = $loaderSchema->getClass();
-		$this->validateLoader($fqn);
-
-		$lastSlashPosition = strrpos($fqn, '\\');
-		if ($lastSlashPosition === false) {
-			$classString = $fqn;
-			$namespaceString = null;
-		} else {
-			$classString = substr($fqn, $lastSlashPosition + 1);
-			$namespaceString = substr($fqn, 0, $lastSlashPosition);
-		}
-
-		$this->writeFile(
-			$loaderSchema->getFile(),
-			$this->getFile($namespaceString, $classString, $schema, $switches, $modulesMeta),
-		);
+		return [
+			'schema' => $schema,
+			'switches' => $switches,
+			'modules' => $modulesMeta,
+		];
 	}
 
 	/**
@@ -183,6 +213,29 @@ final class LoaderGenerator
 		}
 
 		return $itemSwitches;
+	}
+
+	/**
+	 * @return array{namespace: string|null, class: string}
+	 */
+	private function getNamespaceAndClass(LoaderSchema $loaderSchema): array
+	{
+		$fqn = $loaderSchema->getClass();
+		$this->validateLoader($fqn);
+
+		$lastSlashPosition = strrpos($fqn, '\\');
+		if ($lastSlashPosition === false) {
+			$classString = $fqn;
+			$namespaceString = null;
+		} else {
+			$classString = substr($fqn, $lastSlashPosition + 1);
+			$namespaceString = substr($fqn, 0, $lastSlashPosition);
+		}
+
+		return [
+			'namespace' => $namespaceString,
+			'class' => $classString,
+		];
 	}
 
 	public function validateLoader(string $fqn): void
@@ -245,7 +298,7 @@ final class LoaderGenerator
 			->setType('array')
 			->setComment('{@inheritdoc}');
 
-		$class->addProperty('modulesMeta', $modulesMeta)
+		$class->addProperty('modules', $modulesMeta)
 			->setVisibility(ClassType::VISIBILITY_PROTECTED)
 			->setType('array')
 			->setComment('{@inheritdoc}');

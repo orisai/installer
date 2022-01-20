@@ -56,7 +56,7 @@ final class GenerateLoaderCommand extends BaseInstallerCommand
 		$modules = $modulesGenerator->generate($data, $schemaRelativeName);
 
 		$loaderGenerator = new LoaderGenerator($modules);
-		$loaderGenerator->generateLoader();
+		$loaderGenerator->generateAndSave();
 
 		$io = new SymfonyStyle($input, $output);
 		$io->success('Modules loader successfully generated');
