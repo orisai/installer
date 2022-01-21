@@ -34,7 +34,7 @@ final class GenerateLoaderCommand extends BaseInstallerCommand
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$schemaRelativeName = $input->getOption(self::OPTION_FILE);
-		assert(is_string($schemaRelativeName));
+		assert(is_string($schemaRelativeName) || $schemaRelativeName === null);
 
 		$data = PackagesDataStorage::load();
 		$rootPackage = $data->getRootPackage();

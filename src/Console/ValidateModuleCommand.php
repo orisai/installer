@@ -6,7 +6,7 @@ use LogicException;
 use Orisai\Installer\Modules\ModuleSchemaLocator;
 use Orisai\Installer\Modules\ModuleSchemaValidator;
 use Orisai\Installer\Packages\PackagesDataStorage;
-use Orisai\Installer\Plugin;
+use Orisai\Installer\SchemaName;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -33,7 +33,7 @@ final class ValidateModuleCommand extends BaseInstallerCommand
 		parent::configure();
 
 		$this->setName(self::getDefaultName());
-		$this->setDescription(sprintf('Validate %s', Plugin::DEFAULT_FILE_NAME));
+		$this->setDescription(sprintf('Validate %s', SchemaName::DEFAULT_NAME));
 
 		$this->addOption(
 			self::OPTION_PACKAGE,
@@ -46,7 +46,7 @@ final class ValidateModuleCommand extends BaseInstallerCommand
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
 		$schemaRelativeName = $input->getOption(self::OPTION_FILE);
-		assert(is_string($schemaRelativeName));
+		assert(is_string($schemaRelativeName) || $schemaRelativeName === null);
 
 		$data = PackagesDataStorage::load();
 

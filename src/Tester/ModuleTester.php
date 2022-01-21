@@ -28,7 +28,7 @@ final class ModuleTester
 		return (new LoaderGenerator($modules))->generate();
 	}
 
-	public function validateModule(string $schemaFqn, ?string $packageName = null): void
+	public function validateModule(?string $schemaFqn = null, ?string $packageName = null): void
 	{
 		$data = PackagesDataStorage::load();
 
@@ -43,7 +43,9 @@ final class ModuleTester
 			}
 		}
 
-		$schemaRelativeName = $this->getSchemaRelativeName($schemaFqn, $package);
+		$schemaRelativeName = $schemaFqn !== null
+			? $this->getSchemaRelativeName($schemaFqn, $package)
+			: null;
 
 		$locator = new ModuleSchemaLocator();
 		$schema = $locator->locateOrThrow($package, $schemaRelativeName);

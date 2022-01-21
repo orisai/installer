@@ -11,7 +11,6 @@ use Orisai\Exceptions\Message;
 use Orisai\Installer\Console\GenerateLoaderCommand;
 use Orisai\Installer\Modules\Module;
 use Orisai\Installer\Modules\Modules;
-use Orisai\Installer\Plugin;
 use Orisai\Installer\Schema\ConfigFilePriority;
 use Orisai\Installer\Schema\ConfigFileSchema;
 use Orisai\Installer\Schema\LoaderSchema;
@@ -201,7 +200,7 @@ final class LoaderGenerator
 					))
 					->withProblem(sprintf(
 						'Switch is not defined by any of previously loaded `%s` schema files.',
-						Plugin::DEFAULT_FILE_NAME,
+						SchemaName::DEFAULT_NAME,
 					))
 					->withSolution(sprintf(
 						'Do not configure switch or define one or choose one of already loaded: `%s`',

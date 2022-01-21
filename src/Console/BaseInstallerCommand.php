@@ -3,7 +3,7 @@
 namespace Orisai\Installer\Console;
 
 use Composer\Command\BaseCommand as ComposerBaseCommand;
-use Orisai\Installer\Plugin;
+use Orisai\Installer\SchemaName;
 use Symfony\Component\Console\Input\InputOption;
 use function sprintf;
 
@@ -21,8 +21,7 @@ abstract class BaseInstallerCommand extends ComposerBaseCommand
 			self::OPTION_FILE,
 			'f',
 			InputOption::VALUE_REQUIRED,
-			sprintf('Use different config file than %s (for tests)', Plugin::DEFAULT_FILE_NAME),
-			Plugin::DEFAULT_FILE_NAME,
+			sprintf('Use different config file than %s (for tests)', SchemaName::DEFAULT_NAME),
 		);
 	}
 

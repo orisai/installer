@@ -24,8 +24,6 @@ use Orisai\Installer\Packages\PackagesDataGenerator;
 final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 {
 
-	public const DEFAULT_FILE_NAME = 'orisai.php';
-
 	/**
 	 * {@inheritDoc}
 	 */

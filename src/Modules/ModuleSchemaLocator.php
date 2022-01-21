@@ -15,13 +15,46 @@ final class ModuleSchemaLocator
 
 	public function locate(PackageData $data, ?string $schemaRelativeName = null): ?ModuleSchema
 	{
-		$schemaRelativeName ??= SchemaName::DEFAULT_NAME;
+		if ($schemaRelativeName !== null) {
+			return $this->getSchema($data, $schemaRelativeName);
+		}
 
+		foreach (SchemaName::FILE_LOCATIONS as $location) {
+			$schema = $this->getSchema($data, $location);
+
+			if ($schema !== null) {
+				return $schema;
+			}
+		}
+
+		return null;
+	}
+
+	public function locateOrThrow(PackageData $data, ?string $schemaRelativeName = null): ModuleSchema
+	{
+		$schema = $this->locate($data, $schemaRelativeName);
+
+		if ($schema !== null) {
+			return $schema;
+		}
+
+		throw InvalidState::create()
+			->withMessage("Package '{$data->getName()}' does not have config file '$schemaRelativeName'.");
+	}
+
+	private function getSchema(PackageData $data, string $schemaRelativeName): ?ModuleSchema
+	{
 		$schemaFqn = "{$data->getAbsolutePath()}/$schemaRelativeName";
+
 		if (!file_exists($schemaFqn)) {
 			return null;
 		}
 
+		return $this->requireSchema($schemaFqn, $data, $schemaRelativeName);
+	}
+
+	private function requireSchema(string $schemaFqn, PackageData $data, ?string $schemaRelativeName): ModuleSchema
+	{
 		$schema = require $schemaFqn;
 
 		$schemaClass = ModuleSchema::class;
@@ -36,18 +69,6 @@ final class ModuleSchemaLocator
 		}
 
 		return $schema;
-	}
-
-	public function locateOrThrow(PackageData $data, ?string $schemaRelativeName = null): ModuleSchema
-	{
-		$schema = $this->locate($data, $schemaRelativeName);
-
-		if ($schema !== null) {
-			return $schema;
-		}
-
-		throw InvalidState::create()
-			->withMessage("Package '{$data->getName()}' does not have config file '$schemaRelativeName'.");
 	}
 
 }
