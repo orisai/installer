@@ -5,10 +5,12 @@ namespace Orisai\Installer\Tester;
 use Orisai\Exceptions\Logic\InvalidArgument;
 use Orisai\Installer\Loader\BaseLoader;
 use Orisai\Installer\Loader\LoaderGenerator;
+use Orisai\Installer\Modules\ModuleSchemaLocator;
 use Orisai\Installer\Modules\ModuleSchemaValidator;
 use Orisai\Installer\Modules\ModulesGenerator;
 use Orisai\Installer\Packages\PackageData;
 use Orisai\Installer\Packages\PackagesDataStorage;
+use Orisai\Installer\Schema\ModuleSchema;
 use Symfony\Component\Filesystem\Path;
 use function file_exists;
 use function sprintf;
@@ -16,14 +18,12 @@ use function sprintf;
 final class ModuleTester
 {
 
-	public function generateLoader(string $schemaFqn): BaseLoader
+	public function generateLoader(ModuleSchema $schema): BaseLoader
 	{
 		$data = PackagesDataStorage::load();
 
-		$schemaRelativeName = $this->getSchemaRelativeName($schemaFqn, $data->getRootPackage());
-
 		$modulesGenerator = new ModulesGenerator();
-		$modules = $modulesGenerator->generate($data, $schemaRelativeName);
+		$modules = $modulesGenerator->generate($data, $schema);
 
 		return (new LoaderGenerator($modules))->generate();
 	}
@@ -45,8 +45,11 @@ final class ModuleTester
 
 		$schemaRelativeName = $this->getSchemaRelativeName($schemaFqn, $package);
 
+		$locator = new ModuleSchemaLocator();
+		$schema = $locator->locateOrThrow($package, $schemaRelativeName);
+
 		$validator = new ModuleSchemaValidator();
-		$validator->validate($package, $schemaFqn, $schemaRelativeName);
+		$validator->validate($schema);
 	}
 
 	private function getSchemaRelativeName(string $schemaFqn, PackageData $package): string

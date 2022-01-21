@@ -14,9 +14,9 @@ use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
 use Orisai\Installer\Console\CommandProvider;
 use Orisai\Installer\Loader\LoaderGenerator;
+use Orisai\Installer\Modules\ModuleSchemaLocator;
 use Orisai\Installer\Modules\ModulesGenerator;
 use Orisai\Installer\Packages\PackagesDataGenerator;
-use function file_exists;
 
 /**
  * @internal
@@ -84,14 +84,15 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 		$data = $dataGenerator->generate();
 		$rootPackage = $data->getRootPackage();
 
-		$schemaRelativeName = SchemaName::DEFAULT_NAME;
-		$schemaFqn = "{$rootPackage->getAbsolutePath()}/$schemaRelativeName";
-		if (!file_exists($schemaFqn)) {
+		$locator = new ModuleSchemaLocator();
+		$schema = $locator->locate($rootPackage);
+
+		if ($schema === null) {
 			return;
 		}
 
 		$modulesGenerator = new ModulesGenerator();
-		$modules = $modulesGenerator->generate($data, $schemaRelativeName);
+		$modules = $modulesGenerator->generate($data, $schema);
 
 		$loaderGenerator = new LoaderGenerator($modules);
 		$loaderGenerator->generateAndSave();

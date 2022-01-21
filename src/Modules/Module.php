@@ -11,8 +11,6 @@ use Orisai\Installer\Schema\ModuleSchema;
 class Module
 {
 
-	private string $schemaRelativeName;
-
 	private ModuleSchema $schema;
 
 	private PackageData $data;
@@ -20,16 +18,10 @@ class Module
 	/** @var array<string, Module> */
 	private array $dependents;
 
-	public function __construct(string $schemaRelativeName, ModuleSchema $schema, PackageData $data)
+	public function __construct(ModuleSchema $schema, PackageData $data)
 	{
-		$this->schemaRelativeName = $schemaRelativeName;
 		$this->schema = $schema;
 		$this->data = $data;
-	}
-
-	public function getSchemaRelativeName(): string
-	{
-		return $this->schemaRelativeName;
 	}
 
 	public function getSchema(): ModuleSchema

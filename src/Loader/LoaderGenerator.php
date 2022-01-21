@@ -15,6 +15,7 @@ use Orisai\Installer\Plugin;
 use Orisai\Installer\Schema\ConfigFilePriority;
 use Orisai\Installer\Schema\ConfigFileSchema;
 use Orisai\Installer\Schema\LoaderSchema;
+use Orisai\Installer\SchemaName;
 use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function array_merge;
@@ -195,7 +196,7 @@ final class LoaderGenerator
 							$configFile->getFile(),
 							$this->modules->getRootModule()->getData()->getAbsolutePath(),
 						),
-						$module->getSchemaRelativeName(),
+						SchemaName::DEFAULT_NAME,
 						$package->getName(),
 					))
 					->withProblem(sprintf(

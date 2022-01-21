@@ -3,8 +3,7 @@
 namespace Orisai\Installer\Console;
 
 use LogicException;
-use Orisai\Exceptions\Logic\InvalidState;
-use Orisai\Exceptions\Message;
+use Orisai\Installer\Modules\ModuleSchemaLocator;
 use Orisai\Installer\Modules\ModuleSchemaValidator;
 use Orisai\Installer\Packages\PackagesDataStorage;
 use Orisai\Installer\Plugin;
@@ -13,7 +12,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use function assert;
-use function file_exists;
 use function is_string;
 use function sprintf;
 
@@ -64,19 +62,11 @@ final class ValidateModuleCommand extends BaseInstallerCommand
 			}
 		}
 
-		$schemaFqn = "{$package->getAbsolutePath()}/$schemaRelativeName";
-		if (!file_exists($schemaFqn)) {
-			$message = Message::create()
-				->withContext("Trying to validate module schema for package $packageName.")
-				->withProblem("File $schemaRelativeName does not exist in this package.")
-				->withSolution('Use name of an existing file.');
-
-			throw InvalidState::create()
-				->withMessage($message);
-		}
+		$locator = new ModuleSchemaLocator();
+		$schema = $locator->locateOrThrow($package, $schemaRelativeName);
 
 		$validator = new ModuleSchemaValidator();
-		$validator->validate($package, $schemaFqn, $schemaRelativeName);
+		$validator->validate($schema);
 
 		$io = new SymfonyStyle($input, $output);
 		$io->success(sprintf('%s successfully validated', $schemaRelativeName));

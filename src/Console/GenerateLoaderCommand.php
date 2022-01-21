@@ -2,16 +2,14 @@
 
 namespace Orisai\Installer\Console;
 
-use Orisai\Exceptions\Logic\InvalidState;
-use Orisai\Exceptions\Message;
 use Orisai\Installer\Loader\LoaderGenerator;
+use Orisai\Installer\Modules\ModuleSchemaLocator;
 use Orisai\Installer\Modules\ModulesGenerator;
 use Orisai\Installer\Packages\PackagesDataStorage;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use function assert;
-use function file_exists;
 use function is_string;
 
 /**
@@ -41,19 +39,11 @@ final class GenerateLoaderCommand extends BaseInstallerCommand
 		$data = PackagesDataStorage::load();
 		$rootPackage = $data->getRootPackage();
 
-		$schemaFqn = "{$rootPackage->getAbsolutePath()}/$schemaRelativeName";
-		if (!file_exists($schemaFqn)) {
-			$message = Message::create()
-				->withContext("Trying to generate module loader for package {$rootPackage->getName()}.")
-				->withProblem("File $schemaRelativeName does not exist in this package.")
-				->withSolution('Use name of an existing file.');
-
-			throw InvalidState::create()
-				->withMessage($message);
-		}
+		$locator = new ModuleSchemaLocator();
+		$schema = $locator->locateOrThrow($rootPackage, $schemaRelativeName);
 
 		$modulesGenerator = new ModulesGenerator();
-		$modules = $modulesGenerator->generate($data, $schemaRelativeName);
+		$modules = $modulesGenerator->generate($data, $schema);
 
 		$loaderGenerator = new LoaderGenerator($modules);
 		$loaderGenerator->generateAndSave();
