@@ -8,7 +8,7 @@ use Orisai\Installer\Schema\ModuleSchema;
 /**
  * @internal
  */
-class Module
+final class Module
 {
 
 	private ModuleSchema $schema;
