@@ -21,15 +21,17 @@ final class ModuleSchemaTest extends TestCase
 		self::assertSame($loaderClass, $schema->getLoader()->getClass());
 
 		self::assertSame([], $schema->getConfigFiles());
-		$config1 = $schema->addConfigFile(__DIR__ . '/1.neon');
-		$config2 = $schema->addConfigFile(__DIR__ . '/2.neon');
+		$config1 = $schema->addConfigFile('/foo/1.neon');
+		$config2 = $schema->addConfigFile('/foo/../foo/2.neon');
 		self::assertSame(
 			[
-				$config1,
-				$config2,
+				'/foo/1.neon' => $config1,
+				'/foo/2.neon' => $config2,
 			],
 			$schema->getConfigFiles(),
 		);
+		self::assertSame('/foo/1.neon', $config1->getFile());
+		self::assertSame('/foo/2.neon', $config2->getFile());
 
 		self::assertSame([], $schema->getSwitches());
 		$schema->addSwitch('a', true);
@@ -43,15 +45,17 @@ final class ModuleSchemaTest extends TestCase
 		);
 
 		self::assertSame([], $schema->getMonorepoSubmodules());
-		$submodule1 = $schema->addSubmodule('vendor/foo', __DIR__ . '/packages/foo');
-		$submodule2 = $schema->addSubmodule('vendor/bar', __DIR__ . '/packages/bar');
+		$submodule1 = $schema->addSubmodule('vendor/foo', '/packages/foo');
+		$submodule2 = $schema->addSubmodule('vendor/bar', '/packages/bar');
 		self::assertSame(
 			[
-				$submodule1,
-				$submodule2,
+				'vendor/foo' => $submodule1,
+				'vendor/bar' => $submodule2,
 			],
 			$schema->getMonorepoSubmodules(),
 		);
+		self::assertSame($schema->getMonorepoSubmodules()['vendor/foo'], $submodule1);
+		self::assertSame($schema->getMonorepoSubmodules()['vendor/bar'], $submodule2);
 	}
 
 }

@@ -2,18 +2,20 @@
 
 namespace Orisai\Installer\Schema;
 
+use Symfony\Component\Filesystem\Path;
+
 final class ModuleSchema
 {
 
 	private ?LoaderSchema $loader = null;
 
-	/** @var array<int, ConfigFileSchema> */
+	/** @var array<string, ConfigFileSchema> */
 	private array $configFiles = [];
 
 	/** @var array<string, bool> */
 	private array $switches = [];
 
-	/** @var array<int, SubmoduleSchema> */
+	/** @var array<string, SubmoduleSchema> */
 	private array $monorepoPackages = [];
 
 	public function setLoader(string $file, string $class): void
@@ -23,7 +25,9 @@ final class ModuleSchema
 
 	public function addConfigFile(string $file): ConfigFileSchema
 	{
-		return $this->configFiles[] = new ConfigFileSchema($file);
+		$canonical = Path::canonicalize($file);
+
+		return $this->configFiles[$canonical] = new ConfigFileSchema($canonical);
 	}
 
 	public function addSwitch(string $name, bool $defaultValue): void
@@ -33,7 +37,7 @@ final class ModuleSchema
 
 	public function addSubmodule(string $name, string $path): SubmoduleSchema
 	{
-		return $this->monorepoPackages[] = new SubmoduleSchema($name, $path);
+		return $this->monorepoPackages[$name] = new SubmoduleSchema($name, $path);
 	}
 
 	/**
@@ -45,7 +49,7 @@ final class ModuleSchema
 	}
 
 	/**
-	 * @return array<int, ConfigFileSchema>
+	 * @return array<string, ConfigFileSchema>
 	 *
 	 * @internal
 	 */
@@ -65,7 +69,7 @@ final class ModuleSchema
 	}
 
 	/**
-	 * @return array<int, SubmoduleSchema>
+	 * @return array<string, SubmoduleSchema>
 	 *
 	 * @internal
 	 */
