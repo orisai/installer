@@ -13,7 +13,14 @@ use function get_debug_type;
 final class ModuleSchemaLocator
 {
 
-	public function locate(PackageData $data, ?string $schemaRelativeName = null): ?ModuleSchema
+	/**
+	 * @param array<int, string> $triedPaths
+	 */
+	public function locate(
+		PackageData $data,
+		?string $schemaRelativeName = null,
+		array &$triedPaths = []
+	): ?ModuleSchema
 	{
 		if ($schemaRelativeName !== null) {
 			return $this->getSchema($data, $schemaRelativeName);
@@ -21,6 +28,7 @@ final class ModuleSchemaLocator
 
 		foreach (SchemaName::FILE_LOCATIONS as $location) {
 			$schema = $this->getSchema($data, $location);
+			$triedPaths[] = $location;
 
 			if ($schema !== null) {
 				return $schema;

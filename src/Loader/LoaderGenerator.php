@@ -39,7 +39,7 @@ final class LoaderGenerator
 		$this->modules = $modules;
 	}
 
-	public function generateAndSave(): void
+	public function generateAndSave(): LoaderSchema
 	{
 		$loaderSchema = $this->modules->getRootModule()->getSchema()->getLoader();
 
@@ -61,6 +61,8 @@ final class LoaderGenerator
 			$dependencies['modules'],
 		);
 		$this->writeFile($loaderSchema->getFile(), $file);
+
+		return $loaderSchema;
 	}
 
 	public function generate(): BaseLoader

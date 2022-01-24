@@ -8,7 +8,6 @@ use Orisai\Installer\Modules\ModulesGenerator;
 use Orisai\Installer\Packages\PackagesDataStorage;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use function assert;
 use function is_string;
 
@@ -46,10 +45,9 @@ final class GenerateLoaderCommand extends BaseInstallerCommand
 		$modules = $modulesGenerator->generate($data, $schema);
 
 		$loaderGenerator = new LoaderGenerator($modules);
-		$loaderGenerator->generateAndSave();
+		$loader = $loaderGenerator->generateAndSave();
 
-		$io = new SymfonyStyle($input, $output);
-		$io->success('Modules loader successfully generated');
+		$output->writeln("Generated loader <info>{$loader->getClass()}</info>.");
 
 		return 0;
 	}

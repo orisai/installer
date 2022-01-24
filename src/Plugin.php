@@ -17,6 +17,7 @@ use Orisai\Installer\Loader\LoaderGenerator;
 use Orisai\Installer\Modules\ModuleSchemaLocator;
 use Orisai\Installer\Modules\ModulesGenerator;
 use Orisai\Installer\Packages\PackagesDataGenerator;
+use function implode;
 
 /**
  * @internal
@@ -63,29 +64,36 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 
 	public function install(Event $event): void
 	{
-		$this->generateLoader($event->getComposer());
+		$this->generateLoader($event->getComposer(), $event->getIO());
 	}
 
 	public function update(Event $event): void
 	{
-		$this->generateLoader($event->getComposer());
+		$this->generateLoader($event->getComposer(), $event->getIO());
 	}
 
 	public function remove(PackageEvent $event): void
 	{
-		$this->generateLoader($event->getComposer());
+		$this->generateLoader($event->getComposer(), $event->getIO());
 	}
 
-	private function generateLoader(Composer $composer): void
+	private function generateLoader(Composer $composer, IOInterface $io): void
 	{
 		$dataGenerator = new PackagesDataGenerator($composer);
 		$data = $dataGenerator->generate();
 		$rootPackage = $data->getRootPackage();
 
 		$locator = new ModuleSchemaLocator();
-		$schema = $locator->locate($rootPackage);
+		$paths = [];
+		$schema = $locator->locate($rootPackage, null, $paths);
 
 		if ($schema === null) {
+			$pathsInline = implode(', ', $paths);
+			$io->write(
+				'<info>orisai/installer: </info>Installation skipped, ' .
+				"schema file is missing (one of $pathsInline).",
+			);
+
 			return;
 		}
 
@@ -93,7 +101,11 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 		$modules = $modulesGenerator->generate($data, $schema);
 
 		$loaderGenerator = new LoaderGenerator($modules);
-		$loaderGenerator->generateAndSave();
+		$loader = $loaderGenerator->generateAndSave();
+
+		$io->write(
+			"<info>orisai/installer: </info>Generated loader <info>{$loader->getClass()}</info>.",
+		);
 	}
 
 }
