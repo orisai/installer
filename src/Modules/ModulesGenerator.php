@@ -50,7 +50,7 @@ final class ModulesGenerator
 
 	private function dataToModule(PackageData $data, ModuleSchema $schema): Module
 	{
-		$this->validator->validate($schema);
+		$this->validator->validate($schema, $data);
 
 		return new Module($schema, $data);
 	}

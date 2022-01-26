@@ -30,8 +30,8 @@ final class ModuleSchemaTest extends TestCase
 			],
 			$schema->getConfigFiles(),
 		);
-		self::assertSame('/foo/1.neon', $config1->getFile());
-		self::assertSame('/foo/2.neon', $config2->getFile());
+		self::assertSame('/foo/1.neon', $config1->getAbsolutePath());
+		self::assertSame('/foo/2.neon', $config2->getAbsolutePath());
 
 		self::assertSame([], $schema->getSwitches());
 		$schema->addSwitch('a', true);

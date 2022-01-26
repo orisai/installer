@@ -27,7 +27,7 @@ final class ModuleSchemaMerger
 	private function apply(ModuleSchema $new, ModuleSchema $merged): void
 	{
 		foreach ($merged->getConfigFiles() as $file) {
-			$newFile = $new->addConfigFile($file->getFile());
+			$newFile = $new->addConfigFile($file->getAbsolutePath());
 			$newFile->setPriority($file->getPriority());
 			foreach ($file->getRequiredPackages() as $package) {
 				$newFile->addRequiredPackage($package);

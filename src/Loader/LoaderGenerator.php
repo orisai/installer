@@ -130,7 +130,7 @@ final class LoaderGenerator
 
 				$item = [
 					BaseLoader::SCHEMA_ITEM_FILE => Path::makeRelative(
-						$configFile->getFile(),
+						$configFile->getAbsolutePath(),
 						$this->modules->getRootModule()->getData()->getAbsolutePath(),
 					),
 				];
@@ -194,7 +194,7 @@ final class LoaderGenerator
 						'Trying to use switch `%s` for config file `%s` defined in `%s` of package `%s`.',
 						$itemSwitchName,
 						Path::makeRelative(
-							$configFile->getFile(),
+							$configFile->getAbsolutePath(),
 							$this->modules->getRootModule()->getData()->getAbsolutePath(),
 						),
 						SchemaName::DEFAULT_NAME,

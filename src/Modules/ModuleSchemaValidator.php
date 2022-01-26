@@ -2,7 +2,11 @@
 
 namespace Orisai\Installer\Modules;
 
+use Orisai\Exceptions\Logic\InvalidArgument;
+use Orisai\Installer\Packages\PackageData;
 use Orisai\Installer\Schema\ModuleSchema;
+use Symfony\Component\Filesystem\Path;
+use function file_exists;
 
 /**
  * @internal
@@ -10,9 +14,17 @@ use Orisai\Installer\Schema\ModuleSchema;
 final class ModuleSchemaValidator
 {
 
-	public function validate(ModuleSchema $schema): void
+	public function validate(ModuleSchema $schema, PackageData $data): void
 	{
-		// No validation for now
+		foreach ($schema->getConfigFiles() as $file) {
+			$absolutePath = $file->getAbsolutePath();
+			if (!file_exists($absolutePath)) {
+				$relativePath = Path::makeRelative($absolutePath, $data->getAbsolutePath());
+
+				throw InvalidArgument::create()
+					->withMessage("Config file '$relativePath' not found in package '{$data->getName()}'.");
+			}
+		}
 	}
 
 }

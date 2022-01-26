@@ -5,7 +5,7 @@ namespace Orisai\Installer\Schema;
 final class ConfigFileSchema
 {
 
-	private string $file;
+	private string $absolutePath;
 
 	private ConfigFilePriority $priority;
 
@@ -18,9 +18,9 @@ final class ConfigFileSchema
 	/**
 	 * @internal
 	 */
-	public function __construct(string $file)
+	public function __construct(string $absolutePath)
 	{
-		$this->file = $file;
+		$this->absolutePath = $absolutePath;
 		$this->priority = ConfigFilePriority::normal();
 	}
 
@@ -42,9 +42,9 @@ final class ConfigFileSchema
 	/**
 	 * @internal
 	 */
-	public function getFile(): string
+	public function getAbsolutePath(): string
 	{
-		return $this->file;
+		return $this->absolutePath;
 	}
 
 	/**

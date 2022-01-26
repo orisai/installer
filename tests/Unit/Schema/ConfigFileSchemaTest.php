@@ -11,8 +11,8 @@ final class ConfigFileSchemaTest extends TestCase
 
 	public function test(): void
 	{
-		$schema = new ConfigFileSchema($file = __DIR__ . '/wiring.neon');
-		self::assertSame($file, $schema->getFile());
+		$schema = new ConfigFileSchema($absolutePath = __DIR__ . '/wiring.neon');
+		self::assertSame($absolutePath, $schema->getAbsolutePath());
 
 		self::assertEquals(ConfigFilePriority::normal(), $schema->getPriority());
 		$schema->setPriority($priority = ConfigFilePriority::low());

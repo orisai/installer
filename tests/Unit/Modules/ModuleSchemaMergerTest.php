@@ -95,9 +95,9 @@ final class ModuleSchemaMergerTest extends TestCase
 
 		self::assertEquals(
 			[
-				$a->getFile() => $a,
-				$b2->getFile() => $b2,
-				$c->getFile() => $c,
+				$a->getAbsolutePath() => $a,
+				$b2->getAbsolutePath() => $b2,
+				$c->getAbsolutePath() => $c,
 			],
 			$merged->getConfigFiles(),
 		);

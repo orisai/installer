@@ -23,9 +23,9 @@ final class ModuleSchema
 		$this->loader = new LoaderSchema($file, $class);
 	}
 
-	public function addConfigFile(string $file): ConfigFileSchema
+	public function addConfigFile(string $absolutePath): ConfigFileSchema
 	{
-		$canonical = Path::canonicalize($file);
+		$canonical = Path::canonicalize($absolutePath);
 
 		return $this->configFiles[$canonical] = new ConfigFileSchema($canonical);
 	}
