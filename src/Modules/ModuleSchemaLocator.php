@@ -7,6 +7,9 @@ use Orisai\Exceptions\Logic\InvalidState;
 use Orisai\Installer\Packages\PackageData;
 use Orisai\Installer\Schema\ModuleSchema;
 use Orisai\Installer\SchemaName;
+use function array_keys;
+use function array_pop;
+use function count;
 use function file_exists;
 use function get_debug_type;
 use function implode;
@@ -27,16 +30,28 @@ final class ModuleSchemaLocator
 			return $this->getSchema($data, $schemaRelativeName);
 		}
 
+		$schemas = [];
 		foreach (SchemaName::FILE_LOCATIONS as $location) {
 			$schema = $this->getSchema($data, $location);
 			$triedPaths[] = $location;
 
 			if ($schema !== null) {
-				return $schema;
+				$schemas[$location] = $schema;
 			}
 		}
 
-		return null;
+		if (count($schemas) === 0) {
+			return null;
+		}
+
+		if (count($schemas) === 1) {
+			return array_pop($schemas);
+		}
+
+		$foundPaths = implode(', ', array_keys($schemas));
+
+		throw InvalidState::create()
+			->withMessage("Multiple schema files ($foundPaths) found in '{$data->getName()}', only one can exist.");
 	}
 
 	public function locateOrThrow(PackageData $data, ?string $schemaRelativeName = null): ModuleSchema
