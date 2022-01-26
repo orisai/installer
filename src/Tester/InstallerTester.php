@@ -10,7 +10,7 @@ use Orisai\Installer\Modules\ModulesGenerator;
 use Orisai\Installer\Packages\PackagesDataStorage;
 use Orisai\Installer\Schema\ModuleSchema;
 
-final class ModuleTester
+final class InstallerTester
 {
 
 	public function generateLoader(ModuleSchema $schema): BaseLoader
