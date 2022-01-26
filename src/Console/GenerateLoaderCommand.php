@@ -2,20 +2,26 @@
 
 namespace Orisai\Installer\Console;
 
+use Composer\Command\BaseCommand;
 use Orisai\Installer\Loader\LoaderGenerator;
 use Orisai\Installer\Modules\ModuleSchemaLocator;
 use Orisai\Installer\Modules\ModulesGenerator;
 use Orisai\Installer\Packages\PackagesDataStorage;
+use Orisai\Installer\SchemaName;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function assert;
 use function is_string;
+use function sprintf;
 
 /**
  * @internal
  */
-final class GenerateLoaderCommand extends BaseInstallerCommand
+final class GenerateLoaderCommand extends BaseCommand
 {
+
+	private const OPTION_FILE = 'file';
 
 	public static function getDefaultName(): string
 	{
@@ -28,6 +34,13 @@ final class GenerateLoaderCommand extends BaseInstallerCommand
 
 		$this->setName(self::getDefaultName());
 		$this->setDescription('Generate modules loader');
+
+		$this->addOption(
+			self::OPTION_FILE,
+			'f',
+			InputOption::VALUE_REQUIRED,
+			sprintf('Use different config file than %s (for tests)', SchemaName::DEFAULT_NAME),
+		);
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
