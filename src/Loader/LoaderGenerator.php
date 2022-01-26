@@ -8,7 +8,7 @@ use Nette\Utils\FileSystem;
 use Orisai\Exceptions\Logic\InvalidArgument;
 use Orisai\Exceptions\Logic\InvalidState;
 use Orisai\Exceptions\Message;
-use Orisai\Installer\Console\GenerateLoaderCommand;
+use Orisai\Installer\Console\InstallCommand;
 use Orisai\Installer\Modules\Module;
 use Orisai\Installer\Modules\Modules;
 use Orisai\Installer\Schema\ConfigFilePriority;
@@ -252,7 +252,7 @@ final class LoaderGenerator
 				))
 				->withSolution(sprintf(
 					'Remove or rename existing class and then run command `composer %s`',
-					GenerateLoaderCommand::getDefaultName(),
+					InstallCommand::getDefaultName(),
 				));
 
 			throw InvalidState::create()

@@ -18,14 +18,19 @@ use function sprintf;
 /**
  * @internal
  */
-final class GenerateLoaderCommand extends BaseCommand
+final class InstallCommand extends BaseCommand
 {
 
 	private const OPTION_FILE = 'file';
 
 	public static function getDefaultName(): string
 	{
-		return 'orisai:loader:generate';
+		return 'orisai:install';
+	}
+
+	public static function getDefaultDescription(): string
+	{
+		return 'Generate modules loader';
 	}
 
 	protected function configure(): void
@@ -33,7 +38,7 @@ final class GenerateLoaderCommand extends BaseCommand
 		parent::configure();
 
 		$this->setName(self::getDefaultName());
-		$this->setDescription('Generate modules loader');
+		$this->setDescription(self::getDefaultDescription());
 
 		$this->addOption(
 			self::OPTION_FILE,
