@@ -9,6 +9,7 @@ use Orisai\Installer\Schema\ModuleSchema;
 use Orisai\Installer\SchemaName;
 use function file_exists;
 use function get_debug_type;
+use function implode;
 
 final class ModuleSchemaLocator
 {
@@ -40,14 +41,19 @@ final class ModuleSchemaLocator
 
 	public function locateOrThrow(PackageData $data, ?string $schemaRelativeName = null): ModuleSchema
 	{
-		$schema = $this->locate($data, $schemaRelativeName);
+		$paths = [];
+		$schema = $this->locate($data, $schemaRelativeName, $paths);
 
 		if ($schema !== null) {
 			return $schema;
 		}
 
+		$pathsInline = implode(', ', $paths);
+
 		throw InvalidState::create()
-			->withMessage("Package '{$data->getName()}' does not have config file '$schemaRelativeName'.");
+			->withMessage(
+				"Schema file is missing in '{$data->getName()}' (one of $pathsInline).",
+			);
 	}
 
 	private function getSchema(PackageData $data, string $schemaRelativeName): ?ModuleSchema
