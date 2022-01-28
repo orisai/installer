@@ -27,6 +27,8 @@ final class ModuleSchemaLocator
 	): ?ModuleSchema
 	{
 		if ($schemaRelativeName !== null) {
+			$triedPaths[] = $schemaRelativeName;
+
 			return $this->getSchema($data, $schemaRelativeName);
 		}
 
@@ -92,8 +94,8 @@ final class ModuleSchemaLocator
 
 			throw InvalidArgument::create()
 				->withMessage(
-					"Package '{$data->getName()}' config file '$schemaRelativeName' " .
-					"has to return instance of '$schemaClass', '$configType' returned.",
+					"Schema file '$schemaRelativeName' of package '{$data->getName()}' " .
+					"should return '$schemaClass', '$configType' returned.",
 				);
 		}
 
