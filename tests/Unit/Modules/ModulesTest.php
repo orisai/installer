@@ -17,6 +17,7 @@ final class ModulesTest extends TestCase
 		$m1 = $this->createModule('foo/bar');
 		$m2 = $this->createModule('lorem/ipsum');
 		$modules = new Modules($root, $list = [
+			$root->getData()->getName() => $root,
 			$m1->getData()->getName() => $m1,
 			$m2->getData()->getName() => $m2,
 		]);

@@ -40,8 +40,6 @@ final class ModulesGenerator
 			$modules[$package->getName()] = $this->dataToModule($package, $schema);
 		}
 
-		$modules[$rootPackage->getName()] = $rootModule;
-
 		return new Modules(
 			$rootModule,
 			$this->sorter->getSortedModules($modules, $data),

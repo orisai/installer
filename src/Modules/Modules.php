@@ -19,6 +19,7 @@ final class Modules
 	public function __construct(Module $rootModule, array $modules)
 	{
 		$this->rootModule = $rootModule;
+		$modules[$rootModule->getData()->getName()] = $rootModule;
 		$this->modules = $modules;
 	}
 
