@@ -7,7 +7,6 @@ use Orisai\Exceptions\Message;
 use Orisai\Installer\SchemaName;
 use function array_keys;
 use function implode;
-use function sprintf;
 
 abstract class BaseLoader
 {
@@ -26,11 +25,6 @@ abstract class BaseLoader
 
 	/** @var array<string, mixed> */
 	protected array $modules = [];
-
-	final public function __construct()
-	{
-		// Disallow method override so it's safe to create magically
-	}
 
 	/**
 	 * @return array<int, string>
@@ -53,16 +47,19 @@ abstract class BaseLoader
 		return $resolved;
 	}
 
-	public function configureSwitch(string $switch, bool $value, bool $failOnMissing = true): void
+	public function configureSwitch(string $switch, bool $value, bool $throwOnMissing = true): void
 	{
-		if ($failOnMissing && !isset($this->switches[$switch])) {
+		if (!isset($this->switches[$switch])) {
+			if (!$throwOnMissing) {
+				return;
+			}
+
+			$schemaName = SchemaName::DEFAULT_NAME;
+			$switchesInline = implode(', ', array_keys($this->switches));
 			$message = Message::create()
-				->withContext(sprintf('Trying to set value of switch `%s`.', $switch))
-				->withProblem(sprintf('Switch is not defined by any of loaded `%s`.', SchemaName::DEFAULT_NAME))
-				->withSolution(sprintf(
-					'Do not configure switch or choose one of available: `%s`',
-					implode(', ', array_keys($this->switches)),
-				));
+				->withContext("Trying to set value of switch '$switch'.")
+				->withProblem("Switch is not defined by any of loaded '$schemaName'.")
+				->withSolution("Do not configure switch or choose one of available: '$switchesInline'.");
 
 			throw InvalidArgument::create()
 				->withMessage($message);

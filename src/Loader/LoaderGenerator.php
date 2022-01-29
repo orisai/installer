@@ -67,30 +67,13 @@ final class LoaderGenerator
 
 	public function generate(): BaseLoader
 	{
-		$inst = new class extends BaseLoader {
-
-			/**
-			 * @param array<int, mixed>    $schema
-			 * @param array<string, bool>  $switches
-			 * @param array<string, mixed> $modules
-			 */
-			public function setDependencies(array $schema, array $switches, array $modules): void
-			{
-				$this->schema = $schema;
-				$this->switches = $switches;
-				$this->modules = $modules;
-			}
-
-		};
-
 		$dependencies = $this->getDependencies();
-		$inst->setDependencies(
+
+		return new DynamicLoader(
 			$dependencies['schema'],
 			$dependencies['switches'],
 			$dependencies['modules'],
 		);
-
-		return $inst;
 	}
 
 	/**
