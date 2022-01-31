@@ -1,4 +1,8 @@
-<h1 align="center">Orisai Installer</h1>
+<h1 align="center">
+	<img src="https://github.com/orisai/.github/blob/main/images/repo_title.png" alt="Orisai"/>
+	<br/>
+	Installer
+</h1>
 
 <p align="center">
     <a href="https://getcomposer.org">Composer</a> installer for <a href="https://github.com/nette/di">nette/di</a> based packages
