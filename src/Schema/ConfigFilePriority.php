@@ -8,14 +8,14 @@ use function array_key_exists;
 final class ConfigFilePriority
 {
 
-	private const NORMAL = 1,
-		HIGH = 2,
-		LOW = 3;
+	private const Normal = 1,
+		High = 2,
+		Low = 3;
 
-	private const VALUES_AND_NAMES = [
-		self::NORMAL => 'normal',
-		self::HIGH => 'high',
-		self::LOW => 'low',
+	private const ValuesAndNames = [
+		self::Normal => 'normal',
+		self::High => 'high',
+		self::Low => 'low',
 	];
 
 	/** @readonly */
@@ -32,26 +32,26 @@ final class ConfigFilePriority
 
 	public static function normal(): self
 	{
-		return self::from(self::NORMAL);
+		return self::from(self::Normal);
 	}
 
 	public static function high(): self
 	{
-		return self::from(self::HIGH);
+		return self::from(self::High);
 	}
 
 	public static function low(): self
 	{
-		return self::from(self::LOW);
+		return self::from(self::Low);
 	}
 
 	public static function tryFrom(int $value): ?self
 	{
-		if (!array_key_exists($value, self::VALUES_AND_NAMES)) {
+		if (!array_key_exists($value, self::ValuesAndNames)) {
 			return null;
 		}
 
-		return new self(self::VALUES_AND_NAMES[$value], $value);
+		return new self(self::ValuesAndNames[$value], $value);
 	}
 
 	public static function from(int $value): self
@@ -71,7 +71,7 @@ final class ConfigFilePriority
 	public static function cases(): array
 	{
 		$cases = [];
-		foreach (self::VALUES_AND_NAMES as $value => $name) {
+		foreach (self::ValuesAndNames as $value => $name) {
 			$cases[] = self::from($value);
 		}
 

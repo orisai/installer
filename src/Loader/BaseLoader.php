@@ -12,10 +12,10 @@ abstract class BaseLoader
 {
 
 	public const
-		SCHEMA_ITEM_FILE = 'file',
-		SCHEMA_ITEM_SWITCHES = 'switches';
+		SchemaItemFile = 'file',
+		SchemaItemSwitches = 'switches';
 
-	public const META_ITEM_DIR = 'dir';
+	public const MetaItemDir = 'dir';
 
 	/** @var array<int, mixed> */
 	protected array $schema = [];
@@ -34,14 +34,14 @@ abstract class BaseLoader
 		$resolved = [];
 
 		foreach ($this->schema as $item) {
-			foreach ($item[self::SCHEMA_ITEM_SWITCHES] ?? [] as $switchName => $switchValue) {
+			foreach ($item[self::SchemaItemSwitches] ?? [] as $switchName => $switchValue) {
 				// One of switches values does not match, config file not included
 				if ($switchValue !== $this->switches[$switchName]) {
 					continue 2;
 				}
 			}
 
-			$resolved[] = $rootDir . '/' . $item[self::SCHEMA_ITEM_FILE];
+			$resolved[] = $rootDir . '/' . $item[self::SchemaItemFile];
 		}
 
 		return $resolved;
@@ -54,7 +54,7 @@ abstract class BaseLoader
 				return;
 			}
 
-			$schemaName = SchemaName::DEFAULT_NAME;
+			$schemaName = SchemaName::DefaultName;
 			$switchesInline = implode(', ', array_keys($this->switches));
 			$message = Message::create()
 				->withContext("Trying to set value of switch '$switch'.")
@@ -76,8 +76,8 @@ abstract class BaseLoader
 		$meta = [];
 
 		foreach ($this->modules as $moduleName => $moduleMeta) {
-			$dir = $moduleMeta[self::META_ITEM_DIR];
-			$moduleMeta[self::META_ITEM_DIR] = $dir === '' ? $rootDir : $rootDir . '/' . $dir;
+			$dir = $moduleMeta[self::MetaItemDir];
+			$moduleMeta[self::MetaItemDir] = $dir === '' ? $rootDir : $rootDir . '/' . $dir;
 
 			$meta[$moduleName] = $moduleMeta;
 		}

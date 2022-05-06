@@ -13,17 +13,17 @@ use function unserialize;
 final class PackagesDataStorage
 {
 
-	private const FILE = __DIR__ . '/../_generated/installer.dat';
+	private const File = __DIR__ . '/../_generated/installer.dat';
 
 	public static function save(PackagesData $data): void
 	{
-		FileSystem::write(self::FILE, serialize($data));
+		FileSystem::write(self::File, serialize($data));
 	}
 
 	public static function load(): PackagesData
 	{
 		$data = unserialize(
-			FileSystem::read(self::FILE),
+			FileSystem::read(self::File),
 			[
 				'allowed_classes' => [
 					PackagesData::class,

@@ -101,7 +101,7 @@ final class LoaderGenerator
 			$packageSchema = $module->getSchema();
 
 			$modulesMeta[$packageName] = [
-				BaseLoader::META_ITEM_DIR => $packageDirRelative,
+				BaseLoader::MetaItemDir => $packageDirRelative,
 			];
 
 			foreach ($packageSchema->getConfigFiles() as $configFile) {
@@ -113,7 +113,7 @@ final class LoaderGenerator
 				}
 
 				$item = [
-					BaseLoader::SCHEMA_ITEM_FILE => Path::makeRelative(
+					BaseLoader::SchemaItemFile => Path::makeRelative(
 						$configFile->getAbsolutePath(),
 						$this->modules->getRootModule()->getData()->getAbsolutePath(),
 					),
@@ -122,7 +122,7 @@ final class LoaderGenerator
 				$itemSwitches = $this->getConfigSwitches($configFile, $switches, $module);
 
 				if ($itemSwitches !== []) {
-					$item[BaseLoader::SCHEMA_ITEM_SWITCHES] = $itemSwitches;
+					$item[BaseLoader::SchemaItemSwitches] = $itemSwitches;
 				}
 
 				$itemsByPriority[$configFile->getPriority()->name][] = $item;
@@ -181,12 +181,12 @@ final class LoaderGenerator
 							$configFile->getAbsolutePath(),
 							$this->modules->getRootModule()->getData()->getAbsolutePath(),
 						),
-						SchemaName::DEFAULT_NAME,
+						SchemaName::DefaultName,
 						$package->getName(),
 					))
 					->withProblem(sprintf(
 						'Switch is not defined by any of previously loaded `%s` schema files.',
-						SchemaName::DEFAULT_NAME,
+						SchemaName::DefaultName,
 					))
 					->withSolution(sprintf(
 						'Do not configure switch or define one or choose one of already loaded: `%s`',

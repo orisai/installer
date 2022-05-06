@@ -33,7 +33,7 @@ final class ModuleSchemaLocatorTest extends TestCase
 		$schema = $this->locator->locate($package, null, $paths);
 
 		self::assertInstanceOf(ModuleSchema::class, $schema);
-		self::assertSame(SchemaName::FILE_LOCATIONS, $paths);
+		self::assertSame(SchemaName::FileLocations, $paths);
 
 		$this->locator->locateOrThrow($package);
 	}
@@ -72,7 +72,7 @@ final class ModuleSchemaLocatorTest extends TestCase
 		$schema = $this->locator->locate($package, null, $paths);
 
 		self::assertNull($schema);
-		self::assertSame(SchemaName::FILE_LOCATIONS, $paths);
+		self::assertSame(SchemaName::FileLocations, $paths);
 
 		$this->expectException(InvalidState::class);
 		$this->expectExceptionMessage(

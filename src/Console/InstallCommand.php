@@ -21,7 +21,7 @@ use function sprintf;
 final class InstallCommand extends BaseCommand
 {
 
-	private const OPTION_FILE = 'file';
+	private const OptionFile = 'file';
 
 	public static function getDefaultName(): string
 	{
@@ -41,16 +41,16 @@ final class InstallCommand extends BaseCommand
 		$this->setDescription(self::getDefaultDescription());
 
 		$this->addOption(
-			self::OPTION_FILE,
+			self::OptionFile,
 			'f',
 			InputOption::VALUE_REQUIRED,
-			sprintf('Use different config file than %s (for tests)', SchemaName::DEFAULT_NAME),
+			sprintf('Use different config file than %s (for tests)', SchemaName::DefaultName),
 		);
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output): int
 	{
-		$schemaRelativeName = $input->getOption(self::OPTION_FILE);
+		$schemaRelativeName = $input->getOption(self::OptionFile);
 		assert(is_string($schemaRelativeName) || $schemaRelativeName === null);
 
 		$data = PackagesDataStorage::load();

@@ -8,12 +8,12 @@ namespace Orisai\Installer;
 final class SchemaName
 {
 
-	public const DEFAULT_NAME = 'Orisai.php';
+	public const DefaultName = 'Orisai.php';
 
-	public const FILE_LOCATIONS = [
-		self::DEFAULT_NAME,
-		'src/' . self::DEFAULT_NAME,
-		'app/' . self::DEFAULT_NAME,
+	public const FileLocations = [
+		self::DefaultName,
+		'src/' . self::DefaultName,
+		'app/' . self::DefaultName,
 	];
 
 }

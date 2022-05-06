@@ -33,7 +33,7 @@ final class ModuleSchemaLocator
 		}
 
 		$schemas = [];
-		foreach (SchemaName::FILE_LOCATIONS as $location) {
+		foreach (SchemaName::FileLocations as $location) {
 			$schema = $this->getSchema($data, $location);
 			$triedPaths[] = $location;
 
