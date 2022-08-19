@@ -11,14 +11,6 @@ use function implode;
 abstract class BaseLoader
 {
 
-	/** @internal */
-	public const
-		SchemaItemFile = 'file',
-		SchemaItemSwitches = 'switches';
-
-	/** @internal */
-	public const MetaItemDir = 'dir';
-
 	/** @var array<int, array{file: string, switches?: array<string, bool>}> */
 	protected array $schema = [];
 
@@ -36,14 +28,14 @@ abstract class BaseLoader
 		$resolved = [];
 
 		foreach ($this->schema as $item) {
-			foreach ($item[self::SchemaItemSwitches] ?? [] as $switchName => $switchValue) {
+			foreach ($item[LoaderKey::SchemaSwitches] ?? [] as $switchName => $switchValue) {
 				// One of switches values does not match, config file not included
 				if ($switchValue !== $this->switches[$switchName]) {
 					continue 2;
 				}
 			}
 
-			$resolved[] = $rootDir . '/' . $item[self::SchemaItemFile];
+			$resolved[] = $rootDir . '/' . $item[LoaderKey::SchemaFile];
 		}
 
 		return $resolved;
@@ -78,8 +70,8 @@ abstract class BaseLoader
 		$meta = [];
 
 		foreach ($this->modules as $moduleName => $moduleMeta) {
-			$dir = $moduleMeta[self::MetaItemDir];
-			$moduleMeta[self::MetaItemDir] = $dir === '' ? $rootDir : $rootDir . '/' . $dir;
+			$dir = $moduleMeta[LoaderKey::MetaDir];
+			$moduleMeta[LoaderKey::MetaDir] = $dir === '' ? $rootDir : "$rootDir/$dir";
 
 			$meta[$moduleName] = $moduleMeta;
 		}

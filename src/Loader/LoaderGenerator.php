@@ -101,7 +101,7 @@ final class LoaderGenerator
 			$packageSchema = $module->getSchema();
 
 			$modulesMeta[$packageName] = [
-				BaseLoader::MetaItemDir => $packageDirRelative,
+				LoaderKey::MetaDir => $packageDirRelative,
 			];
 
 			foreach ($packageSchema->getConfigFiles() as $configFile) {
@@ -113,7 +113,7 @@ final class LoaderGenerator
 				}
 
 				$item = [
-					BaseLoader::SchemaItemFile => Path::makeRelative(
+					LoaderKey::SchemaFile => Path::makeRelative(
 						$configFile->getAbsolutePath(),
 						$this->modules->getRootModule()->getData()->getAbsolutePath(),
 					),
@@ -122,7 +122,7 @@ final class LoaderGenerator
 				$itemSwitches = $this->getConfigSwitches($configFile, $switches, $module);
 
 				if ($itemSwitches !== []) {
-					$item[BaseLoader::SchemaItemSwitches] = $itemSwitches;
+					$item[LoaderKey::SchemaSwitches] = $itemSwitches;
 				}
 
 				$itemsByPriority[$configFile->getPriority()->name][] = $item;
