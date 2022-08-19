@@ -15,9 +15,6 @@ final class ModuleSchema
 	/** @var array<string, bool> */
 	private array $switches = [];
 
-	/** @var array<string, SubmoduleSchema> */
-	private array $monorepoPackages = [];
-
 	public function setLoader(string $file, string $class): void
 	{
 		$this->loader = new LoaderSchema($file, $class);
@@ -33,11 +30,6 @@ final class ModuleSchema
 	public function addSwitch(string $name, bool $defaultValue): void
 	{
 		$this->switches[$name] = $defaultValue;
-	}
-
-	public function addSubmodule(string $name, string $path): SubmoduleSchema
-	{
-		return $this->monorepoPackages[$name] = new SubmoduleSchema($name, $path);
 	}
 
 	/**
@@ -66,16 +58,6 @@ final class ModuleSchema
 	public function getSwitches(): array
 	{
 		return $this->switches;
-	}
-
-	/**
-	 * @return array<string, SubmoduleSchema>
-	 *
-	 * @internal
-	 */
-	public function getMonorepoSubmodules(): array
-	{
-		return $this->monorepoPackages;
 	}
 
 }

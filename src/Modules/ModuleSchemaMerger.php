@@ -41,11 +41,6 @@ final class ModuleSchemaMerger
 		foreach ($merged->getSwitches() as $name => $value) {
 			$new->addSwitch($name, $value);
 		}
-
-		foreach ($merged->getMonorepoSubmodules() as $submodule) {
-			$newSubmodule = $new->addSubmodule($submodule->getName(), $submodule->getPath());
-			$newSubmodule->setOptional($submodule->isOptional());
-		}
 	}
 
 }

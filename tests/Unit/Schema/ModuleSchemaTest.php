@@ -43,19 +43,6 @@ final class ModuleSchemaTest extends TestCase
 			],
 			$schema->getSwitches(),
 		);
-
-		self::assertSame([], $schema->getMonorepoSubmodules());
-		$submodule1 = $schema->addSubmodule('vendor/foo', '/packages/foo');
-		$submodule2 = $schema->addSubmodule('vendor/bar', '/packages/bar');
-		self::assertSame(
-			[
-				'vendor/foo' => $submodule1,
-				'vendor/bar' => $submodule2,
-			],
-			$schema->getMonorepoSubmodules(),
-		);
-		self::assertSame($schema->getMonorepoSubmodules()['vendor/foo'], $submodule1);
-		self::assertSame($schema->getMonorepoSubmodules()['vendor/bar'], $submodule2);
 	}
 
 }

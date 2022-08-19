@@ -103,34 +103,4 @@ final class ModuleSchemaMergerTest extends TestCase
 		);
 	}
 
-	public function testSubmodulesMerge(): void
-	{
-		$parent = new ModuleSchema();
-		$child = new ModuleSchema();
-
-		$a = $parent->addSubmodule('a', '/parent/a');
-		$b = $parent->addSubmodule('b', '/parent/b');
-		$b->setOptional();
-		$b2 = $child->addSubmodule('b', '/child/b');
-		$c = $child->addSubmodule('c', '/child/c');
-		$c->setOptional();
-
-		$merged = $this->merger->merge($parent, $child);
-
-		// parent options are discarded, submodule is merged without any settings
-		$b3 = $merged->getMonorepoSubmodules()['b'];
-		self::assertEquals($b3, $b2);
-		self::assertNotEquals($b3, $b);
-		self::assertFalse($b3->isOptional());
-
-		self::assertEquals(
-			[
-				$a->getName() => $a,
-				$b2->getName() => $b2,
-				$c->getName() => $c,
-			],
-			$merged->getMonorepoSubmodules(),
-		);
-	}
-
 }
