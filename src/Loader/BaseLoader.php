@@ -11,19 +11,21 @@ use function implode;
 abstract class BaseLoader
 {
 
+	/** @internal */
 	public const
 		SchemaItemFile = 'file',
 		SchemaItemSwitches = 'switches';
 
+	/** @internal */
 	public const MetaItemDir = 'dir';
 
-	/** @var array<int, mixed> */
+	/** @var array<int, array{file: string, switches?: array<string, bool>}> */
 	protected array $schema = [];
 
 	/** @var array<string, bool> */
 	protected array $switches = [];
 
-	/** @var array<string, mixed> */
+	/** @var array<string, array{dir: string}> */
 	protected array $modules = [];
 
 	/**

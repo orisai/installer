@@ -9,9 +9,9 @@ final class DynamicLoader extends BaseLoader
 {
 
 	/**
-	 * @param array<int, mixed>    $schema
+	 * @param array<int, array{file: string, switches?: array<string, bool>}> $schema
 	 * @param array<string, bool>  $switches
-	 * @param array<string, mixed> $modules
+	 * @param array<string, array{dir: string}> $modules
 	 */
 	public function __construct(array $schema, array $switches, array $modules)
 	{
