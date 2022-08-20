@@ -15,7 +15,7 @@ final class ConfigFileSchemaTest extends TestCase
 		self::assertSame($absolutePath, $schema->getAbsolutePath());
 
 		self::assertEquals(ConfigFilePriority::normal(), $schema->getPriority());
-		$schema->setPriority($priority = ConfigFilePriority::low());
+		$schema->setPriority($priority = ConfigFilePriority::last());
 		self::assertSame($priority, $schema->getPriority());
 
 		self::assertSame([], $schema->getRequiredPackages());

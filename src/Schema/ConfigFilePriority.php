@@ -9,13 +9,13 @@ final class ConfigFilePriority
 {
 
 	private const Normal = 1,
-		High = 2,
-		Low = 3;
+		First = 2,
+		Last = 3;
 
 	private const ValuesAndNames = [
 		self::Normal => 'normal',
-		self::High => 'high',
-		self::Low => 'low',
+		self::First => 'first',
+		self::Last => 'last',
 	];
 
 	/** @readonly */
@@ -35,14 +35,14 @@ final class ConfigFilePriority
 		return self::from(self::Normal);
 	}
 
-	public static function high(): self
+	public static function first(): self
 	{
-		return self::from(self::High);
+		return self::from(self::First);
 	}
 
-	public static function low(): self
+	public static function last(): self
 	{
-		return self::from(self::Low);
+		return self::from(self::Last);
 	}
 
 	public static function tryFrom(int $value): ?self

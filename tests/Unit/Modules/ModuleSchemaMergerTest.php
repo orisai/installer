@@ -73,13 +73,13 @@ final class ModuleSchemaMergerTest extends TestCase
 		$a = $parent->addConfigFile('/parent.neon');
 
 		$b = $parent->addConfigFile('/overridden.neon');
-		$b->setPriority(ConfigFilePriority::low());
+		$b->setPriority(ConfigFilePriority::last());
 		$b->addRequiredSwitch('switch');
 		$b->addRequiredPackage('vendor/required');
 		$b2 = $child->addConfigFile('/overridden.neon');
 
 		$c = $child->addConfigFile('/child.neon');
-		$c->setPriority(ConfigFilePriority::low());
+		$c->setPriority(ConfigFilePriority::last());
 		$c->addRequiredSwitch('switch');
 		$c->addRequiredPackage('vendor/required');
 

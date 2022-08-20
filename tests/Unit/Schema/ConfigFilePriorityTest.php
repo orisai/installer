@@ -13,16 +13,16 @@ final class ConfigFilePriorityTest extends TestCase
 	{
 		self::assertSame(1, ConfigFilePriority::normal()->value);
 		self::assertSame('normal', ConfigFilePriority::normal()->name);
-		self::assertSame(2, ConfigFilePriority::high()->value);
-		self::assertSame('high', ConfigFilePriority::high()->name);
-		self::assertSame(3, ConfigFilePriority::low()->value);
-		self::assertSame('low', ConfigFilePriority::low()->name);
+		self::assertSame(2, ConfigFilePriority::first()->value);
+		self::assertSame('first', ConfigFilePriority::first()->name);
+		self::assertSame(3, ConfigFilePriority::last()->value);
+		self::assertSame('last', ConfigFilePriority::last()->name);
 
 		self::assertEquals(
 			[
 				ConfigFilePriority::normal(),
-				ConfigFilePriority::high(),
-				ConfigFilePriority::low(),
+				ConfigFilePriority::first(),
+				ConfigFilePriority::last(),
 			],
 			ConfigFilePriority::cases(),
 		);

@@ -89,9 +89,9 @@ final class LoaderGenerator
 		$modulesMeta = [];
 
 		$itemsByPriority = [
-			ConfigFilePriority::high()->name => [],
+			ConfigFilePriority::first()->name => [],
 			ConfigFilePriority::normal()->name => [],
-			ConfigFilePriority::low()->name => [],
+			ConfigFilePriority::last()->name => [],
 		];
 
 		foreach ($modules as $module) {
@@ -132,9 +132,9 @@ final class LoaderGenerator
 		$modulesMeta['__root__'] = $modulesMeta[$this->modules->getRootModule()->getData()->getName()];
 
 		$schema = array_merge(
-			$itemsByPriority[ConfigFilePriority::high()->name],
+			$itemsByPriority[ConfigFilePriority::first()->name],
 			$itemsByPriority[ConfigFilePriority::normal()->name],
-			$itemsByPriority[ConfigFilePriority::low()->name],
+			$itemsByPriority[ConfigFilePriority::last()->name],
 		);
 
 		return [

@@ -146,10 +146,10 @@ We may be *rarely* need to load config before or after configs loaded in normal 
 use Orisai\Installer\Schema\ConfigFilePriority;
 
 $loadFirstConfig = $schema->addConfigFile(__DIR__ . '/src/loadFirst.neon');
-$loadFirstConfig->setPriority(ConfigFilePriority::high());
+$loadFirstConfig->setPriority(ConfigFilePriority::first());
 
 $loadLastConfig = $schema->addConfigFile(__DIR__ . '/src/loadLast.neon');
-$loadLastConfig->setPriority(ConfigFilePriority::low());
+$loadLastConfig->setPriority(ConfigFilePriority::last());
 ```
 
 ## Loader
