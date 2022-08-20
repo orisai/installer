@@ -22,8 +22,16 @@
 
 Install with [Composer](https://getcomposer.org)
 
+In project
+
 ```sh
 composer require orisai/installer
+```
+
+In library
+
+```sh
+composer require --dev orisai/installer
 ```
 
 ## Quickstart
