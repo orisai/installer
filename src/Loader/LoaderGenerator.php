@@ -168,10 +168,10 @@ final class LoaderGenerator
 		Module $module
 	): array
 	{
-		$itemSwitches = $configFile->getRequiredSwitchValues();
+		$configSwitches = $configFile->getSwitches();
 		$package = $module->getData();
 
-		foreach ($itemSwitches as $itemSwitchName => $itemSwitchValue) {
+		foreach ($configSwitches as $itemSwitchName => $itemSwitchValue) {
 			if (!isset($switches[$itemSwitchName])) {
 				$message = Message::create()
 					->withContext(sprintf(
@@ -198,7 +198,7 @@ final class LoaderGenerator
 			}
 		}
 
-		return $itemSwitches;
+		return $configSwitches;
 	}
 
 	/**

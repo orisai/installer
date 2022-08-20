@@ -29,15 +29,15 @@ final class ConfigFileSchemaTest extends TestCase
 			$schema->getRequiredPackages(),
 		);
 
-		self::assertSame([], $schema->getRequiredSwitchValues());
-		$schema->setRequiredSwitchValue('a', false);
-		$schema->setRequiredSwitchValue('b', true);
+		self::assertSame([], $schema->getSwitches());
+		$schema->addForbiddenSwitch('a');
+		$schema->addRequiredSwitch('b');
 		self::assertSame(
 			[
 				'a' => false,
 				'b' => true,
 			],
-			$schema->getRequiredSwitchValues(),
+			$schema->getSwitches(),
 		);
 	}
 

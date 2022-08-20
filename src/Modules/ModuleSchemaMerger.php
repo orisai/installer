@@ -33,8 +33,12 @@ final class ModuleSchemaMerger
 				$newFile->addRequiredPackage($package);
 			}
 
-			foreach ($file->getRequiredSwitchValues() as $name => $value) {
-				$newFile->setRequiredSwitchValue($name, $value);
+			foreach ($file->getSwitches() as $name => $value) {
+				if ($value) {
+					$newFile->addRequiredSwitch($name);
+				} else {
+					$newFile->addForbiddenSwitch($name);
+				}
 			}
 		}
 

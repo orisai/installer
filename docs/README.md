@@ -102,10 +102,36 @@ $objectMapperConfig->addRequiredPackage('orisai/object-mapper');
 
 Config files could be loaded based on a runtime switch
 
+Preferred way is to require switch to be turned on (set to true)
+
 ```php
 $httpsConfig = $schema->addConfigFile(__DIR__ . '/src/https.neon');
-$httpsConfig->setRequiredSwitchValue('httpsOnly', true);
+$httpsConfig->addRequiredSwitch('httpsOnly');
+```
+
+But we may also add config only if switch is turned off (set to false)
+
+```php
+$httpsConfig = $schema->addConfigFile(__DIR__ . '/src/https.neon');
+$httpsConfig->addForbiddenSwitch('httpOnly');
+```
+
+Each switch must be defined by schema and have a default value
+
+```php
 $schema->addSwitch('httpsOnly', false);
+```
+
+Switch can be turned on/off in runtime via loader
+
+```php
+use Orisai\Installer\AutomaticConfigurator;
+use Orisai\Installer\Loader\DefaultLoader;
+
+$loader = new DefaultLoader();
+$loader->configureSwitch('httpsOnly', true);
+
+$configurator = new AutomaticConfigurator($rootDir, $loader);
 ```
 
 ### Loading order and priority

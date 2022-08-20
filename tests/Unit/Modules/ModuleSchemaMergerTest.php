@@ -74,13 +74,13 @@ final class ModuleSchemaMergerTest extends TestCase
 
 		$b = $parent->addConfigFile('/overridden.neon');
 		$b->setPriority(ConfigFilePriority::low());
-		$b->setRequiredSwitchValue('switch', true);
+		$b->addRequiredSwitch('switch');
 		$b->addRequiredPackage('vendor/required');
 		$b2 = $child->addConfigFile('/overridden.neon');
 
 		$c = $child->addConfigFile('/child.neon');
 		$c->setPriority(ConfigFilePriority::low());
-		$c->setRequiredSwitchValue('switch', true);
+		$c->addRequiredSwitch('switch');
 		$c->addRequiredPackage('vendor/required');
 
 		$merged = $this->merger->merge($parent, $child);
@@ -90,7 +90,7 @@ final class ModuleSchemaMergerTest extends TestCase
 		self::assertEquals($b3, $b2);
 		self::assertNotEquals($b3, $b);
 		self::assertNotEquals($b3->getPriority(), $b->getPriority());
-		self::assertSame([], $b3->getRequiredSwitchValues());
+		self::assertSame([], $b3->getSwitches());
 		self::assertSame([], $b3->getRequiredPackages());
 
 		self::assertEquals(

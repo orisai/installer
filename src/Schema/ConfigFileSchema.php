@@ -34,9 +34,14 @@ final class ConfigFileSchema
 		$this->requiredPackages[] = $package;
 	}
 
-	public function setRequiredSwitchValue(string $switch, bool $value): void
+	public function addRequiredSwitch(string $switch): void
 	{
-		$this->requiredSwitchValues[$switch] = $value;
+		$this->requiredSwitchValues[$switch] = true;
+	}
+
+	public function addForbiddenSwitch(string $switch): void
+	{
+		$this->requiredSwitchValues[$switch] = false;
 	}
 
 	/**
@@ -70,7 +75,7 @@ final class ConfigFileSchema
 	 *
 	 * @internal
 	 */
-	public function getRequiredSwitchValues(): array
+	public function getSwitches(): array
 	{
 		return $this->requiredSwitchValues;
 	}
