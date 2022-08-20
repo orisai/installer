@@ -5,7 +5,8 @@
 </h1>
 
 <p align="center">
-    <a href="https://getcomposer.org">Composer</a> installer for <a href="https://github.com/nette/di">nette/di</a> based packages
+	<a href="https://getcomposer.org">Composer</a> installer and configurator for
+	<a href="https://github.com/orisai/cmf">Orisai CMF</a> / <a href="https://nette.org">Nette</a> packages
 </p>
 
 <p align="center">

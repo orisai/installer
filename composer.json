@@ -1,10 +1,12 @@
 {
 	"name": "orisai/installer",
-	"description": "Composer installer for nette/di based packages",
+	"description": "Composer installer and configurator for Orisai CMF/Nette packages",
 	"keywords": [
-		"bootstrap",
+		"config",
 		"configurator",
-		"DI",
+		"composer",
+		"composer-installer",
+		"composer-plugin",
 		"installer",
 		"nette",
 		"orisai"

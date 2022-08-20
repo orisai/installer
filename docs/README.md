@@ -1,12 +1,22 @@
 # Installer
 
-[Composer](https://getcomposer.org) installer for [nette/di](https://github.com/nette/di/) based packages
+[Composer](https://getcomposer.org) installer and configurator for
+[Orisai CMF](https://github.com/orisai/cmf) / [Nette](https://nette.org) packages
 
 ## Content
 
 - [Setup](#setup)
-- [Schema](#schema)
-- [Automatic configurator](#automatic-configurator)
+- [Quickstart](#quickstart)
+- [Config files](#config-files)
+	- [Load config if dependency is available](#load-config-if-dependency-is-available)
+	- [Load config if requested](#load-config-if-requested)
+	- [Loading order and priority](#loading-order-and-priority)
+- [Loader](#loader)
+	- [Regenerating loader](#regenerating-loader)
+	- [Custom loader](#custom-loader)
+- [Schema location](#schema-location)
+- [Configurator integration](#configurator-integration)
+- [Tests](#tests)
 
 ## Setup
 
@@ -16,62 +26,178 @@ Install with [Composer](https://getcomposer.org)
 composer require orisai/installer
 ```
 
-## Schema
+## Quickstart
 
-`orisai.php`
+Create file `Orisai.php` in root of your project with following content to activate plugin
 
 ```php
-use Orisai\Installer\Schema\ConfigFilePriority;
 use Orisai\Installer\Schema\ModuleSchema;
 
 $schema = new ModuleSchema();
 
-// generated code with all packages and their configs
-// root-only
-$schema->setLoader(
-	__DIR__ . '/src/Loader.php',
-	App\Loader::class,
-);
-
-// config file provided by current package
-$schema->addConfigFile(__DIR__ . '/src/wiring.neon');
-
-$httpsConfig = $schema->addConfigFile(__DIR__ . '/src/https.neon');
-// switch and its value required to include this config file
-$httpsConfig->setRequiredSwitchValue('httpsOnly', true);
-// package required to be installed to include this config file
-$httpsConfig->addRequiredPackage('vendor/package');
-// change loading priority of config file
-// by default configs are ordered by package priority in dependency tree and added to 'normal' group
-$httpsConfig->setPriority(ConfigFilePriority::normal());
-
-// enable/disable config file by runtime switch
-$schema->addSwitch('httpsOnly', false);
-
-// packages which are part of monorepo are not really considered installed in monorepo
-// this simulates their existence for purpose of in-monorepo development
-// root-only
-$schema->addSubmodule('vendor/package', __DIR__ . '/packages/submodule-a')
-	->setOptional(false);
-
 return $schema;
 ```
 
-## Automatic configurator
-
-Automatic configurator is a replacement for [nette/bootstrap](https://github.com/nette/bootstrap) `Configurator` and
-[orisai/nette-di](https://github.com/orisai/nette-di) `ManualConfigurator`.
-
-API is exactly same as for `ManualConfigurator`, except the `addConfig()` method which is replaced by internal calls
-to `Loader`. Check the [orisai/nette-di](https://github.com/orisai/nette-di) documentation first to learn how to use the configurator.
+Add config files (these which are used in `Bootstrap.php`)
 
 ```php
-use App\Boot\Loader;
-use Orisai\Installer\AutomaticConfigurator;
+$schema->addConfigFile(__DIR__ . '/src/wiring.neon');
+```
 
-$configurator = new AutomaticConfigurator($rootDir, new Loader());
+Regenerate loader
+
+```sh
+composer orisai:install
+```
+
+Use loader with custom configurator in `Bootstrap.php`
+
+```diff
+namespace App;
+
+-use OriNette\DI\ManualConfigurator;
++use Orisai\Installer\AutomaticConfigurator;
+use Orisai\Installer\Loader\DefaultLoader;
+use function dirname;
+
+final class Bootstrap
+{
+
+	public static function boot(): void
+	{
+-		$configurator = new ManualConfigurator(dirname(__DIR__));
++		$configurator = new AutomaticConfigurator(dirname(__DIR__), new DefaultLoader());
+-
+-		$configurator->addConfig(__DIR__ . '/wiring.neon');
+		// Other options
+
+		return $configurator;
+	}
+
+}
+```
+
+And now all config files from application and all Composer packages with orisai/installer support are loaded
+automatically.
+
+## Config files
+
+Each module can provide its configuration files to be loaded into app via [Loader](#loader)
+
+```php
+$schema->addConfigFile(__DIR__ . '/src/wiring.neon');
+```
+
+### Load config if dependency is available
+
+Config file is loaded only if all required packages are installed
+
+```php
+// package required to be installed to include this config file
+$objectMapperConfig = $schema->addConfigFile(__DIR__ . '/src/object-mapper.neon');
+$objectMapperConfig->addRequiredPackage('orisai/object-mapper');
+```
+
+### Load config if requested
+
+Config files could be loaded based on a runtime switch
+
+```php
+$httpsConfig = $schema->addConfigFile(__DIR__ . '/src/https.neon');
+$httpsConfig->setRequiredSwitchValue('httpsOnly', true);
+$schema->addSwitch('httpsOnly', false);
+```
+
+### Loading order and priority
+
+To load config files from all packages in correct order, installer orders packages by dependencies. For example if our
+application depends on A, A depends on B and B depends on C, then config files are loaded in order C, B, A, application
+– from packages with no dependencies to packages with most dependencies.
+
+We may be *rarely* need to load config before or after configs loaded in normal order:
+
+```php
+use Orisai\Installer\Schema\ConfigFilePriority;
+
+$loadFirstConfig = $schema->addConfigFile(__DIR__ . '/src/loadFirst.neon');
+$loadFirstConfig->setPriority(ConfigFilePriority::high());
+
+$loadLastConfig = $schema->addConfigFile(__DIR__ . '/src/loadLast.neon');
+$loadLastConfig->setPriority(ConfigFilePriority::low());
+```
+
+## Loader
+
+Loader is the class responsible for providing config files and metadata about packages using the installer.
+
+It is automatically generated by installer and by default is implemented by `Orisai\Installer\DefaultLoader`.
+
+### Regenerating loader
+
+After modifying schema, we have to regenerate loader manually
+
+```sh
+composer orisai:install
+```
+
+After installing, updating or removing Composer packages, loader is updated automatically
+
+### Custom loader
+
+We may set loader to generate with different class name and location
+
+```php
+$schema->setLoader(
+	__DIR__ . '/src/Loader.php',
+	\App\Loader::class,
+);
+```
+
+## Schema location
+
+Schema of each package is located automatically. To be loaded it must be one of:
+
+- `Orisai.php`
+- `src/Orisai.php`
+- `app/Orisai.php`
+
+## Configurator integration
+
+Automatic configurator is a replacement for [nette/bootstrap](https://github.com/nette/bootstrap) `Configurator` and
+[orisai/nette-di](https://github.com/orisai/nette-di) `ManualConfigurator`, for compatibility with installer's loader.
+
+API is exactly same as for `ManualConfigurator`, except the `addConfig()` method which is replaced by internal calls
+to `Loader`. Check the [orisai/nette-di](https://github.com/orisai/nette-di) documentation first to learn how to use the
+configurator.
+
+```php
+use Orisai\Installer\AutomaticConfigurator;
+use Orisai\Installer\Loader\DefaultLoader;
+
+$configurator = new AutomaticConfigurator($rootDir, new DefaultLoader());
 ```
 
 In DI are available additional parameters in `modules` key. They contain useful info about installed modules.
 
-Installer config file switches `consoleMode` and `debugMode` switches are pre-configured to always load right configuration subset.
+Installer also configures predefined [switches](#load-config-if-requested) `consoleMode` and `debugMode` accordingly to
+value of parameters of same name.
+
+## Tests
+
+For testing our application we may utilize `InstallerTester`. It generates the same loader as is generated for
+application runtime and on top of that allows us to provide test-specific schema.
+
+```php
+use Orisai\Installer\AutomaticConfigurator;
+use Orisai\Installer\Schema\ModuleSchema;
+use Orisai\Installer\Tester\InstallerTester;
+
+$tester = new InstallerTester();
+$schema = new ModuleSchema();
+$schema->addConfigFile(__DIR__ . '/testConfig.neon');
+
+$loader = $tester->generateLoader($schema);
+$configurator = new AutomaticConfigurator($rootDir, $loader);
+// ...
+```
+
