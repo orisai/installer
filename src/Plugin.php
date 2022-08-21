@@ -25,9 +25,6 @@ use function implode;
 final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public static function getSubscribedEvents(): array
 	{
 		return [
@@ -37,9 +34,6 @@ final class Plugin implements PluginInterface, EventSubscriberInterface, Capable
 		];
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getCapabilities(): array
 	{
 		return [

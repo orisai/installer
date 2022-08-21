@@ -19,9 +19,6 @@ final class AutomaticConfigurator extends BaseConfigurator
 		]);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	protected function loadConfigFiles(): array
 	{
 		return $this->loader->loadConfigFiles($this->rootDir);

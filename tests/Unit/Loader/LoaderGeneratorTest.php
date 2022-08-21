@@ -60,13 +60,8 @@ use Orisai\Installer\Loader\BaseLoader;
  */
 final class Bar extends BaseLoader
 {
-	/** {@inheritdoc} */
 	protected array $schema = [];
-
-	/** {@inheritdoc} */
 	protected array $switches = [];
-
-	/** {@inheritdoc} */
 	protected array $modules = ['__root__' => ['dir' => '']];
 }
 
@@ -116,13 +111,8 @@ declare(strict_types=1);
  */
 final class Bar extends Orisai\Installer\Loader\BaseLoader
 {
-	/** {@inheritdoc} */
 	protected array $schema = [];
-
-	/** {@inheritdoc} */
 	protected array $switches = [];
-
-	/** {@inheritdoc} */
 	protected array $modules = ['__root__' => ['dir' => '']];
 }
 

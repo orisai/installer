@@ -278,18 +278,15 @@ final class LoaderGenerator
 
 		$class->addProperty('schema', $schema)
 			->setVisibility(ClassType::VISIBILITY_PROTECTED)
-			->setType('array')
-			->setComment('{@inheritdoc}');
+			->setType('array');
 
 		$class->addProperty('switches', $switches)
 			->setVisibility(ClassType::VISIBILITY_PROTECTED)
-			->setType('array')
-			->setComment('{@inheritdoc}');
+			->setType('array');
 
 		$class->addProperty('modules', $modulesMeta)
 			->setVisibility(ClassType::VISIBILITY_PROTECTED)
-			->setType('array')
-			->setComment('{@inheritdoc}');
+			->setType('array');
 
 		return $file;
 	}
