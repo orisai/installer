@@ -18,7 +18,6 @@ use Orisai\Installer\SchemaName;
 use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function array_merge;
-use function assert;
 use function class_exists;
 use function implode;
 use function is_subclass_of;
@@ -215,9 +214,7 @@ final class LoaderGenerator
 			$namespaceString = null;
 		} else {
 			$classString = substr($fqn, $lastSlashPosition + 1);
-			assert($classString !== false);
 			$namespaceString = substr($fqn, 0, $lastSlashPosition);
-			assert($namespaceString !== false);
 		}
 
 		return [

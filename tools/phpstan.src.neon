@@ -9,3 +9,7 @@ parameters:
 		# Cannot happen - used string is always same
 		- message: '#^Parameter \#1 \$string of function substr expects string, string\|false given\.$#'
 		  path: ../src/Loader/LoaderGenerator.php
+
+		# nette/php-generater <4.0.0 support
+		- message: '#^Fetching deprecated class constant VISIBILITY_PROTECTED of class Nette\\PhpGenerator\\ClassType\.$#'
+		  path: ../src/Loader/LoaderGenerator.php

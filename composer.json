@@ -24,7 +24,7 @@
 		"php": ">=7.4.0 <8.2.0",
 		"ext-mbstring": "*",
 		"composer-plugin-api": "^2.0.0",
-		"nette/php-generator": "^3.4.0",
+		"nette/php-generator": "^3.4.0|^4.0.0",
 		"orisai/exceptions": "^1.0.0",
 		"orisai/nette-di": "^1.0.0",
 		"symfony/filesystem": "^5.3.0|^6.0.0",
