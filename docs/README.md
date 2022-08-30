@@ -71,7 +71,8 @@ use function dirname;
 final class Bootstrap
 {
 
-	public static function boot(): void
+-	public static function boot(): ManualConfigurator
++	public static function boot(): AutomaticConfigurator
 	{
 -		$configurator = new ManualConfigurator(dirname(__DIR__));
 +		$configurator = new AutomaticConfigurator(dirname(__DIR__), new DefaultLoader());
