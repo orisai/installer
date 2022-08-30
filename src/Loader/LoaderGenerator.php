@@ -2,6 +2,7 @@
 
 namespace Orisai\Installer\Loader;
 
+use Nette\Neon\Neon;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile;
 use Nette\Utils\FileSystem;
@@ -19,6 +20,7 @@ use Symfony\Component\Filesystem\Path;
 use function array_keys;
 use function array_merge;
 use function class_exists;
+use function dirname;
 use function implode;
 use function is_subclass_of;
 use function sprintf;
@@ -60,7 +62,19 @@ final class LoaderGenerator
 			$dependencies['switches'],
 			$dependencies['modules'],
 		);
-		$this->writeFile($loaderSchema->getFile(), $file);
+
+		FileSystem::write($loaderSchema->getFile(), (string) $file);
+
+		FileSystem::write(
+			dirname($loaderSchema->getFile()) . '/modules.stub.neon',
+			Neon::encode([
+				'parameters' => [
+					'modules' => [
+						$dependencies['modules'],
+					],
+				],
+			], true),
+		);
 
 		return $loaderSchema;
 	}
@@ -286,11 +300,6 @@ final class LoaderGenerator
 			->setType('array');
 
 		return $file;
-	}
-
-	private function writeFile(string $path, PhpFile $file): void
-	{
-		FileSystem::write($path, (string) $file);
 	}
 
 }
