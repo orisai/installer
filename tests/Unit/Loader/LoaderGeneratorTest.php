@@ -62,7 +62,7 @@ final class Bar extends BaseLoader
 {
 	protected array $schema = [];
 	protected array $switches = [];
-	protected array $modules = ['__root__' => ['dir' => '']];
+	protected array $modules = ['root' => ['dir' => '']];
 }
 
 PHP,
@@ -77,7 +77,7 @@ PHP,
 
 		self::assertSame(
 			[
-				'__root__' => [
+				'root' => [
 					'dir' => '/root',
 				],
 			],
@@ -113,7 +113,7 @@ final class Bar extends Orisai\Installer\Loader\BaseLoader
 {
 	protected array $schema = [];
 	protected array $switches = [];
-	protected array $modules = ['__root__' => ['dir' => '']];
+	protected array $modules = ['root' => ['dir' => '']];
 }
 
 PHP,
@@ -128,7 +128,7 @@ PHP,
 
 		self::assertSame(
 			[
-				'__root__' => [
+				'root' => [
 					'dir' => '/root',
 				],
 			],
