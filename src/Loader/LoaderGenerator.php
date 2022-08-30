@@ -68,13 +68,7 @@ final class LoaderGenerator
 
 		FileSystem::write(
 			dirname($loaderSchema->getFile()) . '/modules.stub.neon',
-			Neon::encode([
-				'parameters' => [
-					'modules' => [
-						$dependencies['modules'],
-					],
-				],
-			], true),
+			Neon::encode($this->getStubFileContent($dependencies['modules']), true),
 		);
 
 		return $loaderSchema;
@@ -92,7 +86,7 @@ final class LoaderGenerator
 	}
 
 	/**
-	 * @return array{schema: array<int, mixed>, switches: array<string, bool>, modules: array<string, mixed>}
+	 * @return array{schema: array<int, mixed>, switches: array<string, bool>, modules: array<string, array{dir: string}>}
 	 */
 	private function getDependencies(): array
 	{
@@ -303,6 +297,27 @@ final class LoaderGenerator
 			->setType('array');
 
 		return $file;
+	}
+
+	/**
+	 * @param array<string, array{dir: string}> $modules
+	 * @return array<string, mixed>
+	 */
+	private function getStubFileContent(array $modules): array
+	{
+		foreach ($modules as &$module) {
+			$module['dir'] = $module['dir'] === ''
+				? '%rootDir%'
+				: '%rootDir%/' . $module['dir'];
+		}
+
+		return [
+			'parameters' => [
+				'modules' => [
+					$modules,
+				],
+			],
+		];
 	}
 
 }
