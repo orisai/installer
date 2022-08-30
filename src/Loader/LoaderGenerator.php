@@ -24,6 +24,7 @@ use function dirname;
 use function implode;
 use function is_subclass_of;
 use function sprintf;
+use function str_replace;
 use function strrchr;
 use function strrpos;
 use function substr;
@@ -109,7 +110,7 @@ final class LoaderGenerator
 
 		foreach ($modules as $module) {
 			$package = $module->getData();
-			$packageName = $package->getName();
+			$packageName = str_replace('/', '_', $package->getName());
 			$packageDirRelative = $package->getRelativePath();
 			$packageSchema = $module->getSchema();
 
@@ -142,7 +143,8 @@ final class LoaderGenerator
 			}
 		}
 
-		$modulesMeta['root'] = $modulesMeta[$this->modules->getRootModule()->getData()->getName()];
+		$rootName = str_replace('/', '_', $this->modules->getRootModule()->getData()->getName());
+		$modulesMeta['root'] = $modulesMeta[$rootName];
 		unset($modulesMeta['__root__']);
 
 		$schema = array_merge(
