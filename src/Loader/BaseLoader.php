@@ -41,13 +41,9 @@ abstract class BaseLoader
 		return $resolved;
 	}
 
-	public function configureSwitch(string $switch, bool $value, bool $throwOnMissing = true): void
+	public function configureSwitch(string $switch, bool $value): void
 	{
 		if (!isset($this->switches[$switch])) {
-			if (!$throwOnMissing) {
-				return;
-			}
-
 			$schemaName = SchemaName::DefaultName;
 			$switchesInline = implode(', ', array_keys($this->switches));
 			$message = Message::create()

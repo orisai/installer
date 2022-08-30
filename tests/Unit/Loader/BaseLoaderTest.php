@@ -107,8 +107,6 @@ final class BaseLoaderTest extends TestCase
 			[],
 		);
 
-		$loader->configureSwitch('foo', false, false);
-
 		$this->expectException(InvalidArgument::class);
 		$this->expectExceptionMessage(<<<'MSG'
 Context: Trying to set value of switch 'foo'.
