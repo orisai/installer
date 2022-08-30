@@ -63,8 +63,8 @@ Use loader with custom configurator in `Bootstrap.php`
 ```diff
 namespace App;
 
++use OriNette\DI\AutomaticConfigurator;
 -use OriNette\DI\ManualConfigurator;
-+use Orisai\Installer\AutomaticConfigurator;
 use Orisai\Installer\Loader\DefaultLoader;
 use function dirname;
 
@@ -133,7 +133,7 @@ $schema->addSwitch('httpsOnly', false);
 Switch can be turned on/off in runtime via loader
 
 ```php
-use Orisai\Installer\AutomaticConfigurator;
+use OriNette\DI\AutomaticConfigurator;
 use Orisai\Installer\Loader\DefaultLoader;
 
 $loader = new DefaultLoader();
@@ -205,7 +205,7 @@ to `Loader`. Check the [orisai/nette-di](https://github.com/orisai/nette-di) doc
 configurator.
 
 ```php
-use Orisai\Installer\AutomaticConfigurator;
+use OriNette\DI\AutomaticConfigurator;
 use Orisai\Installer\Loader\DefaultLoader;
 
 $configurator = new AutomaticConfigurator($rootDir, new DefaultLoader());
@@ -222,7 +222,7 @@ For testing our application we may utilize `InstallerTester`. It generates the s
 application runtime and on top of that allows us to provide test-specific schema.
 
 ```php
-use Orisai\Installer\AutomaticConfigurator;
+use OriNette\DI\AutomaticConfigurator;
 use Orisai\Installer\Schema\ModuleSchema;
 use Orisai\Installer\Tester\InstallerTester;
 
