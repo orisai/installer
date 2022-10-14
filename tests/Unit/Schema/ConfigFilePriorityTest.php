@@ -18,7 +18,7 @@ final class ConfigFilePriorityTest extends TestCase
 		self::assertSame(3, ConfigFilePriority::last()->value);
 		self::assertSame('last', ConfigFilePriority::last()->name);
 
-		self::assertEquals(
+		self::assertSame(
 			[
 				ConfigFilePriority::normal(),
 				ConfigFilePriority::first(),
@@ -27,8 +27,8 @@ final class ConfigFilePriorityTest extends TestCase
 			ConfigFilePriority::cases(),
 		);
 
-		self::assertEquals(ConfigFilePriority::normal(), ConfigFilePriority::from(1));
-		self::assertEquals(ConfigFilePriority::normal(), ConfigFilePriority::tryFrom(1));
+		self::assertSame(ConfigFilePriority::normal(), ConfigFilePriority::from(1));
+		self::assertSame(ConfigFilePriority::normal(), ConfigFilePriority::tryFrom(1));
 
 		self::assertNull(ConfigFilePriority::tryFrom(4));
 		$this->expectException(ValueError::class);
