@@ -12,9 +12,9 @@ final class ConfigFilePriority
 		Last = 3;
 
 	private const ValuesAndNames = [
-		self::Normal => 'normal',
-		self::First => 'first',
-		self::Last => 'last',
+		self::Normal => 'Normal',
+		self::First => 'First',
+		self::Last => 'Last',
 	];
 
 	/** @readonly */
