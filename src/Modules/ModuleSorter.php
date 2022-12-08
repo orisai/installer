@@ -81,7 +81,7 @@ final class ModuleSorter
 
 	/**
 	 * @param array<array{PackageData, array<mixed>|null}> $dependents
-	 * @return array<PackageData>
+	 * @return array<string, PackageData>
 	 */
 	private function flatten(array $dependents): array
 	{

@@ -21,7 +21,7 @@
 		}
 	],
 	"require": {
-		"php": ">=7.4.0 <8.2.0",
+		"php": ">=7.4.0 <8.3.0",
 		"ext-mbstring": "*",
 		"composer-plugin-api": "^2.0.0",
 		"nette/neon": "^2.4.0|^3.0.0",
@@ -34,7 +34,7 @@
 		"brianium/paratest": "^6.3.0",
 		"composer/composer": "^2.0.0",
 		"infection/infection": "^0.26.0",
-		"orisai/coding-standard": "^2.0.0",
+		"orisai/coding-standard": "^3.0.0",
 		"orisai/vfs": "^1.0.0",
 		"phpstan/extension-installer": "^1.0.0",
 		"phpstan/phpstan": "^1.0.0",
