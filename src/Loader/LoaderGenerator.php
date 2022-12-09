@@ -2,6 +2,8 @@
 
 namespace Orisai\Installer\Loader;
 
+use Composer\InstalledVersions;
+use Composer\Semver\VersionParser;
 use Nette\Neon\Neon;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile;
@@ -68,7 +70,12 @@ final class LoaderGenerator
 
 		FileSystem::write(
 			dirname($loaderSchema->getFile()) . '/modules.stub.neon',
-			Neon::encode($this->getStubFileContent($dependencies['modules']), true),
+			Neon::encode(
+				$this->getStubFileContent($dependencies['modules']),
+				InstalledVersions::satisfies(new VersionParser(), 'nette/neon', '>=3.3.0')
+					? true
+					: Neon::BLOCK,
+			),
 		);
 
 		return $loaderSchema;
