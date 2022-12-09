@@ -86,10 +86,7 @@ final class PackagesDataGenerator
 
 	private function getRelativePath(string $absolutePath, string $rootDir): string
 	{
-		$path = substr($absolutePath, strlen($rootDir));
-		assert($path !== false);
-
-		return ltrim($path, '/');
+		return ltrim(substr($absolutePath, strlen($rootDir)), '/');
 	}
 
 }
