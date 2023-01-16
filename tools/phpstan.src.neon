@@ -13,3 +13,6 @@ parameters:
 		# nette/php-generater <4.0.0 support
 		- message: '#^Fetching deprecated class constant VISIBILITY_PROTECTED of class Nette\\PhpGenerator\\ClassType\.$#'
 		  path: ../src/Loader/LoaderGenerator.php
+
+		# nette/neon <3.3.0 support
+		- '#^Fetching deprecated class constant BLOCK of class Nette\\Neon\\Neon(.+)#'
