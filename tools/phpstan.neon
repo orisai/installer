@@ -1,0 +1,35 @@
+includes:
+	- ../vendor/phpstan/phpstan/conf/bleedingEdge.neon
+	- phpstan.baseline.neon
+
+parameters:
+	phpVersion: 80100
+	level: 8
+	tmpDir: ../var/tools/PHPStan
+	resultCachePath: %currentWorkingDirectory%/var/tools/PHPStan/resultCache.php
+
+	checkBenevolentUnionTypes: true
+	checkMissingCallableSignature: true
+	checkInternalClassCaseSensitivity: true
+	checkTooWideReturnTypesInProtectedAndPublicMethods: true
+
+	exceptions:
+		check:
+			missingCheckedExceptionInThrows: true
+			tooWideThrowType: true
+		checkedExceptionClasses:
+			- Orisai\Exceptions\Check\CheckedException
+
+	ignoreErrors:
+		# Cannot happen - used string is always same
+		-
+			message: '#^Parameter \#1 \$string of function substr expects string, string\|false given\.$#'
+			path: ../src/Loader/LoaderGenerator.php
+
+		# nette/php-generater <4.0.0 support
+		-
+			message: '#^Fetching deprecated class constant VISIBILITY_PROTECTED of class Nette\\PhpGenerator\\ClassType\.$#'
+			path: ../src/Loader/LoaderGenerator.php
+
+		# nette/neon <3.3.0 support
+		- '#^Fetching deprecated class constant BLOCK of class Nette\\Neon\\Neon(.+)#'
