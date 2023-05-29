@@ -6,6 +6,7 @@ use Composer\Composer;
 use Composer\Installer\InstallationManager;
 use Composer\Package\Link;
 use Composer\Package\PackageInterface;
+use Orisai\Exceptions\Logic\NotImplemented;
 use function array_map;
 use function assert;
 use function getcwd;
@@ -81,7 +82,15 @@ final class PackagesDataGenerator
 			return $cwd;
 		}
 
-		return $this->installationManager->getInstallPath($package);
+		$path = $this->installationManager->getInstallPath($package);
+
+		if ($path === null) {
+			throw NotImplemented::create()
+				->withMessage("Package {$package->getName()} does not have an install path and is not supported." .
+					' Please open an issue.');
+		}
+
+		return $path;
 	}
 
 	private function getRelativePath(string $absolutePath, string $rootDir): string
