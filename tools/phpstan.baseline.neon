@@ -6,6 +6,11 @@ parameters:
 			path: ../tests/Unit/Loader/LoaderGeneratorTest.php
 
 		-
+			message: "#^Call to method Orisai\\\\Installer\\\\Modules\\\\Module\\:\\:getDependents\\(\\) on a separate line has no effect\\.$#"
+			count: 1
+			path: ../tests/Unit/Modules/ModuleTest.php
+
+		-
 			message: "#^Cannot call method getClass\\(\\) on Orisai\\\\Installer\\\\Schema\\\\LoaderSchema\\|null\\.$#"
 			count: 1
 			path: ../tests/Unit/Schema/ModuleSchemaTest.php
