@@ -21,7 +21,7 @@
 		}
 	],
 	"require": {
-		"php": ">=7.4.0 <8.3.0",
+		"php": "7.4 - 8.3",
 		"ext-mbstring": "*",
 		"composer-plugin-api": "^2.0.0",
 		"nette/neon": "^2.4.0|^3.0.0",
